@@ -10,6 +10,7 @@ import 'screens/home_screen.dart';
 import 'screens/landing_screen.dart';
 import 'screens/tree_detail_screen.dart';
 import 'screens/link_tree_screen.dart';
+import 'screens/feature_placeholder_screen.dart';
 import 'services/earthranger_auth.dart';
 import 'services/supabase_service.dart';
 import 'theme/app_theme.dart';
@@ -94,6 +95,70 @@ class TreeInfoApp extends StatelessWidget {
                   );
                 case '/home':
                   return MaterialPageRoute(builder: (_) => const HomeScreen());
+                case '/work-management':
+                  return MaterialPageRoute(
+                    builder: (_) => const FeaturePlaceholderScreen(
+                      titleKey: 'landing_function_work',
+                    ),
+                  );
+                case '/incident-management':
+                  return MaterialPageRoute(
+                    builder: (_) => const FeaturePlaceholderScreen(
+                      titleKey: 'landing_function_incident',
+                    ),
+                  );
+                case '/resource-management':
+                  return MaterialPageRoute(
+                    builder: (_) => const FeaturePlaceholderScreen(
+                      titleKey: 'landing_function_resource',
+                    ),
+                  );
+                case '/schedule-management':
+                  return MaterialPageRoute(
+                    builder: (_) => const FeaturePlaceholderScreen(
+                      titleKey: 'landing_function_schedule',
+                    ),
+                  );
+                case '/reports-management':
+                  return MaterialPageRoute(
+                    builder: (_) => const FeaturePlaceholderScreen(
+                      titleKey: 'landing_function_reports',
+                    ),
+                  );
+                case '/patrol-management':
+                  return MaterialPageRoute(
+                    builder: (_) => const FeaturePlaceholderScreen(
+                      titleKey: 'landing_function_patrol',
+                    ),
+                  );
+                case '/maps':
+                  return MaterialPageRoute(
+                    builder: (_) => const FeaturePlaceholderScreen(
+                      titleKey: 'maps',
+                      navIndex: 1,
+                    ),
+                  );
+                case '/alerts':
+                  return MaterialPageRoute(
+                    builder: (_) => const FeaturePlaceholderScreen(
+                      titleKey: 'alerts',
+                      navIndex: 2,
+                    ),
+                  );
+                case '/notifications':
+                  return MaterialPageRoute(
+                    builder: (_) => const FeaturePlaceholderScreen(
+                      titleKey: 'notifications',
+                      navIndex: 3,
+                    ),
+                  );
+                case '/account':
+                  return MaterialPageRoute(
+                    builder: (_) => const FeaturePlaceholderScreen(
+                      titleKey: 'account',
+                      navIndex: 4,
+                    ),
+                  );
                 default:
                   return MaterialPageRoute(
                     builder: (_) => const LandingScreen(),

@@ -16,8 +16,19 @@ class AppLocalizations {
       'landing_title': 'V-RANGER',
       'landing_open_earthranger': 'MỞ\nEARTHRANGER',
       'landing_add_tree': 'THÊM CÂY',
+      'landing_user_name': 'Nguyễn Minh Đức',
+      'landing_user_role': 'Trưởng Đội Tuần Tra - Đội 01',
+      'landing_user_status_on_duty': 'Đang trực',
+      'landing_user_date': 'Thứ Sáu, 26 Th01 2024',
+      'landing_function_work': 'Quản lý Công việc',
+      'landing_function_incident': 'Quản lý sự cố',
+      'landing_function_resource': 'Quản lý Tài nguyên Rừng',
+      'landing_function_schedule': 'Lịch làm việc',
+      'landing_function_reports': 'Thống kê báo cáo',
+      'landing_function_patrol': 'Quản lý Tuần tra',
 
       // Home
+      'home': 'Trang chủ',
       'nfc_hint': 'Nhập mã NFC hoặc Tree ID',
       'nfc_empty_error': 'Vui lòng nhập mã NFC.',
       'nfc_scan_prompt': 'Vui lòng để điện thoại gần thẻ NFC',
@@ -31,6 +42,10 @@ class AppLocalizations {
       'id_label': 'ID',
       'not_available': 'N/A',
       'maps': 'Bản đồ',
+      'alerts': 'Cảnh báo',
+      'notifications': 'Thông báo',
+      'account': 'Tài khoản',
+      'placeholder_coming_soon': 'Màn hình chức năng đang được phát triển.',
 
       // Admin login dialog
       'login_status_logged_in': 'Trạng thái: Đã đăng nhập Admin',
@@ -128,8 +143,19 @@ class AppLocalizations {
       'landing_title': 'V-RANGER',
       'landing_open_earthranger': 'OPEN\nEARTHRANGER',
       'landing_add_tree': 'ADD TREE',
+      'landing_user_name': 'Nguyen Minh Duc',
+      'landing_user_role': 'Patrol Team Leader - Team 01',
+      'landing_user_status_on_duty': 'On Duty',
+      'landing_user_date': 'Friday, Jan 26 2024',
+      'landing_function_work': 'Work Management',
+      'landing_function_incident': 'Incident Management',
+      'landing_function_resource': 'Forest Resource Management',
+      'landing_function_schedule': 'Work Schedule',
+      'landing_function_reports': 'Report Statistics',
+      'landing_function_patrol': 'Patrol Management',
 
       // Home
+      'home': 'Home',
       'nfc_hint': 'Enter NFC code or Tree ID',
       'nfc_empty_error': 'Please enter an NFC code.',
       'nfc_scan_prompt': 'Please hold your phone near the NFC tag',
@@ -143,6 +169,10 @@ class AppLocalizations {
       'id_label': 'ID',
       'not_available': 'N/A',
       'maps': 'Maps',
+      'alerts': 'Alerts',
+      'notifications': 'Notifications',
+      'account': 'Account',
+      'placeholder_coming_soon': 'This feature screen is coming soon.',
 
       // Admin login dialog
       'login_status_logged_in': 'Status: Admin logged in',
