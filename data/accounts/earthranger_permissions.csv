@@ -1,0 +1,732 @@
+module,resource,permission
+admin,log entry,Can add log entry
+admin,log entry,Can change log entry
+admin,log entry,Can delete log entry
+admin,log entry,Can view log entry
+auth,group,Can add group
+auth,group,Can change group
+auth,group,Can delete group
+auth,group,Can view group
+auth,permission,Can add permission
+auth,permission,Can change permission
+auth,permission,Can delete permission
+auth,permission,Can view permission
+choices,actiontaken,Can add action taken
+choices,actiontaken,Can change action taken
+choices,actiontaken,Can delete action taken
+choices,actiontaken,Can view action taken
+choices,behavior,Can add behavior
+choices,behavior,Can change behavior
+choices,behavior,Can delete behavior
+choices,behavior,Can view behavior
+choices,causeofdeath,Can add cause of death
+choices,causeofdeath,Can change cause of death
+choices,causeofdeath,Can delete cause of death
+choices,causeofdeath,Can view cause of death
+choices,choice,Can add choice
+choices,choice,Can change choice
+choices,choice,Can delete choice
+choices,choice,Can view choice
+choices,color,Can add color
+choices,color,Can change color
+choices,color,Can delete color
+choices,color,Can view color
+choices,conservancy,Can add conservancy
+choices,conservancy,Can change conservancy
+choices,conservancy,Can delete conservancy
+choices,conservancy,Can view conservancy
+choices,Disabled Choice,Can add Disabled Choice
+choices,Disabled Choice,Can change Disabled Choice
+choices,Disabled Choice,Can delete Disabled Choice
+choices,Disabled Choice,Can view Disabled Choice
+choices,dynamic choice,Can add dynamic choice
+choices,dynamic choice,Can change dynamic choice
+choices,dynamic choice,Can delete dynamic choice
+choices,dynamic choice,Can view dynamic choice
+choices,fencesection,Can add fence section
+choices,fencesection,Can change fence section
+choices,fencesection,Can delete fence section
+choices,fencesection,Can view fence section
+choices,health,Can add health
+choices,health,Can change health
+choices,health,Can delete health
+choices,health,Can view health
+choices,species,Can add species
+choices,species,Can change species
+choices,species,Can delete species
+choices,species,Can view species
+choices,station,Can add station
+choices,station,Can change station
+choices,station,Can delete station
+choices,station,Can view station
+choices,sub choice of,Can add sub choice of
+choices,sub choice of,Can change sub choice of
+choices,sub choice of,Can delete sub choice of
+choices,sub choice of,Can view sub choice of
+contenttypes,content type,Can add content type
+contenttypes,content type,Can change content type
+contenttypes,content type,Can delete content type
+contenttypes,content type,Can view content type
+analyzers,Google Earth Engine Analyzer,Can add Google Earth Engine Analyzer
+analyzers,Google Earth Engine Analyzer,Can change Google Earth Engine Analyzer
+analyzers,Google Earth Engine Analyzer,Can delete Google Earth Engine Analyzer
+analyzers,Google Earth Engine Analyzer,Can view Google Earth Engine Analyzer
+analyzers,Feature Proximity Analyzer,Can add Feature Proximity Analyzer
+analyzers,Feature Proximity Analyzer,Can change Feature Proximity Analyzer
+analyzers,Feature Proximity Analyzer,Can delete Feature Proximity Analyzer
+analyzers,Feature Proximity Analyzer,Can view Feature Proximity Analyzer
+analyzers,Feature Proximity Analyzer,Can view Proximity Analyzer Configurations
+analyzers,Geofence Analyzer,Can add Geofence Analyzer
+analyzers,Geofence Analyzer,Can change Geofence Analyzer
+analyzers,Geofence Analyzer,Can delete Geofence Analyzer
+analyzers,Geofence Analyzer,Can view Geofence Analyzer
+analyzers,Global Forest Watch Subscription,Can add Global Forest Watch Subscription
+analyzers,Global Forest Watch Subscription,Can change Global Forest Watch Subscription
+analyzers,Global Forest Watch Subscription,Can delete Global Forest Watch Subscription
+analyzers,Global Forest Watch Subscription,Can view Global Forest Watch Subscription
+analyzers,Immobility Analyzer,Can add Immobility Analyzer
+analyzers,Immobility Analyzer,Can change Immobility Analyzer
+analyzers,Immobility Analyzer,Can delete Immobility Analyzer
+analyzers,Immobility Analyzer,Can view Immobility Analyzer
+analyzers,Low-Speed Analyzer (Percentile method),Can add Low-Speed Analyzer (Percentile method)
+analyzers,Low-Speed Analyzer (Percentile method),Can change Low-Speed Analyzer (Percentile method)
+analyzers,Low-Speed Analyzer (Percentile method),Can delete Low-Speed Analyzer (Percentile method)
+analyzers,Low-Speed Analyzer (Percentile method),Can view Low-Speed Analyzer (Percentile method)
+analyzers,Low-Speed Analyzer (Wilcox method),Can add Low-Speed Analyzer (Wilcox method)
+analyzers,Low-Speed Analyzer (Wilcox method),Can change Low-Speed Analyzer (Wilcox method)
+analyzers,Low-Speed Analyzer (Wilcox method),Can delete Low-Speed Analyzer (Wilcox method)
+analyzers,Low-Speed Analyzer (Wilcox method),Can view Low-Speed Analyzer (Wilcox method)
+analyzers,Subject Track Filter,Can add Subject Track Filter
+analyzers,Subject Track Filter,Can change Subject Track Filter
+analyzers,Subject Track Filter,Can delete Subject Track Filter
+analyzers,Subject Track Filter,Can view Subject Track Filter
+analyzers,speed distro,Can add speed distro
+analyzers,speed distro,Can change speed distro
+analyzers,speed distro,Can delete speed distro
+analyzers,speed distro,Can view speed distro
+analyzers,subject analyzer result,Can add subject analyzer result
+analyzers,subject analyzer result,Can change subject analyzer result
+analyzers,subject analyzer result,Can delete subject analyzer result
+analyzers,subject analyzer result,Can view subject analyzer result
+analyzers,subject analyzer result observations,Can add subject analyzer result observations
+analyzers,subject analyzer result observations,Can change subject analyzer result observations
+analyzers,subject analyzer result observations,Can delete subject analyzer result observations
+analyzers,subject analyzer result observations,Can view subject analyzer result observations
+analyzers,Subject Proximity Analyzer,Can add Subject Proximity Analyzer
+analyzers,Subject Proximity Analyzer,Can change Subject Proximity Analyzer
+analyzers,Subject Proximity Analyzer,Can delete Subject Proximity Analyzer
+analyzers,Subject Proximity Analyzer,Can view Subject Proximity Analyzer
+analyzers,subject speed profile,Can add subject speed profile
+analyzers,subject speed profile,Can change subject speed profile
+analyzers,subject speed profile,Can delete subject speed profile
+analyzers,subject speed profile,Can view subject speed profile
+core,DAS Access Token,Can add DAS Access Token
+core,DAS Access Token,Can change DAS Access Token
+core,DAS Access Token,Can delete DAS Access Token
+core,DAS Access Token,Can view DAS Access Token
+core,DAS Application,Can add DAS Application
+core,DAS Application,Can change DAS Application
+core,DAS Application,Can delete DAS Application
+core,DAS Application,Can view DAS Application
+core,DAS Grant,Can add DAS Grant
+core,DAS Grant,Can change DAS Grant
+core,DAS Grant,Can delete DAS Grant
+core,DAS Grant,Can view DAS Grant
+core,DAS ID Token,Can add DAS ID Token
+core,DAS ID Token,Can change DAS ID Token
+core,DAS ID Token,Can delete DAS ID Token
+core,DAS ID Token,Can view DAS ID Token
+core,DAS Refresh Token,Can add DAS Refresh Token
+core,DAS Refresh Token,Can change DAS Refresh Token
+core,DAS Refresh Token,Can delete DAS Refresh Token
+core,DAS Refresh Token,Can view DAS Refresh Token
+core,das tenant,Can add das tenant
+core,das tenant,Can change das tenant
+core,das tenant,Can delete das tenant
+core,das tenant,Can view das tenant
+gis,post gis geometry columns,Can add post gis geometry columns
+gis,post gis geometry columns,Can change post gis geometry columns
+gis,post gis geometry columns,Can delete post gis geometry columns
+gis,post gis geometry columns,Can view post gis geometry columns
+gis,post gis spatial ref sys,Can add post gis spatial ref sys
+gis,post gis spatial ref sys,Can change post gis spatial ref sys
+gis,post gis spatial ref sys,Can delete post gis spatial ref sys
+gis,post gis spatial ref sys,Can view post gis spatial ref sys
+mapping,Feature Service Configuration,Can add Feature Service Configuration
+mapping,Feature Service Configuration,Can change Feature Service Configuration
+mapping,Feature Service Configuration,Can delete Feature Service Configuration
+mapping,Feature Service Configuration,Can view Feature Service Configuration
+mapping,arcgis group,Can add arcgis group
+mapping,arcgis group,Can change arcgis group
+mapping,arcgis group,Can delete arcgis group
+mapping,arcgis group,Can view arcgis group
+mapping,arcgis item,Can add arcgis item
+mapping,arcgis item,Can change arcgis item
+mapping,arcgis item,Can delete arcgis item
+mapping,arcgis item,Can view arcgis item
+mapping,Display Category,Can add Display Category
+mapping,Display Category,Can change Display Category
+mapping,Display Category,Can delete Display Category
+mapping,Display Category,Can view Display Category
+mapping,feature set,Can add feature set
+mapping,feature set,Can change feature set
+mapping,feature set,Can delete feature set
+mapping,feature set,Can view feature set
+mapping,feature set feature type,Can add feature set feature type
+mapping,feature set feature type,Can change feature set feature type
+mapping,feature set feature type,Can delete feature set feature type
+mapping,feature set feature type,Can view feature set feature type
+mapping,feature type,Can add feature type
+mapping,feature type,Can change feature type
+mapping,feature type,Can delete feature type
+mapping,feature type,Can view feature type
+mapping,line feature,Can add line feature
+mapping,line feature,Can change line feature
+mapping,line feature,Can delete line feature
+mapping,line feature,Can view line feature
+mapping,Map Quicklink,Can add Map Quicklink
+mapping,Map Quicklink,Can change Map Quicklink
+mapping,Map Quicklink,Can delete Map Quicklink
+mapping,Map Quicklink,Can view Map Quicklink
+mapping,point feature,Can add point feature
+mapping,point feature,Can change point feature
+mapping,point feature,Can delete point feature
+mapping,point feature,Can view point feature
+mapping,polygon feature,Can add polygon feature
+mapping,polygon feature,Can change polygon feature
+mapping,polygon feature,Can delete polygon feature
+mapping,polygon feature,Can view polygon feature
+mapping,Feature,Can add Feature
+mapping,Feature,Can change Feature
+mapping,Feature,Can delete Feature
+mapping,Feature,Can view Feature
+mapping,Feature Import File,Can add Feature Import File
+mapping,Feature Import File,Can change Feature Import File
+mapping,Feature Import File,Can delete Feature Import File
+mapping,Feature Import File,Can view Feature Import File
+mapping,Feature Group,Can add Feature Group
+mapping,Feature Group,Can change Feature Group
+mapping,Feature Group,Can delete Feature Group
+mapping,Feature Group,Can view Feature Group
+mapping,spatial feature group static features,Can add spatial feature group static features
+mapping,spatial feature group static features,Can change spatial feature group static features
+mapping,spatial feature group static features,Can delete spatial feature group static features
+mapping,spatial feature group static features,Can view spatial feature group static features
+mapping,Feature Type,Can add Feature Type
+mapping,Feature Type,Can change Feature Type
+mapping,Feature Type,Can delete Feature Type
+mapping,Feature Type,Can view Feature Type
+mapping,spatial feature type tag,Can add spatial feature type tag
+mapping,spatial feature type tag,Can change spatial feature type tag
+mapping,spatial feature type tag,Can delete spatial feature type tag
+mapping,spatial feature type tag,Can view spatial feature type tag
+mapping,spatial feature type tags,Can add spatial feature type tags
+mapping,spatial feature type tags,Can change spatial feature type tags
+mapping,spatial feature type tags,Can delete spatial feature type tags
+mapping,spatial feature type tags,Can view spatial feature type tags
+mapping,Spatial File,Can add Spatial File
+mapping,Spatial File,Can change Spatial File
+mapping,Spatial File,Can delete Spatial File
+mapping,Spatial File,Can view Spatial File
+mapping,Basemap,Can add Basemap
+mapping,Basemap,Can change Basemap
+mapping,Basemap,Can delete Basemap
+mapping,Basemap,Can view Basemap
+spatialfeaturegroup,spatialfeaturegroup,Can add Base Feature Group
+spatialfeaturegroup,spatialfeaturegroup,Can change Base Feature Group
+spatialfeaturegroup,spatialfeaturegroup,Can delete Base Feature Group
+spatialfeaturegroup,spatialfeaturegroup,Can view Base Feature Group
+spatialfeaturegroup,spatialfeaturegroupquery,Can add Calculated Feature Group
+spatialfeaturegroup,spatialfeaturegroupquery,Can change Calculated Feature Group
+spatialfeaturegroup,spatialfeaturegroupquery,Can delete Calculated Feature Group
+spatialfeaturegroup,spatialfeaturegroupquery,Can view Calculated Feature Group
+oauth2_provider,access token,Can add access token
+oauth2_provider,access token,Can change access token
+oauth2_provider,access token,Can delete access token
+oauth2_provider,access token,Can view access token
+oauth2_provider,application,Can add application
+oauth2_provider,application,Can change application
+oauth2_provider,application,Can delete application
+oauth2_provider,application,Can view application
+oauth2_provider,grant,Can add grant
+oauth2_provider,grant,Can change grant
+oauth2_provider,grant,Can delete grant
+oauth2_provider,grant,Can view grant
+oauth2_provider,id token,Can add id token
+oauth2_provider,id token,Can change id token
+oauth2_provider,id token,Can delete id token
+oauth2_provider,id token,Can view id token
+oauth2_provider,refresh token,Can add refresh token
+oauth2_provider,refresh token,Can change refresh token
+oauth2_provider,refresh token,Can delete refresh token
+oauth2_provider,refresh token,Can view refresh token
+accounts,act as profiles,Can add act as profiles
+accounts,act as profiles,Can change act as profiles
+accounts,act as profiles,Can delete act as profiles
+accounts,act as profiles,Can view act as profiles
+accounts,eula,Can add eula
+accounts,eula,Can change eula
+accounts,eula,Can delete eula
+accounts,eula,Can view eula
+accounts,permission set,Can add permission set
+accounts,permission set,Can change permission set
+accounts,permission set,Can delete permission set
+accounts,permission set,Can view permission set
+accounts,permission set children,Can add permission set children
+accounts,permission set children,Can change permission set children
+accounts,permission set children,Can delete permission set children
+accounts,permission set children,Can view permission set children
+accounts,permission set permission,Can add permission set permission
+accounts,permission set permission,Can change permission set permission
+accounts,permission set permission,Can delete permission set permission
+accounts,permission set permission,Can view permission set permission
+accounts,user,Can add user
+accounts,user,Can change user
+accounts,user,Can delete user
+accounts,user,Receive observation lag notification
+accounts,user,Receive silent source notification
+accounts,user,Receive source report
+accounts,user,Can view user
+accounts,user agreement,Can add user agreement
+accounts,user agreement,Can change user agreement
+accounts,user agreement,Can delete user agreement
+accounts,user agreement,Can view user agreement
+accounts,user permission set,Can add user permission set
+accounts,user permission set,Can change user permission set
+accounts,user permission set,Can delete user permission set
+accounts,user permission set,Can view user permission set
+activity,Alert Rule,Can add alert rule
+activity,Alert Rule,Can change alert rule
+activity,Alert Rule,Can delete alert rule
+activity,Alert Rule,Can view alert rule
+activity,alert rule event type,Can add alert rule event type
+activity,alert rule event type,Can change alert rule event type
+activity,alert rule event type,Can delete alert rule event type
+activity,alert rule event type,Can view alert rule event type
+activity,alert rule notification method,Can add alert rule notification method
+activity,alert rule notification method,Can change alert rule notification method
+activity,alert rule notification method,Can delete alert rule notification method
+activity,alert rule notification method,Can view alert rule notification method
+activity,Event Reporters,Can add Event Reporters
+activity,Event Reporters,Can change Event Reporters
+activity,Event Reporters,Can delete Event Reporters
+activity,Event Reporters,Can view Event Reporters
+activity,Event,Can add analyzer_event reports in a certain distance
+activity,Event,Can add hidden reports in a certain distance
+activity,Event,Can add logistics reports in a certain distance
+activity,Event,Can add monitoring reports in a certain distance
+activity,Event,Can add security reports in a certain distance
+activity,Event,Can create analyzer_event reports
+activity,Event,Can delete analyzer_event reports
+activity,Event,Can read analyzer_event reports
+activity,Event,Can update analyzer_event reports
+activity,Event,Can change analyzer_event reports in a certain distance
+activity,Event,Can change hidden reports in a certain distance
+activity,Event,Can change logistics reports in a certain distance
+activity,Event,Can change monitoring reports in a certain distance
+activity,Event,Can change security reports in a certain distance
+activity,Event,Can delete analyzer_event reports in a certain distance
+activity,Event,Can delete hidden reports in a certain distance
+activity,Event,Can delete logistics reports in a certain distance
+activity,Event,Can delete monitoring reports in a certain distance
+activity,Event,Can delete security reports in a certain distance
+activity,Event,Can create hidden reports
+activity,Event,Can delete hidden reports
+activity,Event,Can read hidden reports
+activity,Event,Can update hidden reports
+activity,Event,Can create logistics reports
+activity,Event,Can delete logistics reports
+activity,Event,Can read logistics reports
+activity,Event,Can update logistics reports
+activity,Event,Can create monitoring reports
+activity,Event,Can delete monitoring reports
+activity,Event,Can read monitoring reports
+activity,Event,Can update monitoring reports
+activity,Event,Can create security reports
+activity,Event,Can delete security reports
+activity,Event,Can read security reports
+activity,Event,Can update security reports
+activity,Event,Can view analyzer_event reports in a certain distance
+activity,Event,Can view hidden reports in a certain distance
+activity,Event,Can view logistics reports in a certain distance
+activity,Event,Can view monitoring reports in a certain distance
+activity,Event,Can view security reports in a certain distance
+activity,Event,Create analyzer reports in a certain distance
+activity,Event,Create logistics reports in a certain distance
+activity,Event,Create monitoring reports in a certain distance
+activity,Event,Create security reports in a certain distance
+activity,Event,An admin permission to change which users can view a Subject and their view permission.
+activity,Event,Can Export Event Data
+activity,Event,Can Export Observation Data
+activity,Event,Modify analyzer reports in a certain distance
+activity,Event,Can change event
+activity,Event,Modify logistics reports in a certain distance
+activity,Event,Modify monitoring reports in a certain distance
+activity,Event,Modify security reports in a certain distance
+activity,Event,Delete analyzer reports in a certain distance
+activity,Event,Can delete event
+activity,Event,Delete logistics reports in a certain distance
+activity,Event,Delete monitoring reports in a certain distance
+activity,Event,Delete security reports in a certain distance
+activity,Event,View analyzer reports in a certain distance
+activity,Event,Can view event
+activity,Event,View logistics reports in a certain distance
+activity,Event,View monitoring reports in a certain distance
+activity,Event,View security reports in a certain distance
+activity,Event,Can add event
+activity,Event Attachment,Can add event attachment
+activity,Event Attachment,Can change event attachment
+activity,Event Attachment,Can delete event attachment
+activity,Event Attachment,Can view event attachment
+activity,Event Category,Can add Event Category
+activity,Event Category,Can change Event Category
+activity,Event Category,Can delete Event Category
+activity,Event Category,Permission to see security events
+activity,Event Category,Permission to see reporting events.
+activity,Event Category,Can view Event Category
+activity,event class,Can add event class
+activity,event class,Can change event class
+activity,event class,Can delete event class
+activity,event class,Can view event class
+activity,event class factor,Can add event class factor
+activity,event class factor,Can change event class factor
+activity,event class factor,Can delete event class factor
+activity,event class factor,Can view event class factor
+activity,event details,Can add event details
+activity,event details,Can change event details
+activity,event details,Can delete event details
+activity,event details,Can view event details
+activity,event factor,Can add event factor
+activity,event factor,Can change event factor
+activity,event factor,Can delete event factor
+activity,event factor,Can view event factor
+activity,Event File,Can change event file
+activity,Event File,Can delete event file
+activity,Event File,Can view event file
+activity,event filter,Can add event filter
+activity,event filter,Can change event filter
+activity,event filter,Can delete event filter
+activity,event filter,Can view event filter
+activity,event geometry,Can add event geometry
+activity,event geometry,Can change event geometry
+activity,event geometry,Can delete event geometry
+activity,event geometry,Can view event geometry
+activity,Event Note,Can add event note
+activity,Event Note,Can change event note
+activity,Event Note,Can delete event note
+activity,Event Note,Can view event note
+activity,Event Notification,Can add event notification
+activity,Event Notification,Can change event notification
+activity,Event Notification,Can delete event notification
+activity,Event Notification,Can view event notification
+activity,event photo,Can add event photo
+activity,event photo,Can change event photo
+activity,event photo,Can delete event photo
+activity,event photo,Can view event photo
+activity,Event Provider,Can add event provider
+activity,Event Provider,Can change event provider
+activity,Event Provider,Can delete event provider
+activity,Event Provider,Can view event provider
+activity,event related segments,Can add event related segments
+activity,event related segments,Can change event related segments
+activity,event related segments,Can remove an event from a patrol segment
+activity,event related segments,Can delete event related segments
+activity,event related segments,Can view event related segments
+activity,event related subject,Can add event related subject
+activity,event related subject,Can change event related subject
+activity,event related subject,Can delete event related subject
+activity,event related subject,Can view event related subject
+activity,event relationship,Can add event relationship
+activity,event relationship,Can change event relationship
+activity,event relationship,Can delete event relationship
+activity,event relationship,Can delete event relationships
+activity,event relationship,Can view event relationship
+activity,event relationship type,Can add event relationship type
+activity,event relationship type,Can change event relationship type
+activity,event relationship type,Can delete event relationship type
+activity,event relationship type,Can view event relationship type
+activity,Event Source,Can add event source
+activity,Event Source,Can change event source
+activity,Event Source,Permission to add an event for an event source
+activity,Event Source,Can delete event source
+activity,Event Source,Can view event source
+activity,eventsource event,Can add eventsource event
+activity,eventsource event,Can change eventsource event
+activity,eventsource event,Can delete eventsource event
+activity,eventsource event,Can view eventsource event
+activity,Event Type,Can add event type
+activity,Event Type,Can change event type
+activity,Event Type,Can delete event type
+activity,Event Type,Can view event type
+activity,Event Types and Categories 2.0 (Beta),Can add Event Types and Categories 2.0 (Beta)
+activity,Event Types and Categories 2.0 (Beta),Can change Event Types and Categories 2.0 (Beta)
+activity,Event Types and Categories 2.0 (Beta),Can delete Event Types and Categories 2.0 (Beta)
+activity,Event Types and Categories 2.0 (Beta),Can view Event Types and Categories 2.0 (Beta)
+activity,membership type,Can add membership type
+activity,membership type,Can change membership type
+activity,membership type,Can delete membership type
+activity,membership type,Can view membership type
+activity,Notification Method,Can add notification method
+activity,Notification Method,Can change notification method
+activity,Notification Method,Can delete notification method
+activity,Notification Method,Can view notification method
+activity,patrol,Can add patrol
+activity,patrol,Can change patrol
+activity,patrol,Can delete patrol
+activity,patrol,Can view patrol
+activity,patrol configuration,Can add patrol configuration
+activity,patrol configuration,Can change patrol configuration
+activity,patrol configuration,Can delete patrol configuration
+activity,patrol configuration,Can view patrol configuration
+activity,patrol configuration subject group,Can add patrol configuration subject group
+activity,patrol configuration subject group,Can change patrol configuration subject group
+activity,patrol configuration subject group,Can delete patrol configuration subject group
+activity,patrol configuration subject group,Can view patrol configuration subject group
+activity,Patrol Type,Can add patrol type
+activity,Patrol Type,Can change patrol type
+activity,Patrol Type,Can delete patrol type
+activity,Patrol Type,Can view patrol type
+activity,Person,Can add Person
+activity,Person,Can change Person
+activity,Person,Can delete Person
+activity,Person,Can view Person
+activity,refresh recreate event detail view,Can add refresh recreate event detail view
+activity,refresh recreate event detail view,Can change refresh recreate event detail view
+activity,refresh recreate event detail view,Can delete refresh recreate event detail view
+activity,refresh recreate event detail view,Can view refresh recreate event detail view
+activity,team,Can add team
+activity,team,Can change team
+activity,team,Can delete team
+activity,team,Can view team
+activity,team membership,Can add team membership
+activity,team membership,Can change team membership
+activity,team membership,Can delete team membership
+activity,team membership,Can view team membership
+activity,ts vector model,Can add ts vector model
+activity,ts vector model,Can change ts vector model
+activity,ts vector model,Can delete ts vector model
+activity,ts vector model,Can view ts vector model
+observations,announcement,Can add announcement
+observations,announcement,Can change announcement
+observations,announcement,Can delete announcement
+observations,announcement,Can view announcement
+observations,announcement user,Can add announcement user
+observations,announcement user,Can change announcement user
+observations,announcement user,Can delete announcement user
+observations,announcement user,Can view announcement user
+observations,common name,Can add common name
+observations,common name,Can change common name
+observations,common name,Can delete common name
+observations,common name,Can view common name
+observations,gpx track file,Can add gpx track file
+observations,gpx track file,Can change gpx track file
+observations,gpx track file,Can delete gpx track file
+observations,gpx track file,Can view gpx track file
+observations,latest observation source,Can add latest observation source
+observations,latest observation source,Can change latest observation source
+observations,latest observation source,Can delete latest observation source
+observations,latest observation source,Can view latest observation source
+observations,message,Can add message
+observations,message,Can change message
+observations,message,Can delete message
+observations,message,Can view message
+observations,observation,Can add observation
+observations,observation,Can change observation
+observations,observation,Can delete observation
+observations,observation,Can view observation
+observations,region,Can add region
+observations,region,Can change region
+observations,region,Can delete region
+observations,region,Can view region
+observations,socket client,Can add socket client
+observations,socket client,Can change socket client
+observations,socket client,Can delete socket client
+observations,socket client,Can view socket client
+observations,source,Can add source
+observations,source,Can change source
+observations,source,Can delete source
+observations,source,Can view source
+observations,source group,Can add source group
+observations,source group,Can change source group
+observations,source group,Can delete source group
+observations,source group,Can view source group
+observations,source group children,Can add source group children
+observations,source group children,Can change source group children
+observations,source group children,Can delete source group children
+observations,source group children,Can view source group children
+observations,source group permission set,Can add source group permission set
+observations,source group permission set,Can change source group permission set
+observations,source group permission set,Can delete source group permission set
+observations,source group permission set,Can view source group permission set
+observations,source group source,Can add source group source
+observations,source group source,Can change source group source
+observations,source group source,Can delete source group source
+observations,source group source,Can view source group source
+observations,source provider,Can add source provider
+observations,source provider,Can change source provider
+observations,source provider,Can delete source provider
+observations,source provider,Can view source provider
+observations,subject,Can view tracks no more than 16 days old
+observations,subject,Can view tracks no more than 30 days old
+observations,subject,Can view tracks no more than 60 days old
+observations,subject,Can view tracks no more than 7 days old
+observations,subject,Can view all historical tracks
+observations,subject,Can view tracks no less than 0 days old
+observations,subject,Can view tracks no less than 1 day old
+observations,subject,Can view tracks no less than 3 days old
+observations,subject,Can view tracks no less than 7 days old
+observations,subject,Can add subject
+observations,subject,"Can view gear/subject regardless of location restriction (lat/lon not required)."
+observations,subject,"Permission to configure alerts for subject, includes setting geofences, proximity and immobility settings."
+observations,subject,Can change subject
+observations,subject,An admin permission to change which users can view a Subject and their view permission.
+observations,subject,Can delete subject
+observations,subject,Permission to subscribe to an alert on this Subject.
+observations,subject,"Access to a 24 hour delayed observation feed. No real-time or last reported position."
+observations,subject,Permission to view the last reported position of a Subject only.
+observations,subject,Access to real-time observations.
+observations,subject,Can view subject
+observations,subject group,Can add subject group
+observations,subject group,Can change subject group
+observations,subject group,Can delete subject group
+observations,subject group,Can view subject group
+observations,subject group children,Can add subject group children
+observations,subject group children,Can change subject group children
+observations,subject group children,Can delete subject group children
+observations,subject group children,Can view subject group children
+observations,subject group permission set,Can add subject group permission set
+observations,subject group permission set,Can change subject group permission set
+observations,subject group permission set,Can delete subject group permission set
+observations,subject group permission set,Can view subject group permission set
+observations,subject group subject,Can add subject group subject
+observations,subject group subject,Can change subject group subject
+observations,subject group subject,Can delete subject group subject
+observations,subject group subject,Can view subject group subject
+observations,subject maximum speed,Can add subject maximum speed
+observations,subject maximum speed,Can change subject maximum speed
+observations,subject maximum speed,Can delete subject maximum speed
+observations,subject maximum speed,Can view subject maximum speed
+observations,Subject Positions,Can add Subject Positions
+observations,Subject Positions,Can change Subject Positions
+observations,Subject Positions,Can delete Subject Positions
+observations,Subject Positions,Can view Subject Positions
+observations,Subject Source Assignment,Can add Subject Source Assignment
+observations,Subject Source Assignment,Can change Subject Source Assignment
+observations,Subject Source Assignment,Can delete Subject Source Assignment
+observations,Subject Source Assignment,Can view Subject Source Assignment
+observations,Subject Configuration,Can add Subject Configuration
+observations,Subject Configuration,Can change Subject Configuration
+observations,Subject Configuration,Can delete Subject Configuration
+observations,Subject Configuration,Can view Subject Configuration
+observations,Subject Status,Can add Subject Status
+observations,Subject Status,Can change Subject Status
+observations,Subject Status,Can delete Subject Status
+observations,Subject Status,Can view Subject Status
+observations,subject status latest,Can add subject status latest
+observations,subject status latest,Can change subject status latest
+observations,subject status latest,Can delete subject status latest
+observations,subject status latest,Can view subject status latest
+observations,subject sub type,Can add subject sub type
+observations,subject sub type,Can change subject sub type
+observations,subject sub type,Can delete subject sub type
+observations,subject sub type,Can view subject sub type
+observations,Subject Summary,Can add Subject Summary
+observations,Subject Summary,Can change Subject Summary
+observations,Subject Summary,Can delete Subject Summary
+observations,Subject Summary,Can view Subject Summary
+observations,subject track segment filter,Can add subject track segment filter
+observations,subject track segment filter,Can change subject track segment filter
+observations,subject track segment filter,Can delete subject track segment filter
+observations,subject track segment filter,Can view subject track segment filter
+observations,subject type,Can add subject type
+observations,subject type,Can change subject type
+observations,subject type,Can delete subject type
+observations,subject type,Can view subject type
+observations,user session,Can add user session
+observations,user session,Can change user session
+observations,user session,Can delete user session
+observations,user session,Can view user session
+reports,source event,Can add source event
+reports,source event,Can change source event
+reports,source event,Can delete source event
+reports,source event,Can view source event
+reports,source provider event,Can add source provider event
+reports,source provider event,Can change source provider event
+reports,source provider event,Can delete source provider event
+reports,source provider event,Can view source provider event
+sessions,session,Can add session
+sessions,session,Can change session
+sessions,session,Can delete session
+sessions,session,Can view session
+tracking,awe telemetry plugin,Can add awe telemetry plugin
+tracking,awe telemetry plugin,Can change awe telemetry plugin
+tracking,awe telemetry plugin,Can delete awe telemetry plugin
+tracking,awe telemetry plugin,Can view awe telemetry plugin
+tracking,awt http plugin,Can add awt http plugin
+tracking,awt http plugin,Can change awt http plugin
+tracking,awt http plugin,Can delete awt http plugin
+tracking,awt http plugin,Can view awt http plugin
+tracking,awt plugin,Can add awt plugin
+tracking,awt plugin,Can change awt plugin
+tracking,awt plugin,Can delete awt plugin
+tracking,awt plugin,Can view awt plugin
+tracking,demo source plugin,Can add demo source plugin
+tracking,demo source plugin,Can change demo source plugin
+tracking,demo source plugin,Can delete demo source plugin
+tracking,demo source plugin,Can view demo source plugin
+tracking,firms plugin,Can add firms plugin
+tracking,firms plugin,Can change firms plugin
+tracking,firms plugin,Can delete firms plugin
+tracking,firms plugin,Can view firms plugin
+tracking,inReach Personal plugin,Can add inReach Personal plugin
+tracking,inReach Personal plugin,Can change inReach Personal plugin
+tracking,inReach Personal plugin,Can delete inReach Personal plugin
+tracking,inReach Personal plugin,Can view inReach Personal plugin
+tracking,inReach Professional plugin,Can add inReach Professional plugin
+tracking,inReach Professional plugin,Can change inReach Professional plugin
+tracking,inReach Professional plugin,Can delete inReach Professional plugin
+tracking,inReach Professional plugin,Can view inReach Professional plugin
+tracking,savannah plugin,Can add savannah plugin
+tracking,savannah plugin,Can change savannah plugin
+tracking,savannah plugin,Can delete savannah plugin
+tracking,savannah plugin,Can view savannah plugin
+tracking,sirtrack plugin,Can add sirtrack plugin
+tracking,sirtrack plugin,Can change sirtrack plugin
+tracking,sirtrack plugin,Can delete sirtrack plugin
+tracking,sirtrack plugin,Can view sirtrack plugin
+tracking,skygistics satellite plugin,Can add skygistics satellite plugin
+tracking,skygistics satellite plugin,Can change skygistics satellite plugin
+tracking,skygistics satellite plugin,Can delete skygistics satellite plugin
+tracking,skygistics satellite plugin,Can view skygistics satellite plugin
+tracking,source plugin,Can add source plugin
+tracking,source plugin,Can change source plugin
+tracking,source plugin,Can delete source plugin
+tracking,source plugin,Can view source plugin
+tracking,EarthRanger Track Configuration,Can add EarthRanger Track Configuration
+tracking,EarthRanger Track Configuration,Can change EarthRanger Track Configuration
+tracking,EarthRanger Track Configuration,Can delete EarthRanger Track Configuration
+tracking,EarthRanger Track Configuration,Can view EarthRanger Track Configuration
+tracking,source provider configuration name change excluded subject types,Can add source provider configuration name change excluded subject types
+tracking,source provider configuration name change excluded subject types,Can change source provider configuration name change excluded subject types
+tracking,source provider configuration name change excluded subject types,Can delete source provider configuration name change excluded subject types
+tracking,source provider configuration name change excluded subject types,Can view source provider configuration name change excluded subject types
+tracking,source provider configuration new subject excluded subject types,Can add source provider configuration new subject excluded subject types
+tracking,source provider configuration new subject excluded subject types,Can change source provider configuration new subject excluded subject types
+tracking,source provider configuration new subject excluded subject types,Can delete source provider configuration new subject excluded subject types
+tracking,source provider configuration new subject excluded subject types,Can view source provider configuration new subject excluded subject types
+tracking,spider tracks plugin,Can add spider tracks plugin
+tracking,spider tracks plugin,Can change spider tracks plugin
+tracking,spider tracks plugin,Can delete spider tracks plugin
+tracking,spider tracks plugin,Can view spider tracks plugin
+tracking,vectronics plugin,Can add vectronics plugin
+tracking,vectronics plugin,Can change vectronics plugin
+tracking,vectronics plugin,Can delete vectronics plugin
+tracking,vectronics plugin,Can view vectronics plugin
+usercontent,file content,Can add file content
+usercontent,file content,Can change file content
+usercontent,file content,Can delete file content
+usercontent,file content,Can view file content
+usercontent,image file content,Can add image file content
+usercontent,image file content,Can change image file content
+usercontent,image file content,Can delete image file content
+usercontent,image file content,Can view image file content

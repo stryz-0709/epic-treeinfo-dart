@@ -1,0 +1,848 @@
+﻿<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Tree Manager Dashboard — Hệ thống quản lý cây xanh EarthRanger. Giám sát sức khỏe, vị trí, phân tích và báo cáo cây trồng."
+    />
+    <title>Tree Manager Dashboard</title>
+    <!-- Preconnect to CDN origins for faster resource loading -->
+    <link rel="preconnect" href="https://unpkg.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <!-- Leaflet CSS (render-needed, keep blocking) -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <!-- Leaflet MarkerCluster CSS (non-critical, load async) -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <!-- Defer JS: Leaflet, MarkerCluster -->
+    <script
+      defer
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    ></script>
+    <script
+      defer
+      src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
+    ></script>
+    <!-- Chart.js loaded on demand (lazy) -->
+    <!-- html2pdf loaded on demand (lazy) -->
+    <link rel="stylesheet" href="/static/style.css?v=20260303" />
+  </head>
+  <body>
+    <div class="layout" id="reportContent">
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-title" aria-hidden="true">🌳 Tree Manager</div>
+          <div class="version">EarthRanger Dashboard v2.0</div>
+        </div>
+        <nav class="sidebar-nav" aria-label="Menu chính">
+          <div
+            class="nav-item active"
+            data-page="overview"
+            onclick="switchPage('overview')"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path
+                d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"
+              />
+            </svg>
+            Tổng quan
+          </div>
+          <div
+            class="nav-item"
+            data-page="alerts"
+            onclick="switchPage('alerts')"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+            </svg>
+            Cảnh báo
+            <span class="nav-badge" id="alertBadge" style="display: none"
+              >0</span
+            >
+          </div>
+          <div
+            class="nav-item"
+            data-page="analytics"
+            onclick="switchPage('analytics')"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path
+                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"
+              />
+            </svg>
+            Phân tích
+          </div>
+          <div class="nav-item" data-page="map" onclick="switchPage('map')">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path
+                d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+              />
+            </svg>
+            Bản đồ
+          </div>
+          <div class="nav-item" data-page="data" onclick="switchPage('data')">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path
+                d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z"
+              />
+            </svg>
+            Dữ liệu
+          </div>
+          {% if user.role == 'admin' %}
+          <div class="nav-item" onclick="openUserManager()">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path
+                d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"
+              />
+            </svg>
+            Tài khoản
+          </div>
+          {% endif %}
+        </nav>
+        <div style="padding: 0 1rem 0.5rem">
+          <a
+            href="https://epictech.pamdas.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              padding: 0.65rem 1rem;
+              border-radius: 8px;
+              background: rgba(255, 255, 255, 0.1);
+              color: #fff;
+              text-decoration: none;
+              font-size: 0.92rem;
+              font-weight: 500;
+              transition: background 0.2s;
+            "
+            onmouseover="this.style.background = 'rgba(255,255,255,0.18)'"
+            onmouseout="this.style.background = 'rgba(255,255,255,0.10)'"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              width="18"
+              height="18"
+              style="width: 18px; height: 18px; flex-shrink: 0"
+            >
+              <path
+                d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"
+              />
+            </svg>
+            EarthRanger Web
+          </a>
+        </div>
+        <div class="sidebar-footer">
+          <div class="user-name">{{ user.display_name }}</div>
+          <div>
+            {{ user.role }} &middot;
+            <a
+              href="/logout"
+              style="
+                color: rgba(255, 255, 255, 0.9);
+                text-decoration: underline;
+                text-underline-offset: 2px;
+              "
+              >Đăng xuất</a
+            >
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main" role="main">
+        <!-- Top bar -->
+        <div class="topbar">
+          <div class="topbar-left">
+            <button
+              class="btn btn-outline"
+              onclick="
+                document.getElementById('sidebar').classList.toggle('open')
+              "
+              style="display: none"
+              id="menuBtn"
+              aria-label="Mở menu"
+            >
+              ☰
+            </button>
+            <h1 id="pageTitle">Tổng quan</h1>
+          </div>
+          <div class="topbar-right">
+            <div class="sync-status">
+              <span class="sync-dot" id="syncDot"></span>
+              <span id="syncText">Đang kết nối...</span>
+            </div>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="refreshData()"
+              id="refreshBtn"
+            >
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path
+                  d="M17.65 6.35A7.96 7.96 0 0012 4a8 8 0 108 8h-2a6 6 0 11-1.76-4.24L14 10h7V3l-3.35 3.35z"
+                />
+              </svg>
+              Làm mới
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="exportPDF()">
+              PDF
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="exportCSV()">
+              CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+          <!-- Loading -->
+          <div id="loadingOverlay">
+            <span
+              class="spinner"
+              style="width: 32px; height: 32px; border-width: 3px"
+            ></span>
+            <div>Đang tải dữ liệu từ Supabase...</div>
+          </div>
+
+          <div id="dashboardBody" style="display: none">
+            <!-- PAGE: OVERVIEW -->
+            <div class="page active" id="page-overview">
+              <div class="kpi-grid" id="kpiGrid"></div>
+
+              <!-- Summary row: Alerts + Activity + Quick Species -->
+              <div class="summary-row">
+                <div class="card">
+                  <div class="card-header">
+                    <h2>⚠️ Cảnh báo gần đây</h2>
+                    <button
+                      class="btn btn-outline btn-sm"
+                      onclick="switchPage('alerts')"
+                    >
+                      Xem tất cả
+                    </button>
+                  </div>
+                  <div class="card-body" id="alertSummary" style="padding: 0">
+                    <div class="empty-state">
+                      <div class="icon">✅</div>
+                      <p>Không có cảnh báo</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <h2>📋 Hoạt động gần đây</h2>
+                  </div>
+                  <div
+                    class="card-body activity-list"
+                    id="activityFeed"
+                    style="padding: 0"
+                  >
+                    <div class="empty-state">
+                      <div class="icon">📭</div>
+                      <p>Chưa có hoạt động</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <h2>🌿 Phân bố loài</h2>
+                  </div>
+                  <div class="card-body">
+                    <canvas
+                      id="overviewSpeciesChart"
+                      style="max-height: 240px"
+                    ></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Charts -->
+              <div class="chart-grid">
+                <div class="card">
+                  <div class="card-header"><h2>Tình trạng sức khỏe</h2></div>
+                  <div class="card-body">
+                    <canvas id="healthChart"></canvas>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-header"><h2>Sức khỏe theo loài</h2></div>
+                  <div class="card-body">
+                    <canvas id="speciesHealthChart"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mini map -->
+              <div class="card" style="margin-bottom: 24px">
+                <div class="card-header">
+                  <h2>🗺️ Vị trí tổng quan</h2>
+                  <button
+                    class="btn btn-outline btn-sm"
+                    onclick="switchPage('map')"
+                  >
+                    Mở bản đồ lớn
+                  </button>
+                </div>
+                <div class="card-body">
+                  <div
+                    id="overviewMap"
+                    style="height: 350px; border-radius: var(--radius-sm)"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAGE: ALERTS -->
+            <div class="page" id="page-alerts">
+              <div
+                class="kpi-grid"
+                style="
+                  grid-template-columns: repeat(3, 1fr);
+                  margin-bottom: 20px;
+                "
+              >
+                <div class="kpi">
+                  <div class="kpi-icon red">🚨</div>
+                  <div class="kpi-info">
+                    <div class="kpi-value" id="alertCriticalCount">0</div>
+                    <div class="kpi-label">Nghiêm trọng</div>
+                  </div>
+                </div>
+                <div class="kpi">
+                  <div class="kpi-icon orange">⚠️</div>
+                  <div class="kpi-info">
+                    <div class="kpi-value" id="alertWarningCount">0</div>
+                    <div class="kpi-label">Cần xử lý</div>
+                  </div>
+                </div>
+                <div class="kpi">
+                  <div class="kpi-icon green">✅</div>
+                  <div class="kpi-info">
+                    <div class="kpi-value" id="alertHealthyCount">0</div>
+                    <div class="kpi-label">Khỏe mạnh</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2>Danh sách cảnh báo</h2>
+                  <span class="results-count" id="alertTotal"></span>
+                </div>
+                <div
+                  class="card-body alert-list"
+                  id="alertList"
+                  style="padding: 0"
+                >
+                  <div class="empty-state">
+                    <div class="icon">✅</div>
+                    <p>Tất cả cây đều khỏe mạnh!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAGE: ANALYTICS -->
+            <div class="page" id="page-analytics">
+              <div class="kpi-grid" id="analyticsKPIs"></div>
+
+              <div class="chart-grid">
+                <div class="card">
+                  <div class="card-header"><h2>📏 Phân bố chiều cao</h2></div>
+                  <div class="card-body">
+                    <canvas id="heightChart"></canvas>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-header"><h2>🌿 Phân bố đường kính</h2></div>
+                  <div class="card-body">
+                    <canvas id="diameterChart"></canvas>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-header"><h2>🌳 Phân bố tuổi cây</h2></div>
+                  <div class="card-body"><canvas id="ageChart"></canvas></div>
+                </div>
+                <div class="card">
+                  <div class="card-header"><h2>🍃 Tán lá theo loài</h2></div>
+                  <div class="card-body">
+                    <canvas id="canopyChart"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2>Thống kê chi tiết theo loài</h2>
+                </div>
+                <div class="card-body table-container">
+                  <table id="speciesTable">
+                    <thead>
+                      <tr>
+                        <th>Loài</th>
+                        <th>Số lượng</th>
+                        <th>Tốt</th>
+                        <th>Cần xử lý</th>
+                        <th>Chết</th>
+                        <th>% Khỏe</th>
+                        <th>Tuổi TB</th>
+                        <th>Cao TB (m)</th>
+                        <th>ĐK TB (cm)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="speciesTableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAGE: MAP -->
+            <div class="page" id="page-map">
+              <div class="card">
+                <div class="card-header">
+                  <h2>Bản đồ quản lý cây xanh</h2>
+                  <div class="map-controls">
+                    <select
+                      id="mapLayerSelect"
+                      class="btn btn-sm btn-outline"
+                      onchange="setMapLayer(this.value)"
+                      style="
+                        min-width: 120px;
+                        cursor: pointer;
+                        text-align: left;
+                      "
+                    >
+                      <option value="street">Bản đồ</option>
+                      <option value="satellite">Vệ tinh</option>
+                      <option value="topo">Địa hình</option>
+                    </select>
+                    <button
+                      class="btn btn-sm btn-outline"
+                      onclick="toggleCluster()"
+                      id="clusterBtn"
+                    >
+                      Gom nhóm: Bật
+                    </button>
+                    <select
+                      id="mapSpeciesFilter"
+                      class="btn btn-sm btn-outline"
+                      onchange="applyMapFilters()"
+                      style="
+                        min-width: 140px;
+                        cursor: pointer;
+                        text-align: left;
+                      "
+                    >
+                      <option value="">Tất cả loài cây</option>
+                    </select>
+                    <select
+                      id="mapStatusFilter"
+                      class="btn btn-sm btn-outline"
+                      onchange="applyMapFilters()"
+                      style="
+                        min-width: 140px;
+                        cursor: pointer;
+                        text-align: left;
+                      "
+                    >
+                      <option value="">Tất cả tình trạng</option>
+                      <option value="good">Tốt</option>
+                      <option value="not_good">Cần xử lý</option>
+                      <option value="die">Chết</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="card-body" style="padding: 0">
+                  <div id="map"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAGE: DATA -->
+            <div class="page" id="page-data">
+              <div class="card">
+                <div class="card-header">
+                  <h2>Bảng dữ liệu chi tiết</h2>
+                  <div style="display: flex; gap: 8px">
+                    <button
+                      class="btn btn-outline btn-sm"
+                      onclick="exportCSV()"
+                    >
+                      📥 Xuất CSV
+                    </button>
+                    <button
+                      class="btn btn-outline btn-sm"
+                      onclick="exportPDF()"
+                    >
+                      📄 Xuất PDF
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="filter-bar">
+                    <input
+                      id="searchInput"
+                      placeholder="🔍 Tìm kiếm theo ID, loài, trạng thái..."
+                      oninput="applyFilters()"
+                    />
+                    <select id="speciesFilter" onchange="applyFilters()">
+                      <option value="">Tất cả loài cây</option>
+                    </select>
+                    <select id="statusFilter" onchange="applyFilters()">
+                      <option value="">Tất cả tình trạng</option>
+                      <option value="good">Tốt</option>
+                      <option value="not_good">Cần xử lý</option>
+                      <option value="die">Chết</option>
+                    </select>
+                    <select id="pageSizeSelect" onchange="changePageSize()">
+                      <option value="10">10 dòng</option>
+                      <option value="25" selected>25 dòng</option>
+                      <option value="50">50 dòng</option>
+                      <option value="100">100 dòng</option>
+                    </select>
+                    <span class="results-count" id="resultsCount"></span>
+                  </div>
+                  <div class="table-container">
+                    <table id="dataTable">
+                      <thead>
+                        <tr>
+                          <th onclick="sortTable('tree_id')">ID</th>
+                          <th onclick="sortTable('species')">Loài</th>
+                          <th onclick="sortTable('age')">Tuổi</th>
+                          <th onclick="sortTable('height')">Cao (m)</th>
+                          <th onclick="sortTable('diameter')">ĐK (cm)</th>
+                          <th onclick="sortTable('canopy')">Tán lá (m)</th>
+                          <th onclick="sortTable('status')">Tình trạng</th>
+                          <th>Tọa độ</th>
+                          <th>Hình ảnh</th>
+                          <th onclick="sortTable('updated_at')">Cập nhật</th>
+                          <th>Người CN</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tableBody"></tbody>
+                    </table>
+                  </div>
+                  <div class="pagination" id="pagination"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div class="backdrop" id="detailBackdrop" onclick="closeDetail()"></div>
+    <div class="detail-panel" id="detailPanel">
+      <div class="detail-panel-header">
+        <span class="detail-heading" id="detailTitle">Chi tiết cây</span>
+        <button class="detail-close" onclick="closeDetail()" aria-label="Đóng">
+          ✕
+        </button>
+      </div>
+      <div class="detail-body" id="detailBody"></div>
+    </div>
+
+    <!-- Lightbox -->
+    <div
+      class="overlay"
+      id="lightbox"
+      onclick="this.classList.remove('active')"
+    >
+      <span class="close">&times;</span>
+      <img id="lbImg" src="" alt="Hình ảnh chi tiết cây" />
+    </div>
+
+    <script defer src="/static/app.js?v=20260303"></script>
+
+    <!-- User Management Modal (admin only) -->
+    {% if user.role == 'admin' %}
+    <div
+      id="userManagerOverlay"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+      "
+      onclick="if (event.target === this) closeUserManager();"
+    >
+      <div
+        style="
+          background: #fff;
+          border-radius: 12px;
+          width: min(480px, 92vw);
+          max-height: 85vh;
+          overflow: auto;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        "
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+          "
+        >
+          <h2 style="margin: 0; font-size: 1.15rem; font-weight: 600">
+            Quản lý tài khoản
+          </h2>
+          <button
+            onclick="closeUserManager()"
+            style="
+              background: none;
+              border: none;
+              font-size: 1.4rem;
+              cursor: pointer;
+              color: #6b7280;
+              line-height: 1;
+            "
+          >
+            &times;
+          </button>
+        </div>
+        <!-- Add user form -->
+        <div
+          style="
+            padding: 1rem 1.5rem;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+          "
+        >
+          <div
+            style="
+              font-weight: 600;
+              font-size: 0.9rem;
+              margin-bottom: 0.75rem;
+              color: #374151;
+            "
+          >
+            Thêm tài khoản mới
+          </div>
+          <div
+            id="umMsg"
+            style="
+              display: none;
+              padding: 0.5rem 0.75rem;
+              border-radius: 6px;
+              margin-bottom: 0.75rem;
+              font-size: 0.85rem;
+            "
+          ></div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 0.5rem;
+              margin-bottom: 0.5rem;
+            "
+          >
+            <input
+              id="umUser"
+              placeholder="Tên đăng nhập"
+              style="
+                padding: 0.5rem 0.75rem;
+                border: 1px solid #d1d5db;
+                border-radius: 6px;
+                font-size: 0.9rem;
+              "
+            />
+            <input
+              id="umPass"
+              type="password"
+              placeholder="Mật khẩu"
+              style="
+                padding: 0.5rem 0.75rem;
+                border: 1px solid #d1d5db;
+                border-radius: 6px;
+                font-size: 0.9rem;
+              "
+            />
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 0.5rem;
+              margin-bottom: 0.75rem;
+            "
+          >
+            <input
+              id="umDisplayName"
+              placeholder="Tên hiển thị"
+              style="
+                padding: 0.5rem 0.75rem;
+                border: 1px solid #d1d5db;
+                border-radius: 6px;
+                font-size: 0.9rem;
+              "
+            />
+            <select
+              id="umRole"
+              style="
+                padding: 0.5rem 0.75rem;
+                border: 1px solid #d1d5db;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                background: #fff;
+              "
+            >
+              <option value="viewer">Viewer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <button
+            onclick="addUser()"
+            style="
+              width: 100%;
+              padding: 0.55rem;
+              background: #2563eb;
+              color: #fff;
+              border: none;
+              border-radius: 6px;
+              font-size: 0.9rem;
+              font-weight: 500;
+              cursor: pointer;
+            "
+          >
+            Thêm tài khoản
+          </button>
+        </div>
+        <!-- User list -->
+        <div style="padding: 1rem 1.5rem">
+          <div
+            style="
+              font-weight: 600;
+              font-size: 0.9rem;
+              margin-bottom: 0.75rem;
+              color: #374151;
+            "
+          >
+            Danh sách tài khoản
+          </div>
+          <div
+            id="umList"
+            style="display: flex; flex-direction: column; gap: 0.5rem"
+          >
+            <div style="color: #9ca3af; font-size: 0.85rem">Đang tải...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function openUserManager() {
+        document.getElementById("userManagerOverlay").style.display = "flex";
+        loadUsers();
+      }
+      function closeUserManager() {
+        document.getElementById("userManagerOverlay").style.display = "none";
+      }
+      function showUmMsg(msg, ok) {
+        const el = document.getElementById("umMsg");
+        el.style.display = "block";
+        el.textContent = msg;
+        el.style.background = ok ? "#dcfce7" : "#fee2e2";
+        el.style.color = ok ? "#166534" : "#991b1b";
+        setTimeout(() => (el.style.display = "none"), 3000);
+      }
+      async function loadUsers() {
+        try {
+          const r = await fetch("/api/users");
+          const d = await r.json();
+          const list = document.getElementById("umList");
+          if (!d.users || !d.users.length) {
+            list.innerHTML =
+              '<div style="color:#9ca3af;font-size:.85rem">Không có tài khoản</div>';
+            return;
+          }
+          list.innerHTML = d.users
+            .map(
+              (u) => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem .75rem;background:#f3f4f6;border-radius:8px">
+            <div>
+              <div style="font-weight:500;font-size:.9rem">${u.display_name} <span style="color:#6b7280;font-weight:400;font-size:.8rem">@${u.username}</span></div>
+              <div style="font-size:.78rem;color:#9ca3af;margin-top:2px">${u.role === "admin" ? "🔑 Admin" : "👁 Viewer"}</div>
+            </div>
+            <button onclick="deleteUser('${u.username}')" style="background:none;border:1px solid #fca5a5;color:#dc2626;padding:.3rem .6rem;border-radius:5px;font-size:.78rem;cursor:pointer" title="Xóa">Xóa</button>
+          </div>
+        `,
+            )
+            .join("");
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      async function addUser() {
+        const username = document.getElementById("umUser").value.trim();
+        const password = document.getElementById("umPass").value;
+        const display_name = document
+          .getElementById("umDisplayName")
+          .value.trim();
+        const role = document.getElementById("umRole").value;
+        if (!username || !password) {
+          showUmMsg("Vui lòng nhập tên đăng nhập và mật khẩu", false);
+          return;
+        }
+        try {
+          const r = await fetch("/api/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password, display_name, role }),
+          });
+          const d = await r.json();
+          if (r.ok) {
+            showUmMsg("Đã tạo tài khoản: " + username, true);
+            document.getElementById("umUser").value = "";
+            document.getElementById("umPass").value = "";
+            document.getElementById("umDisplayName").value = "";
+            document.getElementById("umRole").value = "viewer";
+            loadUsers();
+          } else {
+            showUmMsg(d.detail || "Lỗi tạo tài khoản", false);
+          }
+        } catch (e) {
+          showUmMsg("Lỗi kết nối", false);
+        }
+      }
+      async function deleteUser(username) {
+        if (!confirm('Xóa tài khoản "' + username + '"?')) return;
+        try {
+          const r = await fetch("/api/users/" + username, { method: "DELETE" });
+          const d = await r.json();
+          if (r.ok) {
+            showUmMsg("Đã xóa: " + username, true);
+            loadUsers();
+          } else {
+            showUmMsg(d.detail || "Lỗi xóa", false);
+          }
+        } catch (e) {
+          showUmMsg("Lỗi kết nối", false);
+        }
+      }
+    </script>
+    {% endif %}
+  </body>
+</html>

@@ -1,0 +1,29 @@
+stt,username,password,name,position,role,region,phone
+1,eah_dt_d1,0987999917,Nguyễn Ngọc Hùng,Đội trưởng Đội 1,leader,eahleo,0987999917
+2,eah_dp_d1,0359777747,Lê Hữu Sĩ,Đội phó Đội 1,leader,eahleo,0359777747
+3,eah_nv1_d1,0338228744,Ksor Chưa,Nhân viên Đội 1,ranger,eahleo,0338228744
+4,eah_nv2_d1,0364325878,Nay Thuir,Nhân viên Đội 1,ranger,eahleo,0364325878
+5,eah_nv3_d1,0965173705,Adrơng Tâm,Nhân viên Đội 1,ranger,eahleo,0965173705
+6,eah_nv4_d1,0379970054,K sơr Nghĩ,Nhân viên Đội 1,ranger,eahleo,0379970054
+7,eah_dt_d2,0987340134,Nguyễn Cung Khanh,Đội trưởng Đội 2,leader,eahleo,0987340134
+8,eah_dp_d2,0914810408,Ngô Công Hùng,Đội phó Đội 2,leader,eahleo,0914810408
+9,eah_nv1_d2,0946002347,Đoàn Minh Tuấn,Nhân viên Đội 2,ranger,eahleo,0946002347
+10,eah_nv2_d2,0989470547,Trương Đình Đức,Nhân viên Đội 2,ranger,eahleo,0989470547
+11,eah_nv3_d2,0395651420,Lê Đình Phước,Nhân viên Đội 2,ranger,eahleo,0395651420
+12,eah_dt_d3,0337479797,Bàn Văn Giáp,Đội trưởng Đội 3,leader,eahleo,0337479797
+13,eah_dp_d3,0942176004,Nguyễn Thanh Quy,Đội phó Đội 3,leader,eahleo,0942176004
+14,eah_nv1_d3,0984990230,Đặng Văn Lập,Nhân viên Đội 3,ranger,eahleo,0984990230
+15,eah_nv2_d3,0981315720,Ksơr Y Ngôk,Nhân viên Đội 3,ranger,eahleo,0981315720
+16,eah_nv3_d3,0975210328,A Drơng Y Đunh,Nhân viên Đội 3,ranger,eahleo,0975210328
+17,eah_nv4_d3,0377660776,Phùng Văn Trung,Nhân viên Đội 3,ranger,eahleo,0377660776
+18,eah_nv5_d3,0346285773,Lý Văn Trung,Nhân viên Đội 3,ranger,eahleo,0346285773
+19,bjw_tt_t1,0968464120,Nguyễn Văn Thành,Trạm trưởng Trạm 1,leader,bjw,0968464120
+20,bjw_tp_t1,0911704834,Lê Văn Chiên,Trạm phó Trạm 1,leader,bjw,0911704834
+21,bjw_nv1_t1,0812379698,Lý Đại Thiệp,Nhân viên Trạm 1,ranger,bjw,0812379698
+22,bjw_tt_t2,0976252889,Nguyễn Công Thắng,Trạm trưởng Trạm 2,leader,bjw,0976252889
+23,bjw_nv1_t2,0986894508,Phan Bùi Quảng,Nhân viên Trạm 2,ranger,bjw,0986894508
+24,bjw_nv2_t2,0836047399,Trần Văn Thanh,Nhân viên Trạm 2,ranger,bjw,0836047399
+25,bjw_tt_t3,0362850924,Trần Quốc Quang,Trạm trưởng Trạm 3,leader,bjw,0362850924
+26,bjw_tp_t3,0987342842,Nguyễn Thanh Lộc,Trạm phó Trạm 3,leader,bjw,0987342842
+27,bjw_nv1_t3,0916906147,Trần Hồng Minh,Nhân viên Trạm 3,ranger,bjw,0916906147
+28,bjw_nvbv,0353649306,Hà Đình Chẩn,Nhân viên bảo vệ rừng thực nghiệm tk 557,ranger,bjw,0353649306

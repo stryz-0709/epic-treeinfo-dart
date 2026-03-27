@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tree Inventory Report</title>
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--accent:#2d6a4f;--danger:#d62828;--warn:#f77f00;
+       --good:#2d6a4f;--not_good:#f77f00;--die:#d62828;--text:#1d1d1d;--muted:#6c757d;
+       --radius:12px;--shadow:0 2px 8px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:24px}
+h1{font-size:1.6rem;color:var(--accent);margin-bottom:4px}
+.subtitle{color:var(--muted);font-size:.85rem;margin-bottom:24px}
+
+/* KPI cards */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:28px}
+.kpi{background:var(--card);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);text-align:center}
+.kpi .value{font-size:2rem;font-weight:700}
+.kpi .label{font-size:.78rem;color:var(--muted);margin-top:4px}
+.kpi.good .value{color:var(--good)}
+.kpi.warn .value{color:var(--warn)}
+.kpi.danger .value{color:var(--danger)}
+
+/* Chart panels */
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px}
+.chart-card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.chart-card h3{font-size:.95rem;margin-bottom:12px;color:var(--accent)}
+canvas{width:100%!important;max-height:300px}
+
+/* Map */
+.map-wrap{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:28px}
+.map-wrap h3{font-size:.95rem;margin-bottom:12px;color:var(--accent)}
+#map{height:420px;border-radius:8px}
+
+/* Table */
+.table-wrap{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);overflow-x:auto;margin-bottom:28px}
+.table-wrap h3{font-size:.95rem;margin-bottom:12px;color:var(--accent)}
+.filter-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.filter-bar input{padding:8px 14px;border:1px solid #ccc;border-radius:8px;width:260px;font-size:.85rem}
+.filter-bar select{padding:8px 14px;border:1px solid #ccc;border-radius:8px;font-size:.85rem;background:#fff;min-width:160px}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th{background:#e9ecef;position:sticky;top:0}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #eee;white-space:nowrap}
+tr:hover td{background:#f0f7f4}
+.badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:600;color:#fff}
+.badge.good{background:var(--good)}
+.badge.not_good{background:var(--warn)}
+.badge.die{background:var(--danger)}
+.link-btn{display:inline-block;padding:3px 12px;background:var(--accent);color:#fff;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;text-decoration:none}
+
+/* lightbox */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center}
+.overlay.active{display:flex}
+.overlay img{max-width:90vw;max-height:90vh;border-radius:8px}
+.overlay .close{position:absolute;top:16px;right:24px;color:#fff;font-size:2rem;cursor:pointer}
+
+footer{text-align:center;color:var(--muted);font-size:.75rem;padding:16px 0}
+
+@media(max-width:768px){.charts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<h1>🌳 Tree Inventory Dashboard</h1>
+<p class="subtitle">Generated 23:24:20 01-03-2026 &mdash; Data source: Supabase (26 trees)</p>
+
+<!-- KPI -->
+<div class="kpi-grid">
+  <div class="kpi"><div class="value">26</div><div class="label">Tổng số cây</div></div>
+  <div class="kpi"><div class="value">3</div><div class="label">Số loài</div></div>
+  <div class="kpi good"><div class="value">81%</div><div class="label">Cây khỏe mạnh</div></div>
+  <div class="kpi warn"><div class="value">3</div><div class="label">Cây cần xử lý</div></div>
+  <div class="kpi danger"><div class="value">2</div><div class="label">Cây chết</div></div>
+  <div class="kpi"><div class="value">6.2</div><div class="label">Tuổi trung bình</div></div>
+</div>
+
+<!-- Charts -->
+<div class="charts">
+  <div class="chart-card"><h3>Tình trạng sức khỏe</h3><canvas id="healthChart"></canvas></div>
+  <div class="chart-card"><h3>Phân bố theo loài</h3><canvas id="speciesChart"></canvas></div>
+  <div class="chart-card"><h3>Sức khỏe theo loài</h3><canvas id="speciesHealthChart"></canvas></div>
+  <div class="chart-card"><h3>Phân bố tuổi cây</h3><canvas id="ageChart"></canvas></div>
+</div>
+
+<!-- Map -->
+<div class="map-wrap">
+  <h3>Bản đồ vị trí cây</h3>
+  <div id="map"></div>
+</div>
+
+<!-- Table -->
+<div class="table-wrap">
+  <h3>Chi tiết dữ liệu</h3>
+  <div class="filter-bar">
+    <input id="searchInput" placeholder="Tìm kiếm…" oninput="applyFilters()">
+    <select id="speciesFilter" onchange="applyFilters()">
+      <option value="">Tất cả loài cây</option>
+    </select>
+    <select id="statusFilter" onchange="applyFilters()">
+      <option value="">Tất cả tình trạng</option>
+    </select>
+  </div>
+  <table id="dataTable">
+    <thead><tr>
+      <th>ID</th><th>Loài</th><th>Tuổi</th><th>Cao (m)</th><th>ĐK thân (cm)</th>
+      <th>Tán lá (m)</th><th>Tình trạng</th><th>Lat</th><th>Lng</th>
+      <th>Hình ảnh</th><th>Tạo lúc</th><th>Người tạo</th><th>Cập nhật</th><th>Người CN</th>
+    </tr></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<!-- Lightbox -->
+<div class="overlay" id="lightbox" onclick="this.classList.remove('active')">
+  <span class="close">&times;</span>
+  <img id="lbImg" src="">
+</div>
+
+<footer>EarthRanger Tree Report &copy; 2026</footer>
+
+<script>
+// ──── Embedded data ────
+const TREES = [{"tree_id": "1", "species": "Cây Sao", "age": 5, "height": 5, "diameter": 20, "canopy": 2, "status": "good", "lat": 10.779535, "lng": 106.696952, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/92cb72cc-f0d3-491f-ac67-8f26713c7638/file/ad0ec117-4be3-43b0-8fc1-f2c73b1e1381/original/2026-02-11_12-53-21_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/92cb72cc-f0d3-491f-ac67-8f26713c7638/file/c868bf93-a273-4f69-b5b2-2dcf1e0d34b3/original/2026-02-11_12-53-15_tree.jpg"], "created_at": "2026-02-10T21:52:07+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:12:18+00:00", "updated_by": "Epic"}, {"tree_id": "10", "species": "Cây Sọ Khỉ", "age": 4, "height": 5, "diameter": 50, "canopy": 2, "status": "good", "lat": 10.779317, "lng": 106.696716, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/7453699d-694e-401a-b9e0-ac546ba3f93a/file/441ee8e1-fddc-40f7-aa02-75968092865d/original/2026-02-11_13-03-44_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/7453699d-694e-401a-b9e0-ac546ba3f93a/file/72433ac0-6ab4-47a4-819d-70efd884bd3d/original/2026-02-11_13-03-39_tree.jpg"], "created_at": "2026-02-10T22:03:06+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:33:56+00:00", "updated_by": "Epic"}, {"tree_id": "11", "species": "Cây Sao", "age": 6, "height": 5, "diameter": 20, "canopy": 2.5, "status": "good", "lat": 10.779587, "lng": 106.69704, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/3e788f2a-6e27-4f26-9307-f5228de184ea/file/2f7d0dee-30fa-4c7a-a6dd-fb6191714214/original/2026-02-11_13-05-51_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/3e788f2a-6e27-4f26-9307-f5228de184ea/file/84ed15f3-83bf-43f5-800a-cb75d8c01ffb/original/2026-02-11_13-05-46_tree.jpg"], "created_at": "2026-02-10T22:05:09+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:35:29+00:00", "updated_by": "Epic"}, {"tree_id": "12", "species": "Cây Sọ Khỉ", "age": 8, "height": 5, "diameter": 1, "canopy": 1, "status": "good", "lat": 10.779849, "lng": 106.697219, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/ab8a12e0-4a2d-4216-adcb-98b6a6012605/file/92cbbdf7-7a53-4473-a95c-e66218f96265/original/2026-02-11_13-07-08_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/ab8a12e0-4a2d-4216-adcb-98b6a6012605/file/ab647f54-3929-49e9-8286-d6c8dd4e7dd5/original/2026-02-11_13-07-03_tree.jpg"], "created_at": "2026-02-10T22:06:29+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:35:42+00:00", "updated_by": "Epic"}, {"tree_id": "13", "species": "Cây Sao", "age": 5, "height": 5, "diameter": 50, "canopy": 3, "status": "good", "lat": 10.780181, "lng": 106.697501, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/96c19c2d-9285-4975-995d-54d1894f0ead/file/886c193c-1786-4b50-bffd-b88c85874db1/original/2026-02-11_13-08-31_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/96c19c2d-9285-4975-995d-54d1894f0ead/file/7e943372-9fe3-4a97-bbbb-a15965a8bf7d/original/2026-02-11_13-08-26_tree.jpg"], "created_at": "2026-02-10T22:07:56+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:30:45+00:00", "updated_by": "Epic"}, {"tree_id": "14", "species": "Cây Sao", "age": 9, "height": 5, "diameter": 30, "canopy": 2, "status": "good", "lat": 10.780591, "lng": 106.697925, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/55a97078-5d10-4ddd-b353-b7ce5c246998/file/1ee93216-c041-42d2-b577-2f2eb9d404aa/original/2026-02-11_13-09-52_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/55a97078-5d10-4ddd-b353-b7ce5c246998/file/7a55ebda-dad0-4d48-9e05-33ae7db23d87/original/2026-02-11_13-09-48_tree.jpg"], "created_at": "2026-02-10T22:09:20+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:35:54+00:00", "updated_by": "Epic"}, {"tree_id": "15", "species": "Cây Sao", "age": 7, "height": 5, "diameter": 50, "canopy": 2, "status": "good", "lat": 10.78045, "lng": 106.698013, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/fe3df48b-afc4-45ec-a487-2049d10713af/file/7cbdf35a-eb87-4e07-ad7d-8c04ebc97e25/original/2026-02-11_13-10-59_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/fe3df48b-afc4-45ec-a487-2049d10713af/file/6473f83b-4886-4c83-a590-3d99b28b5a0e/original/2026-02-11_13-10-54_tree.jpg"], "created_at": "2026-02-10T22:10:24+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:36:07+00:00", "updated_by": "Epic"}, {"tree_id": "16", "species": "Cây Sao", "age": 10, "height": 5, "diameter": 50, "canopy": 2, "status": "not_good", "lat": 10.780167, "lng": 106.698005, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/4053ac2d-2b7e-4dbc-be5a-f82d443889b8/file/7b0b3b32-ee42-4e3d-a58a-ee26433a3dda/original/2026-02-11_13-12-06_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/4053ac2d-2b7e-4dbc-be5a-f82d443889b8/file/dbeed31b-0704-479c-8d2f-1d350ca83039/original/2026-02-11_13-12-01_tree.jpg"], "created_at": "2026-02-10T22:11:32+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:36:22+00:00", "updated_by": "Epic"}, {"tree_id": "17", "species": "Cây Sọ Khỉ", "age": 10, "height": 10, "diameter": 60, "canopy": 3, "status": "good", "lat": 10.779785, "lng": 106.697714, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/c23bad24-90a2-404f-9c3e-3030912e7d12/file/5197fbf7-ab4e-4e85-8dc0-98ca9c538e0f/original/2026-02-11_13-13-29_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/c23bad24-90a2-404f-9c3e-3030912e7d12/file/985a0db2-8fef-41b5-87c1-5fa448e454a9/original/2026-02-11_13-13-22_tree.jpg"], "created_at": "2026-02-10T22:12:55+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:36:39+00:00", "updated_by": "Epic"}, {"tree_id": "18", "species": "Cây Sao", "age": 4, "height": 4, "diameter": 10, "canopy": 1, "status": "good", "lat": 10.779701, "lng": 106.697592, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/50b81311-b017-478e-9b6f-827f34ad9ac4/file/87317a29-7add-48a7-a002-3472889475a0/original/2026-02-11_13-14-35_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/50b81311-b017-478e-9b6f-827f34ad9ac4/file/b3600bc5-efb1-4704-8e1b-9e1c0cdde019/original/2026-02-11_13-14-30_tree.jpg"], "created_at": "2026-02-10T22:13:57+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:36:56+00:00", "updated_by": "Epic"}, {"tree_id": "19", "species": "Cây Sao", "age": 3, "height": 5, "diameter": 20, "canopy": 2, "status": "good", "lat": 10.779422, "lng": 106.697323, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/fd46ae52-4c7a-4b74-916b-749b30fbb172/file/52d84f32-d9f2-4938-a176-6a1798608edd/original/2026-02-11_13-16-03_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/fd46ae52-4c7a-4b74-916b-749b30fbb172/file/865338eb-a65e-40ff-a51d-68b7952017bb/original/2026-02-11_13-15-59_tree.jpg"], "created_at": "2026-02-10T22:15:34+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:37:08+00:00", "updated_by": "Epic"}, {"tree_id": "2", "species": "Cây Sao", "age": 5, "height": 5, "diameter": 30, "canopy": 2, "status": "good", "lat": 10.779265, "lng": 106.696812, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/a0a4d5c7-faf0-45f5-a2ba-b42913543c95/file/e940c439-2a82-4ecd-bf04-f10703f26054/original/2026-02-11_12-54-50_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/a0a4d5c7-faf0-45f5-a2ba-b42913543c95/file/b7c07d4f-67ea-4bbd-99c1-1804cf93de2a/original/2026-02-11_12-54-44_tree.jpg"], "created_at": "2026-02-10T21:54:03+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:34:24+00:00", "updated_by": "Epic"}, {"tree_id": "20", "species": "Cây Sọ Khỉ", "age": 10, "height": 5, "diameter": 50, "canopy": 10, "status": "good", "lat": 10.779479, "lng": 106.697217, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/f725bc08-6114-43c7-be80-a815f24f34b2/file/4f6d03e6-f67c-4199-a2e3-6880a4a9da4a/original/2026-02-11_13-17-02_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/f725bc08-6114-43c7-be80-a815f24f34b2/file/75b3adb6-e0b6-4df1-a0b4-a91b9d985e9a/original/2026-02-11_13-16-58_tree.jpg"], "created_at": "2026-02-10T22:16:32+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:37:21+00:00", "updated_by": "Epic"}, {"tree_id": "21", "species": "Cây Me", "age": 1, "height": 1, "diameter": 10, "canopy": 1, "status": "good", "lat": 10.779607, "lng": 106.696731, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/b22a2c70-7d89-45b5-8186-a49fe9de88c1/file/75c5cab6-a37a-4112-9ccf-e2de972b733b/original/2026-02-11_13-19-53_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/b22a2c70-7d89-45b5-8186-a49fe9de88c1/file/93d35f6e-616f-4719-9a6a-7caf1a40b9e2/original/2026-02-11_13-19-48_tree.jpg"], "created_at": "2026-02-10T22:19:24+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:37:32+00:00", "updated_by": "Epic"}, {"tree_id": "22", "species": "Cây Me", "age": 5, "height": 5, "diameter": 10, "canopy": 1, "status": "good", "lat": 10.779837, "lng": 106.69657, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/5dfe448a-8d43-4073-9235-b94214fc6ddd/file/4436dec2-58a7-41d4-b7a8-1023ade54173/original/2026-02-11_13-20-58_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/5dfe448a-8d43-4073-9235-b94214fc6ddd/file/6102b331-7a75-474a-8d88-e324dd967217/original/2026-02-11_13-20-53_tree.jpg"], "created_at": "2026-02-10T22:20:28+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:37:51+00:00", "updated_by": "Epic"}, {"tree_id": "23", "species": "Cây Me", "age": 6, "height": 5, "diameter": 20, "canopy": 1, "status": "good", "lat": 10.779979, "lng": 106.696439, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/b7f5aa04-cd9b-4039-bc0e-4cf292314eb2/file/6b03b28f-2432-44d9-9c7b-6a0942968340/original/2026-02-11_13-22-12_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/b7f5aa04-cd9b-4039-bc0e-4cf292314eb2/file/0d2584f4-3269-4c86-a90e-d3c62bc47f7a/original/2026-02-11_13-22-08_tree.jpg"], "created_at": "2026-02-10T22:21:40+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:38:16+00:00", "updated_by": "Epic"}, {"tree_id": "24", "species": "Cây Me", "age": 7, "height": 5, "diameter": 20, "canopy": 1, "status": "good", "lat": 10.780133, "lng": 106.696298, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/5ebeb221-bc3a-4673-b4ba-e0e45f34e45d/file/91266cf2-6f7c-46e9-b19e-28d47d9e1f01/original/2026-02-11_13-23-06_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/5ebeb221-bc3a-4673-b4ba-e0e45f34e45d/file/1ac279d0-375c-4fd6-8d88-0a27e8754bac/original/2026-02-11_13-23-01_tree.jpg"], "created_at": "2026-02-10T22:22:35+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:38:37+00:00", "updated_by": "Epic"}, {"tree_id": "25", "species": "Cây Me", "age": 5, "height": 6, "diameter": 20, "canopy": 2, "status": "good", "lat": 10.780176, "lng": 106.696152, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/9eb8068f-b312-4e48-9de2-1a84d9c9d699/file/37a91ed2-c8f0-41b6-8364-c7a68c34932d/original/2026-02-11_13-24-05_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/9eb8068f-b312-4e48-9de2-1a84d9c9d699/file/d4b61b5e-b623-4e5a-9a50-3015992e0d28/original/2026-02-11_13-24-00_tree.jpg"], "created_at": "2026-02-10T22:23:28+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:11:40+00:00", "updated_by": "Epic"}, {"tree_id": "26", "species": "Cây Me", "age": 5, "height": 5, "diameter": 20, "canopy": 2, "status": "good", "lat": 10.780373, "lng": 106.695902, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/fb548211-243d-46b7-a30b-49f12548b4bb/file/b2d847ad-7482-4eca-8f9a-b56f18671ea4/original/2026-02-11_13-25-16_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/fb548211-243d-46b7-a30b-49f12548b4bb/file/70097000-7b6f-4f1a-bd6c-ad5d46ec6f6e/original/2026-02-11_13-25-11_tree.jpg"], "created_at": "2026-02-10T22:24:38+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:38:45+00:00", "updated_by": "Epic"}, {"tree_id": "3", "species": "Cây Sao", "age": 5, "height": 5, "diameter": 30, "canopy": 1, "status": "not_good", "lat": 10.779173, "lng": 106.696831, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/021f3e7f-04e0-42f1-b733-bbbfbb584e80/file/1fbf2ca3-50a2-4667-8e9f-96dbe3b0bd61/original/2026-02-11_12-55-51_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/021f3e7f-04e0-42f1-b733-bbbfbb584e80/file/4657b502-e932-4127-b552-bb0cfd8ecb43/original/2026-02-11_12-55-44_tree.jpg"], "created_at": "2026-02-10T21:55:07+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:31:16+00:00", "updated_by": "Epic"}, {"tree_id": "4", "species": "Cây Sao", "age": 5, "height": 5, "diameter": 20, "canopy": "", "status": "die", "lat": 10.779007, "lng": 106.696865, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/9bafe404-f926-42cf-aacd-4707dcdb5aca/file/90d95e3b-0dee-4343-9c80-eefb4c25d920/original/2026-02-11_12-56-53_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/9bafe404-f926-42cf-aacd-4707dcdb5aca/file/9e8e7c88-f222-468a-8e00-102611fccce3/original/2026-02-11_12-56-48_tree.jpg"], "created_at": "2026-02-10T21:56:11+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:34:35+00:00", "updated_by": "Epic"}, {"tree_id": "5", "species": "Cây Sao", "age": 5, "height": 5, "diameter": 20, "canopy": 1, "status": "good", "lat": 10.77882, "lng": 106.69686, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/aae2effb-d9e3-482c-a8c7-d68cc6d916a0/file/cee445a7-826e-4b2e-a28d-2102e684b712/original/2026-02-11_12-57-52_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/aae2effb-d9e3-482c-a8c7-d68cc6d916a0/file/0d7e8e33-620c-4274-ad81-1a01abf3ee77/original/2026-02-11_12-57-45_tree.jpg"], "created_at": "2026-02-10T21:57:11+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:34:13+00:00", "updated_by": "Epic"}, {"tree_id": "6", "species": "Cây Sao", "age": 5, "height": 10, "diameter": 20, "canopy": 3, "status": "good", "lat": 10.77863, "lng": 106.696652, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/a93f03e8-c782-46d3-b01e-34e92bb8b618/file/7ddc698b-b783-43c6-8ce6-f67fa55b9edd/original/2026-02-11_12-58-54_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/a93f03e8-c782-46d3-b01e-34e92bb8b618/file/0da07f09-3570-4510-bea5-21c02c369459/original/2026-02-11_12-58-49_tree.jpg"], "created_at": "2026-02-10T21:58:14+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:32:55+00:00", "updated_by": "Epic"}, {"tree_id": "7", "species": "Cây Sọ Khỉ", "age": 10, "height": 5, "diameter": 30, "canopy": "", "status": "die", "lat": 10.778624, "lng": 106.696274, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/6a458c7b-6dad-4c6b-9080-f90b86ae3133/file/bc29e11a-23db-4fb6-b406-169ecb6398ac/original/2026-02-11_13-00-03_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/6a458c7b-6dad-4c6b-9080-f90b86ae3133/file/f02498a0-d2e3-4905-a27d-6ab42d30b8c0/original/2026-02-11_12-59-58_tree.jpg"], "created_at": "2026-02-10T21:59:27+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:34:46+00:00", "updated_by": "Epic"}, {"tree_id": "8", "species": "Cây Sọ Khỉ", "age": 7, "height": 7, "diameter": 40, "canopy": 0.5, "status": "not_good", "lat": 10.778731, "lng": 106.696151, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/98ae59f8-a1af-4a49-a3ce-3dadee42787d/file/2f82655b-fb87-4586-afc3-0412314516b5/original/2026-02-11_13-01-28_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/98ae59f8-a1af-4a49-a3ce-3dadee42787d/file/cc326723-73fb-4b4b-adef-0803b77c68b7/original/2026-02-11_13-01-22_tree.jpg"], "created_at": "2026-02-10T22:00:36+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:35:03+00:00", "updated_by": "Epic"}, {"tree_id": "9", "species": "Cây Sọ Khỉ", "age": 8, "height": 10, "diameter": 1, "canopy": 1, "status": "good", "lat": 10.778988, "lng": 106.696441, "images": ["https://epictech.pamdas.org/api/v1.0/activity/event/a15752e0-a558-4c01-a1cc-d9d390984627/file/fd8d658e-1eee-4d6f-8f51-94e5dacfda52/original/2026-02-11_13-02-33_tree.jpg\nhttps://epictech.pamdas.org/api/v1.0/activity/event/a15752e0-a558-4c01-a1cc-d9d390984627/file/484373a7-cdeb-48c4-8e95-2f34022e680f/original/2026-02-11_13-02-28_tree.jpg"], "created_at": "2026-02-10T22:01:55+00:00", "created_by": "Epic", "updated_at": "2026-02-25T19:35:14+00:00", "updated_by": "Epic"}];
+
+// ──── Helpers ────
+const statusColor = s => s === 'good' ? '#2d6a4f' : s === 'not_good' ? '#f77f00' : '#d62828';
+const statusLabel = s => s === 'good' ? 'Tốt' : s === 'not_good' ? 'Cần xử lý' : s === 'die' ? 'Chết' : s;
+
+function openLightbox(src){ document.getElementById('lbImg').src=src; document.getElementById('lightbox').classList.add('active'); }
+
+// ──── Health donut ────
+(() => {
+  const counts = {};
+  TREES.forEach(t => { const s=t.status; counts[s]=(counts[s]||0)+1; });
+  const labels = Object.keys(counts).map(statusLabel);
+  const data = Object.values(counts);
+  const bg = Object.keys(counts).map(statusColor);
+  new Chart(document.getElementById('healthChart'), {
+    type:'doughnut',
+    data:{labels, datasets:[{data, backgroundColor:bg, borderWidth:0}]},
+    options:{plugins:{legend:{position:'bottom'}}, cutout:'55%'}
+  });
+})();
+
+// ──── Species bar ────
+(() => {
+  const counts = {};
+  TREES.forEach(t => { counts[t.species]=(counts[t.species]||0)+1; });
+  new Chart(document.getElementById('speciesChart'), {
+    type:'bar',
+    data:{labels:Object.keys(counts), datasets:[{label:'Số cây', data:Object.values(counts), backgroundColor:'#52b788', borderRadius:6}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, ticks:{stepSize:1}}}}
+  });
+})();
+
+// ──── Species × Health stacked bar ────
+(() => {
+  const species = [...new Set(TREES.map(t=>t.species))];
+  const statuses = [...new Set(TREES.map(t=>t.status))];
+  const datasets = statuses.map(s => {
+    const data = species.map(sp => TREES.filter(t=>t.species===sp && t.status===s).length);
+    return {label:statusLabel(s), data, backgroundColor:statusColor(s), borderRadius:4};
+  });
+  new Chart(document.getElementById('speciesHealthChart'), {
+    type:'bar',
+    data:{labels:species, datasets},
+    options:{plugins:{legend:{position:'bottom'}}, scales:{x:{stacked:true},y:{stacked:true, beginAtZero:true, ticks:{stepSize:1}}}}
+  });
+})();
+
+// ──── Age histogram ────
+(() => {
+  const ages = TREES.map(t=>Number(t.age)||0);
+  const maxAge = Math.max(...ages, 1);
+  const bins = Array.from({length:maxAge}, (_,i)=>i+1);
+  const data = bins.map(b => ages.filter(a=>a===b).length);
+  new Chart(document.getElementById('ageChart'), {
+    type:'bar',
+    data:{labels:bins.map(b=>b+' năm'), datasets:[{label:'Số cây', data, backgroundColor:'#74c69d', borderRadius:4}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, ticks:{stepSize:1}}}}
+  });
+})();
+
+// ──── Leaflet map ────
+(() => {
+  const pts = TREES.filter(t=>t.lat && t.lng);
+  if(!pts.length) return;
+  const map = L.map('map').setView([pts[0].lat, pts[0].lng], 17);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+  pts.forEach(t => {
+    const color = t.status==='good'?'green':t.status==='not_good'?'orange':'red';
+    const icon = L.divIcon({className:'',html:`<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.4)"></div>`,iconSize:[14,14],iconAnchor:[7,7]});
+    const imgHtml = t.images.length ? `<br><img src="${t.images[0]}" style="width:120px;border-radius:6px;margin-top:6px">` : '';
+    L.marker([t.lat,t.lng],{icon}).addTo(map)
+      .bindPopup(`<b>${t.tree_id} – ${t.species}</b><br>Tuổi: ${t.age} | ${statusLabel(t.status)}${imgHtml}`);
+  });
+  const bounds = L.latLngBounds(pts.map(t=>[t.lat,t.lng]));
+  map.fitBounds(bounds.pad(0.15));
+})();
+
+// ──── Sort trees by Tree ID (numeric) ────
+TREES.sort((a,b) => {
+  const na = parseInt(a.tree_id, 10) || 0;
+  const nb = parseInt(b.tree_id, 10) || 0;
+  return na - nb;
+});
+
+// ──── Populate filter dropdowns ────
+(() => {
+  const speciesSel = document.getElementById('speciesFilter');
+  const statusSel = document.getElementById('statusFilter');
+  const speciesList = [...new Set(TREES.map(t=>t.species))].sort();
+  const statusList = [...new Set(TREES.map(t=>t.status))];
+  speciesList.forEach(s => { const o=document.createElement('option'); o.value=s; o.textContent=s; speciesSel.appendChild(o); });
+  statusList.forEach(s => { const o=document.createElement('option'); o.value=s; o.textContent=statusLabel(s); statusSel.appendChild(o); });
+})();
+
+// ──── Data table ────
+function renderTable(data){
+  const tb = document.getElementById('tableBody');
+  tb.innerHTML = data.map(t => {
+    const badge = `<span class="badge ${t.status}">${statusLabel(t.status)}</span>`;
+    const img = t.images.length ? `<span class="link-btn" onclick="openLightbox('${t.images[0]}')">LINK</span>` : '–';
+    return `<tr>
+      <td>${t.tree_id}</td><td>${t.species}</td><td>${t.age}</td><td>${t.height}</td>
+      <td>${t.diameter}</td><td>${t.canopy}</td><td>${badge}</td>
+      <td>${t.lat}</td><td>${t.lng}</td><td>${img}</td>
+      <td>${t.created_at}</td><td>${t.created_by}</td><td>${t.updated_at}</td><td>${t.updated_by}</td>
+    </tr>`;
+  }).join('');
+}
+renderTable(TREES);
+
+function applyFilters(){
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const sp = document.getElementById('speciesFilter').value;
+  const st = document.getElementById('statusFilter').value;
+  let filtered = TREES;
+  if(sp) filtered = filtered.filter(t => t.species === sp);
+  if(st) filtered = filtered.filter(t => t.status === st);
+  if(q){
+    filtered = filtered.filter(t => {
+      const searchable = [t.tree_id,t.species,t.age,t.height,t.diameter,t.canopy,
+        t.status,t.lat,t.lng,t.created_at,t.created_by,t.updated_at,t.updated_by].join(' ').toLowerCase();
+      return searchable.includes(q);
+    });
+  }
+  renderTable(filtered);
+}
+</script>
+</body>
+</html>

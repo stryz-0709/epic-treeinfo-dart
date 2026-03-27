@@ -1,0 +1,20 @@
+{
+  "enabled": true,
+  "poll_interval": 60,
+  "event_types": [],
+  "event_categories": ["security"],
+  "states": ["new", "active"],
+  "min_priority": 0,
+  "lookback_hours": 1,
+  "zalo_enabled": true,
+  "_comments": {
+    "enabled": "Enable/disable the alert monitor",
+    "poll_interval": "Seconds between API checks",
+    "event_types": "Filter by event types, empty = all (e.g., ['wildlife_sighting_rep', 'snare_rep'])",
+    "event_categories": "Filter by categories (e.g., 'security', 'monitoring', 'logistics')",
+    "states": "Event states to monitor: 'new', 'active', 'resolved'",
+    "min_priority": "Minimum priority to trigger alert (0-500)",
+    "lookback_hours": "How far back to look on first startup",
+    "zalo_enabled": "Enable/disable Zalo notifications"
+  }
+}

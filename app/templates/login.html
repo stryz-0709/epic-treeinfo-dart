@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Đăng nhập — Tree Dashboard</title>
+    <style>
+      :root {
+        --accent: #2d6a4f;
+        --bg: #f4f6f8;
+        --card: #fff;
+        --text: #1d1d1d;
+        --muted: #6c757d;
+        --danger: #d62828;
+        --radius: 16px;
+        --shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background: linear-gradient(
+          135deg,
+          #1b4332 0%,
+          #2d6a4f 40%,
+          #40916c 70%,
+          #52b788 100%
+        );
+        position: relative;
+        overflow: hidden;
+      }
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        border-radius: 50%;
+        opacity: 0.07;
+        pointer-events: none;
+        background: #fff;
+        animation: float 20s ease-in-out infinite;
+      }
+      body::before {
+        width: 500px;
+        height: 500px;
+        top: -120px;
+        left: -100px;
+      }
+      body::after {
+        width: 350px;
+        height: 350px;
+        bottom: -80px;
+        right: -60px;
+        animation-delay: -8s;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        25% {
+          transform: translate(30px, 40px) scale(1.05);
+        }
+        50% {
+          transform: translate(-20px, 60px) scale(0.97);
+        }
+        75% {
+          transform: translate(40px, -20px) scale(1.03);
+        }
+      }
+      .bg-shape {
+        position: fixed;
+        border-radius: 50%;
+        opacity: 0.05;
+        background: #fff;
+        pointer-events: none;
+      }
+      .bg-shape.s1 {
+        width: 200px;
+        height: 200px;
+        top: 15%;
+        right: 10%;
+        animation: float 25s ease-in-out infinite -3s;
+      }
+      .bg-shape.s2 {
+        width: 160px;
+        height: 160px;
+        bottom: 20%;
+        left: 8%;
+        animation: float 22s ease-in-out infinite -12s;
+      }
+      .bg-shape.s3 {
+        width: 100px;
+        height: 100px;
+        top: 60%;
+        right: 30%;
+        animation: float 18s ease-in-out infinite -6s;
+      }
+      .leaf {
+        position: fixed;
+        opacity: 0.06;
+        pointer-events: none;
+        font-size: 5rem;
+      }
+      .leaf.l1 {
+        top: 12%;
+        left: 6%;
+        transform: rotate(-25deg);
+        animation: sway 8s ease-in-out infinite;
+      }
+      .leaf.l2 {
+        bottom: 10%;
+        right: 5%;
+        transform: rotate(15deg);
+        animation: sway 10s ease-in-out infinite -4s;
+      }
+      .leaf.l3 {
+        top: 50%;
+        left: 80%;
+        transform: rotate(45deg);
+        animation: sway 12s ease-in-out infinite -2s;
+        font-size: 4rem;
+      }
+      @keyframes sway {
+        0%,
+        100% {
+          transform: rotate(-25deg) translateY(0);
+        }
+        50% {
+          transform: rotate(-15deg) translateY(-20px);
+        }
+      }
+      .login-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 44px 40px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        position: relative;
+        z-index: 10;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        animation: cardIn 0.6s ease-out;
+      }
+      @keyframes cardIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px) scale(0.96);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      .login-card .logo {
+        font-size: 3.2rem;
+        margin-bottom: 8px;
+        filter: drop-shadow(0 2px 8px rgba(45, 106, 79, 0.3));
+      }
+      .login-card h1 {
+        font-size: 1.4rem;
+        color: var(--accent);
+        margin-bottom: 4px;
+        font-weight: 700;
+      }
+      .login-card .subtitle {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 28px;
+      }
+      .form-group {
+        text-align: left;
+        margin-bottom: 18px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        outline: none;
+        background: rgba(255, 255, 255, 0.8);
+      }
+      .form-group input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+        background: #fff;
+      }
+      .error-msg {
+        background: #fde8e8;
+        color: var(--danger);
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        margin-bottom: 18px;
+        display: none;
+      }
+      .error-msg.show {
+        display: block;
+      }
+      .btn-login {
+        width: 100%;
+        padding: 13px;
+        background: linear-gradient(135deg, #2d6a4f, #40916c);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 15px rgba(45, 106, 79, 0.3);
+      }
+      .btn-login:hover {
+        background: linear-gradient(135deg, #1b4332, #2d6a4f);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(45, 106, 79, 0.4);
+      }
+      .btn-login:active {
+        transform: translateY(0);
+      }
+      .footer {
+        margin-top: 24px;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-shape s1"></div>
+    <div class="bg-shape s2"></div>
+    <div class="bg-shape s3"></div>
+    <div class="leaf l1">🍃</div>
+    <div class="leaf l2">🌿</div>
+    <div class="leaf l3">🍂</div>
+    <div class="login-card">
+      <div class="logo">🌳</div>
+      <h1>Tree Dashboard</h1>
+      <p class="subtitle">Đăng nhập để xem báo cáo</p>
+      {% if error %}
+      <div class="error-msg show">{{ error }}</div>
+      {% endif %}
+      <form method="POST" action="/login">
+        <div class="form-group">
+          <label for="username">Tên đăng nhập</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="admin"
+            required
+            autofocus
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            required
+          />
+        </div>
+        <button type="submit" class="btn-login">Đăng nhập</button>
+      </form>
+      <p class="footer">EarthRanger Tree Platform v2 &copy; 2026</p>
+    </div>
+  </body>
+</html>

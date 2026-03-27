@@ -1,0 +1,1705 @@
+﻿diff --git a/app/src/server.py b/app/src/server.py
+new file mode 100644
+index 0000000..f662f27
+--- /dev/null
++++ b/app/src/server.py
+@@ -0,0 +1,1398 @@
++"""
++Unified FastAPI server ΓÇö dashboard + API + webhooks, all in one app.
++
++Serves:
++  - Dashboard UI (login, tree report, charts, map)
++  - REST API for NFC app (/api/trees, /api/trees/{id}, /api/sync)
++  - Webhook endpoints (/webhook/earthranger, /webhook/camera)
++
++Production features:
++  - Structured JSON logging with request ID tracking
++  - bcrypt password hashing (auto-migrates from old SHA-256 hashes)
++  - Rate limiting on login / API / sync
++  - CORS middleware for NFC Android app
++
++Usage:
++    cd v2
++    uvicorn src.server:app --reload --port 8000
++"""
++
++import hmac
++import hashlib
++import json
++import logging
++import os
++import secrets
++from contextlib import asynccontextmanager
++from datetime import date, datetime, timedelta, timezone
++from threading import Thread
++from typing import Optional
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
++
++import bcrypt
++from fastapi import FastAPI, Request, Form, Header, HTTPException, Depends, Query
++from pydantic import BaseModel
++from fastapi.middleware.cors import CORSMiddleware
++from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
++from fastapi.staticfiles import StaticFiles
++from fastapi.templating import Jinja2Templates
++from slowapi import Limiter, _rate_limit_exceeded_handler
++from slowapi.errors import RateLimitExceeded
++from slowapi.util import get_remote_address
++from starlette.middleware.base import BaseHTTPMiddleware
++
++from src.config import get_settings
++from src.logging_config import (
++    setup_logging, request_id_var, generate_request_id, get_request_id,
++)
++from src.supabase_db import get_all_trees, get_tree_by_id, get_tree_by_nfc, link_nfc_to_tree
++from src.earthranger import get_er_client
++from src.models import db_row_to_dashboard, compute_stats, compute_alerts, compute_analytics, event_to_db_row
++from src.zalo import (
++    format_er_alert, format_camera_alert,
++    should_notify, send_to_zalo_group,
++)
++from src.sync import run_sync_cycle, run_loop
++
++log = logging.getLogger(__name__)
++
++
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++# LIFESPAN ΓÇö start background sync on startup
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++
++@asynccontextmanager
++async def lifespan(app: FastAPI):
++    """Start the background sync thread when the server boots."""
++    s = get_settings()
++
++    # Configure logging BEFORE anything else
++    setup_logging(level=s.log_level, json_output=s.log_json)
++
++    # Fail fast on insecure production configuration
++    s.validate_security_baseline()
++
++    log.info("Starting EarthRanger Tree Platform v%s", s.app_version)
++
++    sync_thread = Thread(target=run_loop, daemon=True, name="sync-pipeline")
++    sync_thread.start()
++    log.info("Background sync started (every %d min)", s.sync_interval_minutes)
++    yield
++    log.info("Server shutting down")
++
++
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++# RATE LIMITER
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++
++limiter = Limiter(key_func=get_remote_address)
++
++
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++# REQUEST ID MIDDLEWARE
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++
++class RequestIDMiddleware(BaseHTTPMiddleware):
++    """Attach a unique request ID to every request for log correlation."""
++
++    async def dispatch(self, request: Request, call_next):
++        rid = request.headers.get("X-Request-ID") or generate_request_id()
++        request_id_var.set(rid)
++
++        start = datetime.now(timezone.utc)
++        response = await call_next(request)
++        duration = (datetime.now(timezone.utc) - start).total_seconds() * 1000
++
++        response.headers["X-Request-ID"] = rid
++
++        # Log every request with structured fields
++        log.info(
++            "%s %s ΓåÆ %d (%.0fms)",
++            request.method,
++            request.url.path,
++            response.status_code,
++            duration,
++            extra={
++                "method": request.method,
++                "path": str(request.url.path),
++                "status_code": response.status_code,
++                "duration_ms": round(duration, 1),
++                "client_ip": get_remote_address(request),
++            },
++        )
++        return response
++
++
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++# APP
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++
++_s = get_settings()
++
++app = FastAPI(
++    title="EarthRanger Tree Platform",
++    version=_s.app_version,
++    lifespan=lifespan,
++)
++
++# Rate limiting
++app.state.limiter = limiter
++app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
++
++# CORS ΓÇö allow NFC app / external clients
++app.add_middleware(
++    CORSMiddleware,
++    allow_origins=_s.cors_origins,
++    allow_credentials=_s.cors_allow_credentials,
++    allow_methods=["*"],
++    allow_headers=["*"],
++)
++
++# Request ID tracking
++app.add_middleware(RequestIDMiddleware)
++
++BASE_DIR = os.path.dirname(os.path.abspath(__file__))
++PROJECT_DIR = os.path.dirname(BASE_DIR)
++
++templates = Jinja2Templates(directory=os.path.join(PROJECT_DIR, "templates"))
++
++static_dir = os.path.join(PROJECT_DIR, "static")
++os.makedirs(static_dir, exist_ok=True)
++app.mount("/static", StaticFiles(directory=static_dir), name="static")
++
++
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++# AUTH ΓÇö bcrypt + session-based
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++
++USERS_FILE = os.path.join(PROJECT_DIR, "users.json")
++sessions: dict[str, dict] = {}
++mobile_access_sessions: dict[str, dict] = {}
++mobile_refresh_sessions: dict[str, dict] = {}
++mobile_schedule_records: dict[str, dict] = {}
++mobile_schedule_sequence = 0
++mobile_work_summary_records: list[dict] = []
++mobile_daily_checkins: dict[tuple[str, str], dict] = {}
++mobile_incident_records: list[dict] = []
++
++PROJECT_TIMEZONE_NAME = "Asia/Ho_Chi_Minh"
++try:
++    PROJECT_TIMEZONE = ZoneInfo(PROJECT_TIMEZONE_NAME)
++except ZoneInfoNotFoundError:
++    # Fallback for environments without IANA timezone data.
++    PROJECT_TIMEZONE = timezone(timedelta(hours=7), name=PROJECT_TIMEZONE_NAME)
++
++
++class MobileLoginRequest(BaseModel):
++    """Request payload for mobile login endpoint."""
++
++    username: str
++    password: str
++
++
++class MobileRefreshRequest(BaseModel):
++    """Request payload for mobile refresh endpoint."""
++
++    refresh_token: str
++
++
++class MobileLogoutRequest(BaseModel):
++    """Request payload for mobile logout endpoint."""
++
++    refresh_token: str
++
++
++class MobileScheduleWriteRequest(BaseModel):
++    """Request payload for mobile schedule write endpoints."""
++
++    ranger_id: str
++    work_date: str
++    note: str = ""
++
++
++class MobileCheckinRequest(BaseModel):
++    """Request payload for mobile check-in ingest endpoint."""
++
++    idempotency_key: str = ""
++    client_time: str = ""
++    timezone: str = ""
++    app_version: str = ""
++
++
++def _hash_pw(password: str) -> str:
++    """Hash a password with bcrypt (salted, 12 rounds)."""
++    return bcrypt.hashpw(password.encode(), bcrypt.gensalt(rounds=12)).decode()
++
++
++def _verify_pw(password: str, stored_hash: str) -> bool:
++    """
++    Verify a password against a stored hash.
++    Supports both bcrypt ($2b$...) and legacy SHA-256 (64-char hex).
++    Auto-migrates SHA-256 ΓåÆ bcrypt on successful login.
++    """
++    # Legacy SHA-256 detection (64 hex chars, no $ prefix)
++    if len(stored_hash) == 64 and not stored_hash.startswith("$"):
++        import hashlib
++        if hashlib.sha256(password.encode()).hexdigest() == stored_hash:
++            return True  # migration handled in login_submit
++        return False
++
++    # bcrypt verification
++    try:
++        return bcrypt.checkpw(password.encode(), stored_hash.encode())
++    except Exception:
++        return False
++
++
++def _load_users() -> dict:
++    if not os.path.exists(USERS_FILE):
++        s = get_settings()
++        default = {
++            "admin": {
++                "password": _hash_pw(s.default_admin_password),
++                "role": "admin",
++                "display_name": "Administrator",
++            }
++        }
++        with open(USERS_FILE, "w", encoding="utf-8") as f:
++            json.dump(default, f, indent=2)
++        return default
++    with open(USERS_FILE, "r", encoding="utf-8") as f:
++        return json.load(f)
++
++
++def _save_users(users: dict):
++    with open(USERS_FILE, "w", encoding="utf-8") as f:
++        json.dump(users, f, indent=2, ensure_ascii=False)
++
++
++def _utcnow() -> datetime:
++    """Return timezone-aware current UTC timestamp."""
++    return datetime.now(timezone.utc)
++
++
++def _normalize_mobile_role(user_role: str) -> str:
++    """Map internal user roles to mobile contract role claims."""
++    role = (user_role or "").strip().lower()
++    if role in {"admin", "leader"}:
++        return "leader"
++    return "ranger"
++
++
++def _cleanup_expired_mobile_sessions() -> None:
++    """Remove expired mobile sessions and orphaned access tokens."""
++    now = _utcnow()
++
++    expired_refresh_tokens = [
++        token
++        for token, payload in mobile_refresh_sessions.items()
++        if payload["expires_at"] <= now
++    ]
++    for token in expired_refresh_tokens:
++        del mobile_refresh_sessions[token]
++
++    expired_access_tokens = [
++        token
++        for token, payload in mobile_access_sessions.items()
++        if payload["expires_at"] <= now
++        or payload["refresh_token"] not in mobile_refresh_sessions
++    ]
++    for token in expired_access_tokens:
++        del mobile_access_sessions[token]
++
++
++def _issue_mobile_tokens(username: str, user_data: dict) -> dict:
++    """Issue access/refresh tokens for mobile clients."""
++    s = get_settings()
++    _cleanup_expired_mobile_sessions()
++
++    now = _utcnow()
++    refresh_expires_at = now + timedelta(days=s.mobile_refresh_token_ttl_days)
++
++    refresh_token = secrets.token_urlsafe(48)
++    role = _normalize_mobile_role(user_data.get("role", "viewer"))
++
++    mobile_refresh_sessions[refresh_token] = {
++        "username": username,
++        "role": role,
++        "issued_at": now,
++        "expires_at": refresh_expires_at,
++    }
++
++    return _issue_mobile_access_token(username=username, role=role, refresh_token=refresh_token)
++
++
++def _issue_mobile_access_token(username: str, role: str, refresh_token: str) -> dict:
++    """Issue a new mobile access token bound to an existing refresh token."""
++    s = get_settings()
++    now = _utcnow()
++    access_expires_at = now + timedelta(minutes=s.mobile_access_token_ttl_minutes)
++    access_token = secrets.token_urlsafe(32)
++
++    mobile_access_sessions[access_token] = {
++        "username": username,
++        "role": role,
++        "issued_at": now,
++        "expires_at": access_expires_at,
++        "refresh_token": refresh_token,
++    }
++
++    return {
++        "access_token": access_token,
++        "refresh_token": refresh_token,
++        "token_type": "bearer",
++        "expires_in": int((access_expires_at - now).total_seconds()),
++        "role": role,
++    }
++
++
++def _refresh_mobile_access_token(refresh_token: str) -> dict:
++    """Refresh access token for a valid refresh/session token."""
++    _cleanup_expired_mobile_sessions()
++
++    refresh_session = mobile_refresh_sessions.get(refresh_token)
++    if not refresh_session:
++        raise HTTPException(status_code=401, detail="Invalid refresh token")
++
++    stale_access_tokens = [
++        token
++        for token, payload in mobile_access_sessions.items()
++        if payload["refresh_token"] == refresh_token
++    ]
++    for token in stale_access_tokens:
++        del mobile_access_sessions[token]
++
++    return _issue_mobile_access_token(
++        username=refresh_session["username"],
++        role=refresh_session["role"],
++        refresh_token=refresh_token,
++    )
++
++
++def _logout_mobile_session(refresh_token: str) -> bool:
++    """Invalidate refresh token and linked access tokens."""
++    _cleanup_expired_mobile_sessions()
++
++    if refresh_token not in mobile_refresh_sessions:
++        return False
++
++    del mobile_refresh_sessions[refresh_token]
++
++    stale_access_tokens = [
++        token
++        for token, payload in mobile_access_sessions.items()
++        if payload["refresh_token"] == refresh_token
++    ]
++    for token in stale_access_tokens:
++        del mobile_access_sessions[token]
++
++    return True
++
++
++def _extract_bearer_token(authorization: str | None) -> str | None:
++    """Parse bearer token from Authorization header."""
++    if not authorization:
++        return None
++    scheme, _, token = authorization.partition(" ")
++    if scheme.strip().lower() != "bearer":
++        return None
++    parsed = token.strip()
++    return parsed or None
++
++
++def require_mobile_auth(authorization: Optional[str] = Header(None)) -> dict:
++    """FastAPI dependency ΓÇö validate mobile bearer token and return session."""
++    _cleanup_expired_mobile_sessions()
++    access_token = _extract_bearer_token(authorization)
++    if not access_token:
++        raise HTTPException(status_code=401, detail="Invalid access token")
++
++    mobile_user = mobile_access_sessions.get(access_token)
++    if not mobile_user:
++        raise HTTPException(status_code=401, detail="Invalid access token")
++
++    return mobile_user
++
++
++def require_mobile_leader(mobile_user: dict = Depends(require_mobile_auth)) -> dict:
++    """FastAPI dependency ΓÇö require leader role for mobile endpoint access."""
++    if mobile_user.get("role") != "leader":
++        raise HTTPException(status_code=403, detail="Leader role required")
++    return mobile_user
++
++
++def _resolve_mobile_ranger_scope(mobile_user: dict, ranger_id: str | None) -> str:
++    """Resolve effective ranger scope from role and optional ranger filter."""
++    username = mobile_user.get("username", "")
++    requested_ranger_id = (ranger_id or "").strip()
++
++    if mobile_user.get("role") == "leader":
++        return requested_ranger_id or username
++
++    if requested_ranger_id and requested_ranger_id != username:
++        raise HTTPException(status_code=403, detail="Ranger scope violation")
++
++    return username
++
++
++def _next_mobile_schedule_id() -> str:
++    """Generate a deterministic incrementing schedule ID for in-memory writes."""
++    global mobile_schedule_sequence
++    while True:
++        mobile_schedule_sequence += 1
++        candidate = f"sched-{mobile_schedule_sequence}"
++        if candidate not in mobile_schedule_records:
++            return candidate
++
++
++def _parse_iso_day(value: str | None) -> date | None:
++    """Parse an ISO day string (YYYY-MM-DD) to date."""
++    if value is None:
++        return None
++    raw = value.strip()
++    if not raw:
++        return None
++    try:
++        return date.fromisoformat(raw)
++    except ValueError as exc:
++        raise HTTPException(status_code=400, detail=f"Invalid date format: '{value}'") from exc
++
++
++def _safe_parse_row_day(value: str | None) -> date | None:
++    """Parse row day defensively without raising on malformed source values."""
++    if value is None:
++        return None
++
++    raw = value.strip()
++    if not raw:
++        return None
++
++    try:
++        return date.fromisoformat(raw)
++    except ValueError:
++        return None
++
++
++def _parse_iso_datetime(value: str | None, field_name: str) -> datetime | None:
++    """Parse an ISO datetime string to UTC-aware datetime."""
++    if value is None:
++        return None
++    raw = value.strip()
++    if not raw:
++        return None
++
++    normalized = raw.replace("Z", "+00:00")
++    try:
++        parsed = datetime.fromisoformat(normalized)
++    except ValueError as exc:
++        raise HTTPException(
++            status_code=400,
++            detail=f"Invalid datetime format for '{field_name}': '{value}'",
++        ) from exc
++
++    if parsed.tzinfo is None:
++        parsed = parsed.replace(tzinfo=timezone.utc)
++    return parsed.astimezone(timezone.utc)
++
++
++def _safe_parse_row_datetime(value: str | None) -> datetime | None:
++    """Parse row datetime defensively without raising on malformed source values."""
++    if value is None:
++        return None
++
++    raw = value.strip()
++    if not raw:
++        return None
++
++    normalized = raw.replace("Z", "+00:00")
++    try:
++        parsed = datetime.fromisoformat(normalized)
++    except ValueError:
++        return None
++
++    if parsed.tzinfo is None:
++        parsed = parsed.replace(tzinfo=timezone.utc)
++    return parsed.astimezone(timezone.utc)
++
++
++def _resolve_mobile_work_scope(mobile_user: dict, ranger_id: str | None) -> tuple[Optional[str], bool]:
++    """Resolve effective work-management scope based on user role and ranger filter."""
++    requested_ranger_id = (ranger_id or "").strip() or None
++    username = mobile_user.get("username", "")
++    role = mobile_user.get("role")
++
++    if role == "leader":
++        # team scope when no specific ranger filter is provided
++        return requested_ranger_id, requested_ranger_id is None
++
++    if requested_ranger_id and requested_ranger_id != username:
++        raise HTTPException(status_code=403, detail="Ranger scope violation")
++
++    return username, False
++
++
++def _build_mobile_work_summary_items(
++    mobile_user: dict,
++    ranger_id: str | None,
++    from_day: date | None,
++    to_day: date | None,
++) -> tuple[list[dict], Optional[str], bool]:
++    """Build role-scoped, filtered work summary rows."""
++    effective_ranger_id, team_scope = _resolve_mobile_work_scope(mobile_user, ranger_id)
++
++    items: list[dict] = []
++    for row in mobile_work_summary_records:
++        row_ranger_id = str(row.get("ranger_id") or "").strip()
++        if not row_ranger_id:
++            continue
++
++        if effective_ranger_id is not None and row_ranger_id != effective_ranger_id:
++            continue
++
++        row_day_key = str(row.get("day_key") or "").strip()
++        row_day = _parse_iso_day(row_day_key)
++        if row_day is None:
++            continue
++
++        if from_day and row_day < from_day:
++            continue
++        if to_day and row_day > to_day:
++            continue
++
++        has_checkin = bool(
++            row.get("has_checkin")
++            if "has_checkin" in row
++            else row.get("checkin_confirmed", False)
++        )
++
++        summary = row.get("summary")
++        if not isinstance(summary, dict):
++            summary = {}
++
++        items.append(
++            {
++                "ranger_id": row_ranger_id,
++                "day_key": row_day.isoformat(),
++                "has_checkin": has_checkin,
++                "checkin_indicator": "confirmed" if has_checkin else "none",
++                "summary": summary,
++            }
++        )
++
++    items.sort(key=lambda item: (item["ranger_id"], item["day_key"]))
++    return items, effective_ranger_id, team_scope
++
++
++def _build_mobile_incident_items(
++    mobile_user: dict,
++    ranger_id: str | None,
++    from_day: date | None,
++    to_day: date | None,
++    updated_since: datetime | None,
++) -> tuple[list[dict], Optional[str], bool]:
++    """Build role-scoped, filtered incident rows from mirrored in-memory data."""
++    effective_ranger_id, team_scope = _resolve_mobile_work_scope(mobile_user, ranger_id)
++
++    items: list[dict] = []
++    for row in mobile_incident_records:
++        mapping_status = str(row.get("mapping_status") or "mapped").strip().lower()
++        row_ranger_id = str(row.get("ranger_id") or row.get("mapped_ranger_id") or "").strip()
++
++        if effective_ranger_id is not None and row_ranger_id != effective_ranger_id:
++            continue
++
++        # Ranger feeds must only include incidents mapped to the authenticated ranger identity.
++        if mobile_user.get("role") == "ranger" and mapping_status != "mapped":
++            continue
++
++        occurred_at_raw = str(row.get("occurred_at") or "").strip()
++        occurred_at = _safe_parse_row_datetime(occurred_at_raw)
++        if from_day or to_day:
++            if occurred_at is None:
++                continue
++
++            occurred_day = occurred_at.astimezone(PROJECT_TIMEZONE).date()
++            if from_day and occurred_day < from_day:
++                continue
++            if to_day and occurred_day > to_day:
++                continue
++
++        updated_at_raw = str(row.get("updated_at") or occurred_at_raw).strip()
++        updated_at = _safe_parse_row_datetime(updated_at_raw)
++        if updated_since and (updated_at is None or updated_at < updated_since):
++            continue
++
++        incident_id = str(row.get("incident_id") or row.get("er_event_id") or "").strip()
++        if not incident_id:
++            continue
++
++        payload_ref = row.get("payload_ref")
++        if payload_ref is not None:
++            payload_ref = str(payload_ref)
++
++        items.append(
++            {
++                "incident_id": incident_id,
++                "er_event_id": str(row.get("er_event_id") or incident_id),
++                "ranger_id": row_ranger_id or None,
++                "mapping_status": mapping_status,
++                "occurred_at": occurred_at.isoformat() if occurred_at else None,
++                "updated_at": updated_at.isoformat() if updated_at else None,
++                "title": str(row.get("title") or row.get("event_type") or "Incident"),
++                "status": str(row.get("status") or "open"),
++                "severity": str(row.get("severity") or "unknown"),
++                "payload_ref": payload_ref,
++            }
++        )
++
++    items.sort(
++        key=lambda item: (item.get("updated_at") or "", item.get("incident_id") or ""),
++        reverse=True,
++    )
++    return items, effective_ranger_id, team_scope
++
++
++def _build_mobile_schedule_items(
++    mobile_user: dict,
++    ranger_id: str | None,
++    from_day: date | None,
++    to_day: date | None,
++) -> tuple[list[dict], Optional[str], bool]:
++    """Build role-scoped, filtered schedule rows from in-memory schedule records."""
++    effective_ranger_id, team_scope = _resolve_mobile_work_scope(mobile_user, ranger_id)
++
++    items: list[dict] = []
++    for row in mobile_schedule_records.values():
++        row_ranger_id = str(row.get("ranger_id") or "").strip()
++        if not row_ranger_id:
++            continue
++
++        if effective_ranger_id is not None and row_ranger_id != effective_ranger_id:
++            continue
++
++        row_day = _safe_parse_row_day(str(row.get("work_date") or ""))
++        if row_day is None:
++            continue
++
++        if from_day and row_day < from_day:
++            continue
++        if to_day and row_day > to_day:
++            continue
++
++        updated_by = row.get("updated_by")
++        if updated_by is not None:
++            updated_by = str(updated_by)
++
++        created_at = _safe_parse_row_datetime(str(row.get("created_at") or ""))
++        updated_at = _safe_parse_row_datetime(str(row.get("updated_at") or ""))
++
++        items.append(
++            {
++                "schedule_id": str(row.get("schedule_id") or ""),
++                "ranger_id": row_ranger_id,
++                "work_date": row_day.isoformat(),
++                "note": str(row.get("note") or ""),
++                "updated_by": updated_by,
++                "created_at": created_at.isoformat() if created_at else None,
++                "updated_at": updated_at.isoformat() if updated_at else None,
++            }
++        )
++
++    items.sort(key=lambda item: (item["work_date"], item["ranger_id"], item["schedule_id"]))
++    return items, effective_ranger_id, team_scope
++
++
++def _validate_mobile_schedule_write_payload(payload: MobileScheduleWriteRequest) -> tuple[str, date, str]:
++    """Validate and normalize schedule write payload fields."""
++    ranger_id = payload.ranger_id.strip()
++    work_date_raw = payload.work_date.strip()
++    note = payload.note.strip()
++
++    if not ranger_id or not work_date_raw:
++        raise HTTPException(status_code=400, detail="ranger_id and work_date required")
++
++    work_day = _parse_iso_day(work_date_raw)
++    if work_day is None:
++        raise HTTPException(status_code=400, detail="ranger_id and work_date required")
++
++    return ranger_id, work_day, note
++
++
++def _compute_project_day_key(now_utc: datetime) -> str:
++    """Compute day key in project timezone from UTC timestamp."""
++    return now_utc.astimezone(PROJECT_TIMEZONE).date().isoformat()
++
++
++def _upsert_work_summary_checkin(ranger_id: str, day_key: str) -> None:
++    """Ensure work summary row has confirmed check-in indicator for ranger/day."""
++    for row in mobile_work_summary_records:
++        if row.get("ranger_id") == ranger_id and row.get("day_key") == day_key:
++            row["has_checkin"] = True
++            row["checkin_confirmed"] = True
++            if not isinstance(row.get("summary"), dict):
++                row["summary"] = {}
++            return
++
++    mobile_work_summary_records.append(
++        {
++            "ranger_id": ranger_id,
++            "day_key": day_key,
++            "has_checkin": True,
++            "checkin_confirmed": True,
++            "summary": {},
++        }
++    )
++
++
++def _ingest_mobile_checkin(mobile_user: dict, payload: MobileCheckinRequest) -> dict:
++    """Persist idempotent once-per-day check-in for authenticated ranger."""
++    if mobile_user.get("role") != "ranger":
++        raise HTTPException(status_code=403, detail="Ranger role required")
++
++    server_time = _utcnow()
++    day_key = _compute_project_day_key(server_time)
++    user_id = mobile_user.get("username", "")
++    checkin_key = (user_id, day_key)
++
++    existing = mobile_daily_checkins.get(checkin_key)
++    if existing:
++        _upsert_work_summary_checkin(user_id, day_key)
++        return {
++            "status": "already_exists",
++            "user_id": user_id,
++            "day_key": day_key,
++            "server_time": existing["server_time"],
++            "timezone": PROJECT_TIMEZONE_NAME,
++            "idempotency_key": existing["idempotency_key"],
++        }
++
++    request_idempotency_key = payload.idempotency_key.strip()
++    record = {
++        "user_id": user_id,
++        "day_key": day_key,
++        "server_time": server_time.isoformat(),
++        "timezone": PROJECT_TIMEZONE_NAME,
++        "idempotency_key": request_idempotency_key or f"{user_id}:checkin:{day_key}",
++        "client_time": payload.client_time.strip(),
++        "client_timezone": payload.timezone.strip(),
++        "app_version": payload.app_version.strip(),
++    }
++
++    mobile_daily_checkins[checkin_key] = record
++    _upsert_work_summary_checkin(user_id, day_key)
++
++    return {
++        "status": "created",
++        "user_id": record["user_id"],
++        "day_key": record["day_key"],
++        "server_time": record["server_time"],
++        "timezone": record["timezone"],
++        "idempotency_key": record["idempotency_key"],
++    }
++
++
++def get_current_user(request: Request) -> dict | None:
++    token = request.cookies.get("session_token")
++    if token and token in sessions:
++        return sessions[token]
++    return None
++
++
++def require_auth(request: Request) -> dict:
++    """FastAPI dependency ΓÇö returns user or raises 401."""
++    user = get_current_user(request)
++    if not user:
++        raise HTTPException(status_code=401, detail="Not authenticated")
++    return user
++
++
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++# ROUTES ΓÇö Dashboard UI
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++
++@app.get("/login", response_class=HTMLResponse)
++async def login_page(request: Request):
++    if get_current_user(request):
++        return RedirectResponse("/", status_code=302)
++    return templates.TemplateResponse("login.html", {"request": request, "error": ""})
++
++
++@app.post("/login")
++@limiter.limit(lambda: get_settings().rate_limit_login)
++async def login_submit(request: Request, username: str = Form(...), password: str = Form(...)):
++    users = _load_users()
++    user_data = users.get(username)
++    if not user_data or not _verify_pw(password, user_data["password"]):
++        log.warning("Failed login attempt for user '%s' from %s", username, get_remote_address(request))
++        return templates.TemplateResponse("login.html", {
++            "request": request,
++            "error": "Sai t├¬n ─æ─âng nhß║¡p hoß║╖c mß║¡t khß║⌐u",
++        })
++
++    # Auto-migrate legacy SHA-256 hash to bcrypt
++    stored = user_data["password"]
++    if len(stored) == 64 and not stored.startswith("$"):
++        log.info("Migrating password hash for '%s' from SHA-256 to bcrypt", username)
++        users[username]["password"] = _hash_pw(password)
++        _save_users(users)
++
++    token = secrets.token_urlsafe(32)
++    sessions[token] = {
++        "username": username,
++        "role": user_data["role"],
++        "display_name": user_data.get("display_name", username),
++        "region": user_data.get("region"),
++    }
++    log.info("User '%s' logged in", username)
++    response = RedirectResponse("/", status_code=302)
++    response.set_cookie("session_token", token, httponly=True, samesite="lax", max_age=86400)
++    return response
++
++
++@app.post("/api/mobile/auth/login")
++@limiter.limit(lambda: get_settings().rate_limit_login)
++async def api_mobile_login(request: Request, payload: MobileLoginRequest):
++    """Authenticate mobile user and return short-lived access + refresh tokens."""
++    username = payload.username.strip()
++    password = payload.password
++
++    users = _load_users()
++    user_data = users.get(username)
++
++    if not username or not password or not user_data:
++        log.warning("Failed mobile login attempt for user '%s' from %s", username or "<empty>", get_remote_address(request))
++        raise HTTPException(status_code=401, detail="Invalid credentials")
++
++    stored_hash = user_data.get("password", "")
++    if not _verify_pw(password, stored_hash):
++        log.warning("Failed mobile login attempt for user '%s' from %s", username, get_remote_address(request))
++        raise HTTPException(status_code=401, detail="Invalid credentials")
++
++    # Auto-migrate legacy SHA-256 hash to bcrypt
++    if len(stored_hash) == 64 and not stored_hash.startswith("$"):
++        log.info("Migrating mobile login password hash for '%s' from SHA-256 to bcrypt", username)
++        users[username]["password"] = _hash_pw(password)
++        _save_users(users)
++        user_data = users[username]
++
++    tokens = _issue_mobile_tokens(username, user_data)
++    log.info("Mobile user '%s' authenticated with role '%s'", username, tokens["role"])
++    return tokens
++
++
++@app.post("/api/mobile/auth/refresh")
++@limiter.limit(lambda: get_settings().rate_limit_login)
++async def api_mobile_refresh(request: Request, payload: MobileRefreshRequest):
++    """Issue a new access token from a valid mobile refresh/session token."""
++    refresh_token = payload.refresh_token.strip()
++    if not refresh_token:
++        log.warning("Failed mobile refresh attempt with empty token from %s", get_remote_address(request))
++        raise HTTPException(status_code=401, detail="Invalid refresh token")
++
++    tokens = _refresh_mobile_access_token(refresh_token)
++    log.info("Mobile session refreshed with role '%s'", tokens["role"])
++    return tokens
++
++
++@app.post("/api/mobile/auth/logout")
++@limiter.limit(lambda: get_settings().rate_limit_login)
++async def api_mobile_logout(request: Request, payload: MobileLogoutRequest):
++    """Invalidate an authenticated mobile refresh/session token."""
++    refresh_token = payload.refresh_token.strip()
++    if not refresh_token:
++        log.warning("Failed mobile logout attempt with empty token from %s", get_remote_address(request))
++        raise HTTPException(status_code=401, detail="Invalid refresh token")
++
++    logged_out = _logout_mobile_session(refresh_token)
++    if not logged_out:
++        log.warning("Failed mobile logout attempt with invalid token from %s", get_remote_address(request))
++        raise HTTPException(status_code=401, detail="Invalid refresh token")
++
++    log.info("Mobile session logged out")
++    return {"ok": True}
++
++
++@app.get("/api/mobile/me")
++@limiter.limit(lambda: get_settings().rate_limit_api)
++async def api_mobile_me(request: Request, mobile_user: dict = Depends(require_mobile_auth)):
++    """Return authenticated mobile identity and role claims."""
++    return {
++        "username": mobile_user["username"],
++        "role": mobile_user["role"],
++    }
++
++
++@app.get("/api/mobile/work-management")
++@limiter.limit(lambda: get_settings().rate_limit_api)
++async def api_mobile_work_management(
++    request: Request,
++    from_day_raw: Optional[str] = Query(None, alias="from"),
++    to_day_raw: Optional[str] = Query(None, alias="to"),
++    ranger_id: Optional[str] = None,
++    page: int = Query(1, ge=1),
++    page_size: int = Query(31, ge=1, le=366),
++    mobile_user: dict = Depends(require_mobile_auth),
++):
++    """Role-scoped work management summary endpoint for calendar views."""
++    from_day = _parse_iso_day(from_day_raw)
++    to_day = _parse_iso_day(to_day_raw)
++    if from_day and to_day and from_day > to_day:
++        raise HTTPException(status_code=400, detail="Invalid date range: from must be <= to")
++
++    all_items, effective_ranger_id, team_scope = _build_mobile_work_summary_items(
++        mobile_user=mobile_user,
++        ranger_id=ranger_id,
++        from_day=from_day,
++        to_day=to_day,
++    )
++
++    total = len(all_items)
++    start = (page - 1) * page_size
++    end = start + page_size
++    paged_items = all_items[start:end]
++
++    total_pages = 0 if total == 0 else ((total - 1) // page_size) + 1
++
++    return {
++        "items": paged_items,
++        "scope": {
++            "role": mobile_user["role"],
++            "team_scope": team_scope,
++            "requested_ranger_id": ranger_id,
++            "effective_ranger_id": effective_ranger_id,
++        },
++        "filters": {
++            "from": from_day.isoformat() if from_day else None,
++            "to": to_day.isoformat() if to_day else None,
++        },
++        "pagination": {
++            "page": page,
++            "page_size": page_size,
++            "total": total,
++            "total_pages": total_pages,
++        },
++    }
++
++
++@app.get("/api/mobile/incidents")
++@limiter.limit(lambda: get_settings().rate_limit_api)
++async def api_mobile_incidents(
++    request: Request,
++    from_day_raw: Optional[str] = Query(None, alias="from"),
++    to_day_raw: Optional[str] = Query(None, alias="to"),
++    updated_since_raw: Optional[str] = Query(None, alias="updated_since"),
++    ranger_id: Optional[str] = None,
++    cursor: Optional[str] = None,
++    page: int = Query(1, ge=1),
++    page_size: int = Query(50, ge=1, le=200),
++    mobile_user: dict = Depends(require_mobile_auth),
++):
++    """Role-scoped read-only incidents endpoint for mobile clients."""
++    from_day = _parse_iso_day(from_day_raw)
++    to_day = _parse_iso_day(to_day_raw)
++    if from_day and to_day and from_day > to_day:
++        raise HTTPException(status_code=400, detail="Invalid date range: from must be <= to")
++
++    updated_since = _parse_iso_datetime(updated_since_raw, "updated_since")
++
++    all_items, effective_ranger_id, team_scope = _build_mobile_incident_items(
++        mobile_user=mobile_user,
++        ranger_id=ranger_id,
++        from_day=from_day,
++        to_day=to_day,
++        updated_since=updated_since,
++    )
++
++    total = len(all_items)
++    start = (page - 1) * page_size
++    end = start + page_size
++    paged_items = all_items[start:end]
++
++    total_pages = 0 if total == 0 else ((total - 1) // page_size) + 1
++    has_more = page < total_pages if total_pages else False
++    last_synced_at = next((item["updated_at"] for item in all_items if item.get("updated_at")), None)
++
++    return {
++        "items": paged_items,
++        "scope": {
++            "role": mobile_user["role"],
++            "team_scope": team_scope,
++            "requested_ranger_id": ranger_id,
++            "effective_ranger_id": effective_ranger_id,
++        },
++        "filters": {
++            "from": from_day.isoformat() if from_day else None,
++            "to": to_day.isoformat() if to_day else None,
++            "updated_since": updated_since.isoformat() if updated_since else None,
++        },
++        "pagination": {
++            "page": page,
++            "page_size": page_size,
++            "total": total,
++            "total_pages": total_pages,
++        },
++        "sync": {
++            "cursor": cursor,
++            "has_more": has_more,
++            "last_synced_at": last_synced_at,
++        },
++    }
++
++
++@app.post("/api/mobile/checkins")
++@limiter.limit(lambda: get_settings().rate_limit_api)
++async def api_mobile_checkins(
++    request: Request,
++    payload: MobileCheckinRequest,
++    mobile_user: dict = Depends(require_mobile_auth),
++):
++    """Idempotent ranger check-in ingest endpoint."""
++    return _ingest_mobile_checkin(mobile_user, payload)
++
++
++@app.get("/api/mobile/schedules")
++@limiter.limit(lambda: get_settings().rate_limit_api)
++async def api_mobile_schedules(
++    request: Request,
++    from_day_raw: Optional[str] = Query(None, alias="from"),
++    to_day_raw: Optional[str] = Query(None, alias="to"),
++    ranger_id: Optional[str] = None,
++    mobile_user: dict = Depends(require_mobile_auth),
++):
++    """Role-scoped schedule read endpoint for mobile clients."""
++    from_day = _parse_iso_day(from_day_raw)
++    to_day = _parse_iso_day(to_day_raw)
++    if from_day and to_day and from_day > to_day:
++        raise HTTPException(status_code=400, detail="Invalid date range: from must be <= to")
++
++    items, effective_ranger_id, team_scope = _build_mobile_schedule_items(
++        mobile_user=mobile_user,
++        ranger_id=ranger_id,
++        from_day=from_day,
++        to_day=to_day,
++    )
++
++    return {
++        "items": items,
++        "scope": {
++            "role": mobile_user["role"],
++            "team_scope": team_scope,
++            "requested_ranger_id": ranger_id,
++            "effective_ranger_id": effective_ranger_id,
++        },
++        "filters": {
++            "from": from_day.isoformat() if from_day else None,
++            "to": to_day.isoformat() if to_day else None,
++        },
++    }
++
++
++@app.post("/api/mobile/schedules")
++@limiter.limit(lambda: get_settings().rate_limit_api)
++async def api_mobile_create_schedule(
++    request: Request,
++    payload: MobileScheduleWriteRequest,
++    mobile_user: dict = Depends(require_mobile_leader),
++):
++    """Leader-only mobile schedule create endpoint."""
++    ranger_id, work_day, note = _validate_mobile_schedule_write_payload(payload)
++    updated_at = _utcnow().isoformat()
++
++    schedule_id = _next_mobile_schedule_id()
++    schedule = {
++        "schedule_id": schedule_id,
++        "ranger_id": ranger_id,
++        "work_date": work_day.isoformat(),
++        "note": note,
++        "updated_by": mobile_user["username"],
++        "created_at": updated_at,
++        "updated_at": updated_at,
++    }
++    mobile_schedule_records[schedule_id] = schedule
++    return {"ok": True, "schedule": schedule}
++
++
++@app.put("/api/mobile/schedules/{schedule_id}")
++@limiter.limit(lambda: get_settings().rate_limit_api)
++async def api_mobile_update_schedule(
++    request: Request,
++    schedule_id: str,
++    payload: MobileScheduleWriteRequest,
++    mobile_user: dict = Depends(require_mobile_leader),
++):
++    """Leader-only mobile schedule update endpoint."""
++    schedule = mobile_schedule_records.get(schedule_id)
++    if not schedule:
++        raise HTTPException(status_code=404, detail="Schedule not found")
++
++    ranger_id, work_day, note = _validate_mobile_schedule_write_payload(payload)
++    updated_at = _utcnow().isoformat()
++    if not schedule.get("created_at"):
++        schedule["created_at"] = updated_at
++
++    schedule.update(
++        {
++            "ranger_id": ranger_id,
++            "work_date": work_day.isoformat(),
++            "note": note,
++            "updated_by": mobile_user["username"],
++            "updated_at": updated_at,
++        }
++    )
++    return {"ok": True, "schedule": schedule}
++
++
++@app.get("/logout")
++async def logout(request: Request):
++    token = request.cookies.get("session_token")
++    if token and token in sessions:
++        del sessions[token]
++    resp = RedirectResponse("/login", status_code=302)
++    resp.delete_cookie("session_token")
++    return resp
++
++
++@app.get("/", response_class=HTMLResponse)
++async def dashboard(request: Request):
++    user = get_current_user(request)
++    if not user:
++        return RedirectResponse("/login", status_code=302)
++    return templates.TemplateResponse("index.html", {"request": request, "user": user})
++
++
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++# ROUTES ΓÇö Data API (for dashboard + NFC app)
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++
++@app.get("/api/trees")
++@limiter.limit(lambda: get_settings().rate_limit_api)
++async def api_trees(request: Request):
++    """All trees with stats. Used by dashboard and NFC app."""
++    user = get_current_user(request)
++    if not user:
++        raise HTTPException(status_code=401, detail="Unauthorized")
++
++    records = get_all_trees()
++    rows = [db_row_to_dashboard(r) for r in records]
++
++    # Region-based filtering: non-admin users see only their region
++    user_region = user.get("region") if user else None
++    if user_region and user.get("role") != "admin":
++        rows = [r for r in rows if r.get("region") == user_region]
++
++    stats = compute_stats(rows)
++    alerts = compute_alerts(rows)
++    analytics = compute_analytics(rows)
++    return {"trees": rows, "stats": stats, "alerts": alerts, "analytics": analytics}
++
++
++@app.get("/api/trees/{tree_id}")
++@limiter.limit(lambda: get_settings().rate_limit_api)
++async def api_tree_detail(request: Request, tree_id: str, user: dict = Depends(require_auth)):
++    """Get a single tree. Used by NFC app after scanning."""
++    tree = get_tree_by_id(tree_id)
++    if not tree:
++        raise HTTPException(status_code=404, detail="Tree not found")
++    return {"tree": db_row_to_dashboard(tree)}
++
++
++@app.get("/api/nfc/{nfc_uid}")
++@limiter.limit(lambda: get_settings().rate_limit_api)
++async def api_nfc_lookup(request: Request, nfc_uid: str, user: dict = Depends(require_auth)):
++    """Look up a tree by NFC card UID."""
++    tree = get_tree_by_nfc(nfc_uid)
++    if not tree:
++        raise HTTPException(status_code=404, detail="NFC card not linked to any tree")
++    return {"tree": db_row_to_dashboard(tree)}
++
++
++@app.post("/api/nfc/link")
++@limiter.limit(lambda: get_settings().rate_limit_api)
++async def api_nfc_link(request: Request, user: dict = Depends(require_auth)):
++    """Link an NFC card to a tree."""
++    body = await request.json()
++    nfc_uid = body.get("nfc_uid")
++    tree_id = body.get("tree_id")
++    if not nfc_uid or not tree_id:
++        raise HTTPException(status_code=400, detail="nfc_uid and tree_id required")
++    result = link_nfc_to_tree(nfc_uid, tree_id, assigned_by=user["username"])
++    return {"ok": True, "data": result}
++
++
++@app.post("/api/sync")
++@limiter.limit(lambda: get_settings().rate_limit_sync)
++async def api_trigger_sync(request: Request, user: dict = Depends(require_auth)):
++    """Manually trigger an ER ΓåÆ Supabase sync cycle."""
++    if user.get("role") != "admin":
++        raise HTTPException(status_code=403, detail="Admin only")
++    log.info("Manual sync triggered by '%s'", user["username"])
++    result = run_sync_cycle()
++    return result
++
++
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++# ROUTES ΓÇö Webhooks
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++
++def _verify_signature(payload: bytes, signature: str | None) -> bool:
++    s = get_settings()
++    if not s.webhook_secret:
++        # Development mode may skip signature checks.
++        # Production mode must always enforce signature verification.
++        return not s.is_production
++    if not signature:
++        return False
++    expected = hmac.new(
++        s.webhook_secret.encode(), payload, hashlib.sha256
++    ).hexdigest()
++    return hmac.compare_digest(f"sha256={expected}", signature)
++
++
++@app.post("/webhook/earthranger")
++async def webhook_earthranger(
++    request: Request,
++    x_hub_signature_256: Optional[str] = Header(None),
++):
++    """Receive ER webhook events ΓåÆ filter ΓåÆ forward to Zalo."""
++    body = await request.body()
++
++    if not _verify_signature(body, x_hub_signature_256):
++        raise HTTPException(status_code=401, detail="Invalid signature")
++
++    try:
++        payload = json.loads(body)
++    except json.JSONDecodeError:
++        raise HTTPException(status_code=400, detail="Invalid JSON")
++
++    log.info(
++        "Webhook: action=%s type=%s",
++        payload.get("action", "?"),
++        payload.get("event", {}).get("event_type", "?"),
++    )
++
++    event = payload.get("event") or payload
++
++    if not should_notify(event):
++        return JSONResponse({"status": "filtered"})
++
++    message = format_er_alert(event)
++    sent = send_to_zalo_group(message)
++    return JSONResponse({"status": "sent" if sent else "send_failed"})
++
++
++@app.post("/webhook/camera")
++async def webhook_camera(request: Request):
++    """Receive camera detection alerts ΓåÆ forward to Zalo."""
++    try:
++        data = await request.json()
++    except Exception:
++        raise HTTPException(status_code=400, detail="Invalid JSON")
++
++    camera_id = data.get("camera_id")
++    if camera_id is None:
++        raise HTTPException(status_code=400, detail="camera_id required")
++
++    message = format_camera_alert(
++        camera_id=camera_id,
++        object_class=data.get("object_class", "unknown"),
++        direction=data.get("direction"),
++        image_url=data.get("image_url"),
++    )
++    sent = send_to_zalo_group(message)
++    return JSONResponse({"status": "sent" if sent else "send_failed"})
++
++
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++# HEALTH
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++
++@app.get("/health")
++async def health():
++    s = get_settings()
++    return {
++        "status": "healthy",
++        "timestamp": datetime.now(timezone.utc).isoformat(),
++        "version": s.app_version,
++    }
++
++
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++# ROUTES ΓÇö User management (admin only)
++# ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++
++@app.get("/api/users")
++async def api_list_users(request: Request, user: dict = Depends(require_auth)):
++    """List all users (admin only). Passwords are excluded."""
++    if user.get("role") != "admin":
++        raise HTTPException(status_code=403, detail="Admin only")
++    users = _load_users()
++    return {
++        "users": [
++            {
++                "username": uname,
++                "role": udata.get("role", "viewer"),
++                "display_name": udata.get("display_name", uname),
++            }
++            for uname, udata in users.items()
++        ]
++    }
++
++
++@app.post("/api/users")
++async def api_create_user(request: Request, user: dict = Depends(require_auth)):
++    """Create a new user (admin only)."""
++    if user.get("role") != "admin":
++        raise HTTPException(status_code=403, detail="Admin only")
++    body = await request.json()
++    username = body.get("username", "").strip().lower()
++    password = body.get("password", "")
++    display_name = body.get("display_name", "").strip()
++    role = body.get("role", "viewer")
++    if not username or not password:
++        raise HTTPException(status_code=400, detail="username and password required")
++    if len(username) < 3:
++        raise HTTPException(status_code=400, detail="Username must be at least 3 characters")
++    if len(password) < 6:
++        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
++    if role not in ("admin", "viewer"):
++        raise HTTPException(status_code=400, detail="Role must be 'admin' or 'viewer'")
++    users = _load_users()
++    if username in users:
++        raise HTTPException(status_code=409, detail="User already exists")
++    users[username] = {
++        "password": _hash_pw(password),
++        "role": role,
++        "display_name": display_name or username,
++    }
++    _save_users(users)
++    log.info("User '%s' created by '%s'", username, user["username"])
++    return {"ok": True, "username": username}
++
++
++@app.delete("/api/users/{username}")
++async def api_delete_user(request: Request, username: str, user: dict = Depends(require_auth)):
++    """Delete a user (admin only). Cannot delete yourself."""
++    if user.get("role") != "admin":
++        raise HTTPException(status_code=403, detail="Admin only")
++    if username == user["username"]:
++        raise HTTPException(status_code=400, detail="Cannot delete your own account")
++    users = _load_users()
++    if username not in users:
++        raise HTTPException(status_code=404, detail="User not found")
++    del users[username]
++    _save_users(users)
++    # Remove active sessions for deleted user
++    to_remove = [t for t, s in sessions.items() if s["username"] == username]
++    for t in to_remove:
++        del sessions[t]
++
++    refresh_to_remove = [t for t, s in mobile_refresh_sessions.items() if s["username"] == username]
++    for t in refresh_to_remove:
++        del mobile_refresh_sessions[t]
++
++    access_to_remove = [t for t, s in mobile_access_sessions.items() if s["username"] == username]
++    for t in access_to_remove:
++        del mobile_access_sessions[t]
++
++    log.info("User '%s' deleted by '%s'", username, user["username"])
++    return {"ok": True}
+diff --git a/app/tests/test_mobile_schedules.py b/app/tests/test_mobile_schedules.py
+new file mode 100644
+index 0000000..82d2d6c
+--- /dev/null
++++ b/app/tests/test_mobile_schedules.py
+@@ -0,0 +1,295 @@
++"""Regression tests for Story 3.3 mobile schedules read/write endpoints."""
++
++from datetime import datetime
++import json
++from pathlib import Path
++from tempfile import TemporaryDirectory
++import unittest
++from unittest.mock import patch
++
++from fastapi.testclient import TestClient
++
++from src import server
++
++
++class MobileScheduleTests(unittest.TestCase):
++    def setUp(self):
++        self.temp_dir = TemporaryDirectory()
++        self.addCleanup(self.temp_dir.cleanup)
++        self.users_file = Path(self.temp_dir.name) / "users.json"
++
++        users = {
++            "leaderuser": {
++                "password": server._hash_pw("strong-password-123"),
++                "role": "admin",
++                "display_name": "Leader User",
++            },
++            "rangeruser": {
++                "password": server._hash_pw("safe-ranger-password"),
++                "role": "viewer",
++                "display_name": "Ranger User",
++            },
++            "otherranger": {
++                "password": server._hash_pw("another-ranger-password"),
++                "role": "viewer",
++                "display_name": "Other Ranger",
++            },
++        }
++        self.users_file.write_text(json.dumps(users, ensure_ascii=False, indent=2), encoding="utf-8")
++
++        self.users_patch = patch("src.server.USERS_FILE", str(self.users_file))
++        self.run_loop_patch = patch("src.server.run_loop", lambda: None)
++        self.users_patch.start()
++        self.run_loop_patch.start()
++        self.addCleanup(self.users_patch.stop)
++        self.addCleanup(self.run_loop_patch.stop)
++
++        self.settings = server.get_settings()
++        self.original_rate_limit_login = self.settings.rate_limit_login
++        self.original_rate_limit_api = self.settings.rate_limit_api
++        self.settings.rate_limit_login = "1000/minute"
++        self.settings.rate_limit_api = "1000/minute"
++        self.addCleanup(self._restore_rate_limits)
++
++        server.sessions.clear()
++        server.mobile_access_sessions.clear()
++        server.mobile_refresh_sessions.clear()
++        server.mobile_schedule_records.clear()
++        server.mobile_work_summary_records.clear()
++        server.mobile_daily_checkins.clear()
++        server.mobile_incident_records.clear()
++        server.mobile_schedule_sequence = 0
++        self.addCleanup(server.sessions.clear)
++        self.addCleanup(server.mobile_access_sessions.clear)
++        self.addCleanup(server.mobile_refresh_sessions.clear)
++        self.addCleanup(server.mobile_schedule_records.clear)
++        self.addCleanup(server.mobile_work_summary_records.clear)
++        self.addCleanup(server.mobile_daily_checkins.clear)
++        self.addCleanup(server.mobile_incident_records.clear)
++        self.addCleanup(self._reset_schedule_sequence)
++
++        self.client = TestClient(server.app)
++        self.addCleanup(self.client.close)
++
++        server.mobile_schedule_records.update(
++            {
++                "seed-1": {
++                    "schedule_id": "seed-1",
++                    "ranger_id": "rangeruser",
++                    "work_date": "2026-03-19",
++                    "note": "Morning route",
++                    "updated_by": "leaderuser",
++                    "created_at": "2026-03-18T10:00:00+00:00",
++                    "updated_at": "2026-03-18T10:00:00+00:00",
++                },
++                "seed-2": {
++                    "schedule_id": "seed-2",
++                    "ranger_id": "rangeruser",
++                    "work_date": "2026-03-21",
++                    "note": "Night route",
++                    "updated_by": "leaderuser",
++                    "created_at": "2026-03-20T10:00:00+00:00",
++                    "updated_at": "2026-03-20T10:00:00+00:00",
++                },
++                "seed-3": {
++                    "schedule_id": "seed-3",
++                    "ranger_id": "otherranger",
++                    "work_date": "2026-03-20",
++                    "note": "Bridge watch",
++                    "updated_by": "leaderuser",
++                    "created_at": "2026-03-19T10:00:00+00:00",
++                    "updated_at": "2026-03-19T10:00:00+00:00",
++                },
++                "seed-4": {
++                    "schedule_id": "seed-4",
++                    "ranger_id": "otherranger",
++                    "work_date": "2026-03-22",
++                    "note": "Camera sweep",
++                    "updated_by": "leaderuser",
++                    "created_at": "2026-03-21T10:00:00+00:00",
++                    "updated_at": "2026-03-21T10:00:00+00:00",
++                },
++            }
++        )
++
++    def _restore_rate_limits(self):
++        self.settings.rate_limit_login = self.original_rate_limit_login
++        self.settings.rate_limit_api = self.original_rate_limit_api
++
++    def _reset_schedule_sequence(self):
++        server.mobile_schedule_sequence = 0
++
++    def _login_headers(self, username: str, password: str) -> dict:
++        response = self.client.post(
++            "/api/mobile/auth/login",
++            json={"username": username, "password": password},
++        )
++        self.assertEqual(200, response.status_code)
++        token = response.json()["access_token"]
++        return {"Authorization": f"Bearer {token}"}
++
++    def _assert_iso_datetime(self, value: str):
++        self.assertIsInstance(value, str)
++        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
++        self.assertIsNotNone(parsed)
++
++    def test_ranger_self_scope_and_cross_ranger_denial(self):
++        headers = self._login_headers("rangeruser", "safe-ranger-password")
++
++        denied = self.client.get(
++            "/api/mobile/schedules",
++            params={"ranger_id": "otherranger"},
++            headers=headers,
++        )
++        self.assertEqual(403, denied.status_code)
++        self.assertEqual({"detail": "Ranger scope violation"}, denied.json())
++
++        allowed = self.client.get("/api/mobile/schedules", headers=headers)
++        self.assertEqual(200, allowed.status_code)
++        payload = allowed.json()
++
++        self.assertEqual("ranger", payload["scope"]["role"])
++        self.assertFalse(payload["scope"]["team_scope"])
++        self.assertEqual("rangeruser", payload["scope"]["effective_ranger_id"])
++        self.assertEqual(2, len(payload["items"]))
++        self.assertTrue(all(item["ranger_id"] == "rangeruser" for item in payload["items"]))
++
++    def test_leader_team_scope_ranger_filter_and_date_filters(self):
++        headers = self._login_headers("leaderuser", "strong-password-123")
++
++        team_scope = self.client.get("/api/mobile/schedules", headers=headers)
++        self.assertEqual(200, team_scope.status_code)
++        team_payload = team_scope.json()
++
++        self.assertEqual("leader", team_payload["scope"]["role"])
++        self.assertTrue(team_payload["scope"]["team_scope"])
++        self.assertIsNone(team_payload["scope"]["effective_ranger_id"])
++        self.assertEqual(4, len(team_payload["items"]))
++
++        filtered = self.client.get(
++            "/api/mobile/schedules",
++            params={"ranger_id": "otherranger"},
++            headers=headers,
++        )
++        self.assertEqual(200, filtered.status_code)
++        filtered_payload = filtered.json()
++
++        self.assertFalse(filtered_payload["scope"]["team_scope"])
++        self.assertEqual("otherranger", filtered_payload["scope"]["effective_ranger_id"])
++        self.assertEqual(2, len(filtered_payload["items"]))
++        self.assertTrue(all(item["ranger_id"] == "otherranger" for item in filtered_payload["items"]))
++
++        ranged = self.client.get(
++            "/api/mobile/schedules",
++            params={"from": "2026-03-20", "to": "2026-03-21"},
++            headers=headers,
++        )
++        self.assertEqual(200, ranged.status_code)
++        ranged_payload = ranged.json()
++
++        self.assertEqual("2026-03-20", ranged_payload["filters"]["from"])
++        self.assertEqual("2026-03-21", ranged_payload["filters"]["to"])
++        self.assertEqual(2, len(ranged_payload["items"]))
++        self.assertTrue(all("2026-03-20" <= item["work_date"] <= "2026-03-21" for item in ranged_payload["items"]))
++
++    def test_schedule_read_invalid_date_range_returns_400(self):
++        headers = self._login_headers("leaderuser", "strong-password-123")
++
++        response = self.client.get(
++            "/api/mobile/schedules",
++            params={"from": "2026-03-22", "to": "2026-03-20"},
++            headers=headers,
++        )
++
++        self.assertEqual(400, response.status_code)
++        self.assertEqual({"detail": "Invalid date range: from must be <= to"}, response.json())
++
++    def test_leader_write_validation_and_audit_fields(self):
++        headers = self._login_headers("leaderuser", "strong-password-123")
++
++        missing_required = self.client.post(
++            "/api/mobile/schedules",
++            headers=headers,
++            json={"ranger_id": "", "work_date": "2026-03-25", "note": "test"},
++        )
++        self.assertEqual(400, missing_required.status_code)
++        self.assertEqual({"detail": "ranger_id and work_date required"}, missing_required.json())
++
++        invalid_date = self.client.post(
++            "/api/mobile/schedules",
++            headers=headers,
++            json={"ranger_id": "rangeruser", "work_date": "2026/03/25", "note": "test"},
++        )
++        self.assertEqual(400, invalid_date.status_code)
++        self.assertIn("Invalid date format", invalid_date.json()["detail"])
++
++        created = self.client.post(
++            "/api/mobile/schedules",
++            headers=headers,
++            json={"ranger_id": "rangeruser", "work_date": "2026-03-25", "note": " night patrol "},
++        )
++        self.assertEqual(200, created.status_code)
++        created_payload = created.json()
++
++        self.assertTrue(created_payload["ok"])
++        schedule = created_payload["schedule"]
++        self.assertEqual("rangeruser", schedule["ranger_id"])
++        self.assertEqual("2026-03-25", schedule["work_date"])
++        self.assertEqual("night patrol", schedule["note"])
++        self.assertEqual("leaderuser", schedule["updated_by"])
++        self._assert_iso_datetime(schedule["created_at"])
++        self._assert_iso_datetime(schedule["updated_at"])
++        self.assertIn(schedule["schedule_id"], server.mobile_schedule_records)
++
++        updated = self.client.put(
++            f"/api/mobile/schedules/{schedule['schedule_id']}",
++            headers=headers,
++            json={"ranger_id": "otherranger", "work_date": "2026-03-26", "note": "updated route"},
++        )
++        self.assertEqual(200, updated.status_code)
++        updated_payload = updated.json()["schedule"]
++
++        self.assertEqual("otherranger", updated_payload["ranger_id"])
++        self.assertEqual("2026-03-26", updated_payload["work_date"])
++        self.assertEqual("updated route", updated_payload["note"])
++        self.assertEqual("leaderuser", updated_payload["updated_by"])
++        self._assert_iso_datetime(updated_payload["updated_at"])
++
++        missing_schedule = self.client.put(
++            "/api/mobile/schedules/does-not-exist",
++            headers=headers,
++            json={"ranger_id": "rangeruser", "work_date": "2026-03-26", "note": "updated route"},
++        )
++        self.assertEqual(404, missing_schedule.status_code)
++        self.assertEqual({"detail": "Schedule not found"}, missing_schedule.json())
++
++        invalid_update = self.client.put(
++            f"/api/mobile/schedules/{schedule['schedule_id']}",
++            headers=headers,
++            json={"ranger_id": "rangeruser", "work_date": "26-03-2026", "note": "bad"},
++        )
++        self.assertEqual(400, invalid_update.status_code)
++        self.assertIn("Invalid date format", invalid_update.json()["detail"])
++
++    def test_non_leader_schedule_writes_are_denied(self):
++        headers = self._login_headers("rangeruser", "safe-ranger-password")
++
++        create_response = self.client.post(
++            "/api/mobile/schedules",
++            headers=headers,
++            json={"ranger_id": "rangeruser", "work_date": "2026-03-25", "note": "attempt"},
++        )
++        self.assertEqual(403, create_response.status_code)
++        self.assertEqual({"detail": "Leader role required"}, create_response.json())
++
++        update_response = self.client.put(
++            "/api/mobile/schedules/seed-1",
++            headers=headers,
++            json={"ranger_id": "rangeruser", "work_date": "2026-03-26", "note": "attempt"},
++        )
++        self.assertEqual(403, update_response.status_code)
++        self.assertEqual({"detail": "Leader role required"}, update_response.json())
++
++
++if __name__ == "__main__":
++    unittest.main()

@@ -1,0 +1,2824 @@
+{
+  "generated_at": "2026-03-26T06:25:27.482025+00:00",
+  "source": {
+    "domain": "epictech.pamdas.org",
+    "api_versions": [
+      "v1.0",
+      "v2.0"
+    ]
+  },
+  "event_types": {
+    "v1": {
+      "count": 32,
+      "items": [
+        {
+          "id": "65163f2e-cd6c-42bd-912c-9950b17a3275",
+          "has_events_assigned": true,
+          "icon": "",
+          "value": "accident_rep",
+          "display": "Tai nạn",
+          "ordernum": 9.0,
+          "is_collection": false,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "accident_rep",
+          "is_active": true,
+          "schema": "{\r\n    \"schema\": \r\n    {\r\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n        \"title\": \"EventType Test Data\",\r\n      \r\n        \"type\": \"object\",\r\n\r\n        \"properties\": \r\n        {\r\n        \"type_accident\": {\r\n            \"type\": \"string\",\r\n            \"title\": \"Loại tai nạn \"\r\n        },\r\n        \"number_people_involved\": {\r\n            \"type\": \"number\",\r\n            \"title\": \"Bao nhiêu người liên quan?\",\r\n            \"minimum\":0\r\n        },\r\n        \"animals_involved\": {\r\n            \"type\": \"string\",\r\n            \"title\": \"Những bên liên quan khác\"\r\n        }\r\n    }\r\n  },\r\n  \"definition\": [\r\n    {\r\n        \"key\":     \"type_accident\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":     \"number_people_involved\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":     \"animals_involved\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n  ]\r\n}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/65163f2e-cd6c-42bd-912c-9950b17a3275",
+          "_schema_field_count": 3,
+          "_schema_fields": [
+            "animals_involved",
+            "number_people_involved",
+            "type_accident"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "2a7fc8bb-4ccf-41d1-a17f-21c970f2ee10",
+          "has_events_assigned": true,
+          "icon": "",
+          "value": "activity_rep",
+          "display": "Hoạt động khả nghi",
+          "ordernum": 3.0,
+          "is_collection": false,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "activity_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Hoạt động khả nghi (activity_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"activityrep_whatseen\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Mô tả hoạt động khả nghi\"\r\n            },\r\n            \"activityrep_bearing\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Góc phương vị (0-360)\",\r\n                \"minimum\": 0,\r\n                \"maximum\": 360\r\n            },\r\n            \"activityrep_distance\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Khoảng cách (m)\",\r\n                \"minimum\": 0\r\n            },            \r\n            \"activityrep_patrolresponse\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Hành động dự định\"\r\n            }                \r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\":    \"activityrep_whatseen\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"activityrep_bearing\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"activityrep_distance\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"activityrep_patrolresponse\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n ]\r\n}",
+          "default_priority": 200,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/2a7fc8bb-4ccf-41d1-a17f-21c970f2ee10",
+          "_schema_field_count": 4,
+          "_schema_fields": [
+            "activityrep_bearing",
+            "activityrep_distance",
+            "activityrep_patrolresponse",
+            "activityrep_whatseen"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "1b06fac2-6a0c-4390-b1e5-f6cfccf963dc",
+          "has_events_assigned": true,
+          "icon": "",
+          "value": "arrest_rep",
+          "display": "Bắt giữ",
+          "ordernum": 7.0,
+          "is_collection": false,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "arrest_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Báo cáo bắt giữ (arrest_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"arrestrep_name\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Tên người bị giữ\"\r\n            },   \r\n            \"arrestrep_age\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Tuổi\",\r\n                \"minimum\": 0\r\n            },                      \r\n            \"arrestrep_dateofbirth\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Ngày sinh\"\r\n            },              \r\n            \"arrestrep_villagename\":{\r\n                \"type\": \"string\",\r\n                \"title\": \"Địa chỉ\"\r\n            },\r\n            \"arrestrep_nationality\":{\r\n                \"type\": \"string\",\r\n                \"title\": \"Quốc tịch\",\r\n               \"enum\": {{enum___arrestrep_nationality___values}},\r\n               \"enumNames\": {{enum___arrestrep_nationality___names}}   \r\n            },\r\n            \"arrestrep_reaonforarrest\":{\r\n                \"type\": \"string\",\r\n                \"title\": \"Nguyên nhân bị giữ\",\r\n               \"enum\": {{enum___arrestrep_reasonforarrest___values}},\r\n               \"enumNames\": {{enum___arrestrep_reasonforarrest___names}}                  \r\n            },\r\n            \"arrestrep_timeofarrest\":{\r\n                \"type\": \"string\",\r\n                \"title\": \"Thời gian bắt \"\r\n            },\r\n            \"arrestrep_placeofarrest\":{\r\n                \"type\": \"string\",\r\n                \"title\": \"Nơi bị giữ lại\"\r\n            },\r\n            \"arrestrep_arrestingranger\":{\r\n                \"type\": \"string\",\r\n                \"title\": \"Cán bộ bắt giữ\"\r\n            },\r\n            \"arrestrep_witness\":{\r\n                \"type\": \"string\",\r\n                \"title\": \"Nhân chứng\"\r\n            }\r\n\r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\":    \"arrestrep_name\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"arrestrep_age\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\": \"arrestrep_dateofbirth\",\r\n        \"fieldHtmlClass\": \"date-time-picker json-schema\",\r\n        \"readonly\": false,\r\n        \"htmlClass\": \"col-lg-6\"\r\n    },\r\n    {\r\n        \"key\":    \"arrestrep_villagename\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"arrestrep_nationality\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"arrestrep_reaonforarrest\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\": \"arrestrep_timeofarrest\",\r\n        \"fieldHtmlClass\": \"date-time-picker json-schema\",\r\n        \"readonly\": false,\r\n        \"htmlClass\": \"col-lg-6\"\r\n    },\r\n    {\r\n        \"key\":    \"arrestrep_placeofarrest\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    \r\n    {\r\n        \"key\":    \"arrestrep_arrestingranger\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"arrestrep_witness\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n ]\r\n}",
+          "default_priority": 300,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/1b06fac2-6a0c-4390-b1e5-f6cfccf963dc",
+          "_schema_field_count": 10,
+          "_schema_fields": [
+            "arrestrep_age",
+            "arrestrep_arrestingranger",
+            "arrestrep_dateofbirth",
+            "arrestrep_name",
+            "arrestrep_nationality",
+            "arrestrep_placeofarrest",
+            "arrestrep_reaonforarrest",
+            "arrestrep_timeofarrest",
+            "arrestrep_villagename",
+            "arrestrep_witness"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        },
+        {
+          "id": "83273bbf-b9cf-4138-a599-d2ec5c2717ed",
+          "has_events_assigned": false,
+          "icon": "",
+          "value": "confiscation_rep",
+          "display": "Tạm giữ tang vật",
+          "ordernum": 8.0,
+          "is_collection": false,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "confiscation_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Báo cáo tạm giữ tang vật (confiscation_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"confiscationrep_itemsconfiscated\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Tang vật bị tạm giữ\",\r\n                \"enum\": {{enum___confiscationrep_itemsconfiscated___values}},\r\n                \"enumNames\": {{enum___confiscationrep_itemsconfiscated___names}} \r\n            },\r\n            \"confiscationrep_numberofitems\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Số lượng\",\r\n                \"minimum\": 0\r\n            },\r\n            \"confiscationrep_weightofitems\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Trọng lượng (nếu có)\"\r\n            },\r\n            \"confiscationrep_details\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Chi tiết\"\r\n            }                   \r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\":    \"confiscationrep_itemsconfiscated\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"confiscationrep_numberofitems\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"confiscationrep_weightofitems\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    },\r\n    {\r\n        \"key\":    \"confiscationrep_details\",\r\n        \"type\":   \"textarea\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }    \r\n ]\r\n}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/83273bbf-b9cf-4138-a599-d2ec5c2717ed",
+          "_schema_field_count": 4,
+          "_schema_fields": [
+            "confiscationrep_details",
+            "confiscationrep_itemsconfiscated",
+            "confiscationrep_numberofitems",
+            "confiscationrep_weightofitems"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        },
+        {
+          "id": "516faabd-983b-49a4-8c5a-ea851215b3c3",
+          "has_events_assigned": false,
+          "icon": "",
+          "value": "contact_rep",
+          "display": "Xung đột",
+          "ordernum": 27.0,
+          "is_collection": false,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "contact_rep",
+          "is_active": true,
+          "schema": "{\r\n    \"schema\": \r\n    {\r\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n        \"title\": \"Báo cáo xung đột (contact_rep)\",\r\n      \r\n        \"type\": \"object\",\r\n\r\n        \"properties\": \r\n        {\r\n            \"contactrep_poachinggroupsize\": {\r\n                \"type\":\"number\",\r\n                \"title\": \"Có bao nhiêu người xâm phạm?\",\r\n                \"minimum\": 0\r\n            },\r\n            \"contactrep_whoinitiatedcontact\": {\r\n                \"type\":\"string\",\r\n                \"title\": \"Ai là người xung đột trước?\", \r\n                \"enum\": {{enum___contactrep_whoinitiatedcontact___values}},\r\n                \"enumNames\": {{enum___contactrep_whoinitiatedcontact___names}}                  \r\n            },\r\n            \"contactrep_patrolactivity\": {\r\n                \"type\":\"string\",\r\n                \"title\": \"Mô tả sự vụ xảy ra\",\r\n                \"enum\": {{enum___contactrep_patrolactivity___values}},\r\n                \"enumNames\": {{enum___contactrep_patrolactivity___names}}                  \r\n            },\r\n            \"contactrep_rangerresponse\": {\r\n                \"type\":\"string\",\r\n                \"title\": \"Mô tả biện pháp xử lý đã tiến hành\"\r\n            },             \r\n            \"contactrep_rangercasualties\": {\r\n                \"type\":\"number\",\r\n                \"title\": \"Thương vong nhân viên\"\r\n            },\r\n            \"contactrep_oppositioncasualties\": {\r\n                \"type\":\"number\",\r\n                \"title\": \"Thương vong của đối phương\"\r\n            }, \r\n            \"contactrep_arrests\": {\r\n                \"type\":\"number\",\r\n                \"title\": \"Bắt giữ\"\r\n            }, \r\n            \"contactrep_seizedweapons\": {\r\n                \"type\":\"string\",\r\n                \"title\": \"Tang vật của vụ việc\"\r\n            },\r\n            \"contactrep_ammunitionusedbypatrol\": {\r\n                \"type\":\"number\",\r\n                \"title\": \"Có vũ khí được sử dụng không?\"\r\n            }            \r\n        }\r\n    },\r\n  \"definition\": [\r\n    {\r\n        \"key\":     \"contactrep_poachinggroupsize\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":     \"contactrep_whoinitiatedcontact\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":     \"contactrep_patrolactivity\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":     \"contactrep_rangerresponse\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":     \"contactrep_rangercasualties\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":     \"contactrep_oppositioncasualties\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":     \"contactrep_arrests\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":     \"contactrep_seizedweapons\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":     \"contactrep_ammunitionusedbypatrol\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n  ]\r\n}",
+          "default_priority": 300,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/516faabd-983b-49a4-8c5a-ea851215b3c3",
+          "_schema_field_count": 9,
+          "_schema_fields": [
+            "contactrep_ammunitionusedbypatrol",
+            "contactrep_arrests",
+            "contactrep_oppositioncasualties",
+            "contactrep_patrolactivity",
+            "contactrep_poachinggroupsize",
+            "contactrep_rangercasualties",
+            "contactrep_rangerresponse",
+            "contactrep_seizedweapons",
+            "contactrep_whoinitiatedcontact"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        },
+        {
+          "id": "9bcc89d8-8210-4772-9e95-ef2754d5d577",
+          "has_events_assigned": true,
+          "icon": "",
+          "value": "fire_rep",
+          "display": "Cháy rừng",
+          "ordernum": 10.0,
+          "is_collection": false,
+          "category": {
+            "id": "1da9a802-8a42-473d-92c4-75a72c355c8d",
+            "value": "monitoring",
+            "display": "Giám sát",
+            "is_active": true,
+            "ordernum": 5.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "fire_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Cháy rừng (fire_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"firerep_status\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Tình trạng\",\r\n               \"enum\": {{enum___firerep_status___values}},\r\n               \"enumNames\": {{enum___firerep_status___names}}   \r\n            },           \r\n            \"firerep_cause\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Nguyên nhân\",\r\n               \"enum\": {{enum___firerep_cause___values}},\r\n               \"enumNames\": {{enum___firerep_cause___names}}   \r\n            },           \r\n            \"firerep_direction\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Hướng di chuyển của lửa\",\r\n               \"enum\": {{enum___firerep_direction___values}},\r\n               \"enumNames\": {{enum___firerep_direction___names}}   \r\n            }\r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\":    \"firerep_status\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"firerep_cause\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":     \"firerep_direction\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n ]\r\n}",
+          "default_priority": 200,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/9bcc89d8-8210-4772-9e95-ef2754d5d577",
+          "_schema_field_count": 3,
+          "_schema_fields": [
+            "firerep_cause",
+            "firerep_direction",
+            "firerep_status"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        },
+        {
+          "id": "c356f398-0261-4a4d-9a98-7ffe1b569d0f",
+          "has_events_assigned": true,
+          "icon": "firms_rep",
+          "value": "firms_rep",
+          "display": "FIRMS Report",
+          "ordernum": 0.125,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "firms_rep",
+          "is_active": true,
+          "schema": "{\r\n    \"schema\": \r\n    {\r\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n        \"title\": \"FIRMS Fire Report Schema\",\r\n      \r\n        \"type\": \"object\",\r\n\r\n        \"properties\": \r\n        {\r\n        \"bright_ti4\": {\r\n            \"type\": \"number\",\r\n            \"title\": \"VIIRS I-4 channel brightness (Kelvin)\"\r\n        },\r\n        \"bright_ti5\": {\r\n            \"type\": \"number\",\r\n            \"title\": \"VIIRS I-5 channel brightness (Kelvin)\"\r\n        },\r\n        \"scan\": {\r\n            \"type\": \"number\",\r\n            \"title\": \"VIIRS Scan\"\r\n        },\r\n        \"track\": {\r\n            \"type\": \"number\",\r\n            \"title\": \"Satellite Track\"\r\n        },\r\n        \"confidence\": {\r\n            \"type\": \"string\",\r\n            \"title\": \"FIRMS Confidence\"\r\n        },\r\n        \"frp\": {\r\n            \"type\": \"number\",\r\n            \"title\": \"Fire Radiative Power (MW)\"\r\n        }\r\n    }\r\n  },\r\n  \"definition\": [\r\n    \"confidence\",\r\n    \"frp\",\r\n    \"bright_ti4\",\r\n    \"bright_ti5\",\r\n    \"scan\",\r\n    \"track\"\r\n  ]\r\n}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/c356f398-0261-4a4d-9a98-7ffe1b569d0f",
+          "_schema_field_count": 6,
+          "_schema_fields": [
+            "bright_ti4",
+            "bright_ti5",
+            "confidence",
+            "frp",
+            "scan",
+            "track"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "f36ac64a-599e-4abb-a9b6-8aec2674bcf8",
+          "has_events_assigned": false,
+          "icon": null,
+          "value": "geofence_break",
+          "display": "Geofence Break",
+          "ordernum": 41.0,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "geofence_break",
+          "is_active": true,
+          "schema": "\n{\n    \"schema\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"title\": \"EventType Geofencing\",\n        \"type\": \"object\",\n        \"readonly\": true,\n        \"properties\": {\n            \"name\": {\n                \"title\": \"Name of subject\",\n                \"type\": \"string\"\n            },\n            \"total_fix_count\": {\n                \"title\": \"Total Fix Count\",\n                \"type\": \"number\"\n            },\n            \"subject_heading\": {\n                \"title\": \"Subject Heading\",\n                \"type\": \"number\"\n            },\n            \"contain_regions\": {\n                \"title\": \"Current Region\",\n                \"type\": \"string\"\n            },\n            \"details\": {\n                \"title\": \"Details\",\n                \"type\": \"string\"\n            },\n            \"subject_speed_kmhr\": {\n                \"title\": \"Subject Speed\",\n                \"type\": \"number\"\n            },\n            \"geofence_name\": {\n                \"title\": \"Geofence Name\",\n                \"type\": \"string\"\n            },\n            \"feature_group_name\": {\n                \"title\": \"Geofence Feature Group\",\n                \"type\": \"string\"\n            }\n        },\n        \"definition\": [\n            \"name\",\n            \"details\",\n            \"geofence_name\",\n            \"feature_group_name\",\n            \"contain_regions\",\n            \"subject_speed_kmhr\",\n            \"subject_heading\",\n            \"total_fix_count\"\n        ]\n    }\n}\n    ",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/f36ac64a-599e-4abb-a9b6-8aec2674bcf8",
+          "readonly": true,
+          "_schema_field_count": 8,
+          "_schema_fields": [
+            "contain_regions",
+            "details",
+            "feature_group_name",
+            "geofence_name",
+            "name",
+            "subject_heading",
+            "subject_speed_kmhr",
+            "total_fix_count"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "41b4b408-4dc3-4503-845f-3a1d834b876c",
+          "has_events_assigned": false,
+          "icon": "fire_rep",
+          "value": "gfw_activefire_alert",
+          "display": "Active Fire Alert (GFW)",
+          "ordernum": 23.0,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "fire_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\":{\r\n      \"$schema\":\"http://json-schema.org/draft-04/schema#\",\r\n      \"title\":\"Event Type Global Forest Watch Active Fire Alert\",\r\n      \"type\":\"object\",\r\n      \"properties\":{\r\n         \"subscription_name\":{\r\n            \"type\":\"string\",\r\n            \"title\":\"Name of subscription with Global Forest Watch\"\r\n         },\r\n         \"bright_ti4\": {\r\n            \"type\": \"number\",\r\n            \"title\": \"VIIRS I-4 channel brightness (Kelvin)\"\r\n         },\r\n         \"bright_ti5\": {\r\n            \"type\": \"number\",\r\n            \"title\": \"VIIRS I-5 channel brightness (Kelvin)\"\r\n         },\r\n         \"scan\": {\r\n            \"type\": \"number\",\r\n            \"title\": \"VIIRS Scan\"\r\n         },\r\n         \"track\": {\r\n            \"type\": \"number\",\r\n            \"title\": \"Satellite Track\"\r\n         },\r\n         \"frp\": {\r\n            \"type\": \"number\",\r\n            \"title\": \"Fire Radiative Power (MW)\"\r\n         },\r\n         \"alert_link\":{\r\n            \"type\":\"string\",\r\n            \"title\":\"URL of the map for this alert\",\r\n            \"format\":\"uri\"\r\n         },\r\n         \"confidence\":{\r\n            \"type\":\"string\",\r\n            \"title\":\"Confidence level of alert\"\r\n         },\r\n         \"num_clustered_alerts\":{\r\n            \"type\":\"number\",\r\n            \"title\":\"Number of clustered alerts\"\r\n         }\r\n      }\r\n   },\r\n   \"definition\":[\r\n      \"subscription_name\",\r\n      \"alert_link\",\r\n      \"confidence\",\r\n      \"num_clustered_alerts\",\r\n      \"bright_ti4\",\r\n      \"bright_ti5\",\r\n      \"scan\",\r\n      \"track\",\r\n      \"frp\"\r\n   ]\r\n}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/41b4b408-4dc3-4503-845f-3a1d834b876c",
+          "_schema_field_count": 9,
+          "_schema_fields": [
+            "alert_link",
+            "bright_ti4",
+            "bright_ti5",
+            "confidence",
+            "frp",
+            "num_clustered_alerts",
+            "scan",
+            "subscription_name",
+            "track"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "1a116541-4db0-4530-b7c2-58f9656b184b",
+          "has_events_assigned": false,
+          "icon": "deforestation_rep",
+          "value": "gfw_glad_alert",
+          "display": "GLAD Tree-Loss Alert (GFW)",
+          "ordernum": 7.0,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "deforestation_rep",
+          "is_active": true,
+          "schema": "{\n   \"schema\":{\n      \"$schema\":\"http://json-schema.org/draft-04/schema#\",\n      \"title\":\"Event Type Global Forest Watch Tree Loss Alert\",\n      \"type\":\"object\",\n      \"properties\":{\n         \"subscription_name\":{\n            \"type\":\"string\",\n            \"title\":\"Name of subscription with Global Forest Watch\"\n         },\n         \"alert_link\":{\n            \"type\":\"string\",\n            \"title\":\"URL of the map for this alert\",\n            \"format\":\"uri\"\n         },\n         \"confidence\":{\n            \"type\":\"number\",\n            \"title\":\"Confidence level of alert\"\n         },\n         \"num_clustered_alerts\":{\n            \"type\":\"number\",\n            \"title\":\"Number of clustered alerts\"\n         }\n      }\n   },\n   \"definition\":[\n      \"subscription_name\",\n      \"alert_link\",\n      \"confidence\",\n      \"num_clustered_alerts\"\n   ]\n}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/1a116541-4db0-4530-b7c2-58f9656b184b",
+          "_schema_field_count": 4,
+          "_schema_fields": [
+            "alert_link",
+            "confidence",
+            "num_clustered_alerts",
+            "subscription_name"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "e67acbc9-e4a9-48ce-953a-a23781b021ba",
+          "has_events_assigned": false,
+          "icon": "fire_rep",
+          "value": "gfwfirealert",
+          "display": "GFW Fire Alerts",
+          "ordernum": 0.25,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "fire_rep",
+          "is_active": true,
+          "schema": "{\r\n \"schema\": {\r\n   \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n   \"title\": \"Auto-generated schema, from incoming data.\",\r\n   \"type\": \"object\",\r\n   \"properties\": {\r\n     \"confidence\": {\r\n       \"type\": \"string\",\r\n       \"title\": \"Confidence\"\r\n     },\r\n     \"alert_time\": {\r\n       \"type\": \"string\",\r\n       \"title\": \"Alert Time\"\r\n     }\r\n   }\r\n },\r\n \"definition\": [\r\n   \"alert_time\",\r\n   \"confidence\"\r\n ]\r\n}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/e67acbc9-e4a9-48ce-953a-a23781b021ba",
+          "_schema_field_count": 2,
+          "_schema_fields": [
+            "alert_time",
+            "confidence"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "9af7e4c8-16a8-49e7-8bb4-14fbf0557ce2",
+          "has_events_assigned": false,
+          "icon": "deforestation_rep",
+          "value": "gfwgladalert",
+          "display": "GFW Integrated Deforestation Alerts",
+          "ordernum": 0.5,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "deforestation_rep",
+          "is_active": true,
+          "schema": "{\r\n \"schema\": {\r\n   \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n   \"title\": \"Auto-generated schema, from incoming data.\",\r\n   \"type\": \"object\",\r\n   \"properties\": {\r\n     \"confidence\": {\r\n       \"type\": \"number\",\r\n       \"title\": \"Confidence\"\r\n     }\r\n   }\r\n },\r\n \"definition\": [\r\n   \"confidence\"\r\n ]\r\n}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/9af7e4c8-16a8-49e7-8bb4-14fbf0557ce2",
+          "_schema_field_count": 1,
+          "_schema_fields": [
+            "confidence"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "2324685b-8cc5-4999-b7a0-94b20d384b80",
+          "has_events_assigned": true,
+          "icon": "",
+          "value": "hwc_rep",
+          "display": "Thú rừng xâm nhập",
+          "ordernum": 11.0,
+          "is_collection": false,
+          "category": {
+            "id": "1da9a802-8a42-473d-92c4-75a72c355c8d",
+            "value": "monitoring",
+            "display": "Giám sát",
+            "is_active": true,
+            "ordernum": 5.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "hwc_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Báo cáo thú rừng xâm nhập (hwc_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"hwcrep_species\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Loài\",\r\n               \"enum\": {{enum___hwcrep_species___values}},\r\n               \"enumNames\": {{enum___hwcrep_species___names}}   \r\n            },                      \r\n            \"hwcrep_cropdamaged\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Mùa màng bị hại\",\r\n               \"enum\": {{enum___hwcrep_cropdamaged___values}},\r\n               \"enumNames\": {{enum___hwcrep_cropdamaged___names}}   \r\n            },              \r\n            \"hwcrep_livestocktypes\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Gia súc bị hại\",\r\n                \"enum\": {{enum___hwcrep_livestocktypes___values}},\r\n                \"enumNames\": {{enum___hwcrep_livestocktypes___names}}                   \r\n            },              \r\n            \"hwcrep_livestockInjuredKilled\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Số lượng gia súc bị hại\",\r\n                \"minimum\": 0\r\n            },  \r\n            \"hwcrep_humaninjury\":{\r\n                \"type\": \"string\",\r\n                \"title\": \"Người dân bị thương\",\r\n                \"enum\": {{enum___yesno___values}},\r\n                \"enumNames\": {{enum___yesno___names}}   \r\n            },\r\n            \"hwcrep_humandeath\":{\r\n                \"type\": \"string\",\r\n                \"title\": \"Người dân bị tử vong\",\r\n                \"enum\": {{enum___yesno___values}},\r\n                \"enumNames\": {{enum___yesno___names}}   \r\n            },\r\n            \"hwcrep_propertydamage\":{\r\n                \"type\": \"string\",\r\n                \"title\": \"Hạ tầng bị ảnh hưởng\",\r\n                \"enum\": {{enum___yesno___values}},\r\n                \"enumNames\": {{enum___yesno___names}}   \r\n            },\r\n            \"hwcrep_propertydamagetype\":{\r\n                \"type\": \"string\",\r\n                \"title\": \"Hạ tầng bị ảnh hưởng\",\r\n                \"enum\": {{enum___hwcrep_propertydamagetype___values}},\r\n                \"enumNames\": {{enum___hwcrep_propertydamagetype___names}}\r\n            }                        \r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\":    \"hwcrep_species\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"hwcrep_cropdamaged\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"hwcrep_livestocktypes\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"hwcrep_livestockInjuredKilled\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"hwcrep_humaninjury\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"hwcrep_humandeath\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"hwcrep_propertydamage\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"hwcrep_propertydamagetype\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n]\r\n}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/2324685b-8cc5-4999-b7a0-94b20d384b80",
+          "_schema_field_count": 8,
+          "_schema_fields": [
+            "hwcrep_cropdamaged",
+            "hwcrep_humandeath",
+            "hwcrep_humaninjury",
+            "hwcrep_livestockInjuredKilled",
+            "hwcrep_livestocktypes",
+            "hwcrep_propertydamage",
+            "hwcrep_propertydamagetype",
+            "hwcrep_species"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        },
+        {
+          "id": "3d6be897-043f-4a52-81a1-385f689a5854",
+          "has_events_assigned": false,
+          "icon": null,
+          "value": "immobility",
+          "display": "Immobility",
+          "ordernum": 36.0,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "immobility",
+          "is_active": true,
+          "schema": "{\n      \"schema\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"title\": \"EventType Immobility\",\n        \"type\": \"object\",\n        \"properties\": {\n          \"details\": {\n            \"type\": \"string\",\n            \"title\": \"Details\"\n          },\n          \"name\": {\n            \"type\": \"string\",\n            \"title\": \"Name of animal\"\n          },\n          \"cluster_fix_count\": {\n            \"type\": \"number\",\n            \"title\": \"Cluster Fix Count\"\n          },\n          \"total_fix_count\": {\n            \"type\": \"number\",\n            \"title\": \"Total Fix Count\"\n          },\n          \"cluster_radius\": {\n            \"type\": \"number\",\n            \"title\": \"Cluster Search Radius\"\n          },\n          \"probability_value\": {\n            \"type\": \"number\",\n            \"title\": \"Probability\"\n          }\n        },\n        \"definition\": [\n          \"name\",\n          \"details\",\n          \"probability_value\",\n          \"total_fix_count\",\n          \"cluster_fix_count\",\n          \"cluster_radius\"\n        ]\n      }\n    }",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/3d6be897-043f-4a52-81a1-385f689a5854",
+          "_schema_field_count": 6,
+          "_schema_fields": [
+            "cluster_fix_count",
+            "cluster_radius",
+            "details",
+            "name",
+            "probability_value",
+            "total_fix_count"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "b4cf22e4-fabc-4db3-85fd-3385a92cea90",
+          "has_events_assigned": false,
+          "icon": null,
+          "value": "immobility_all_clear",
+          "display": "Immobility All Clear",
+          "ordernum": 37.0,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "immobility_all_clear",
+          "is_active": true,
+          "schema": "{\n      \"schema\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"title\": \"EventType Immobility\",\n        \"type\": \"object\",\n        \"properties\": {\n          \"details\": {\n            \"type\": \"string\",\n            \"title\": \"Details\"\n          },\n          \"name\": {\n            \"type\": \"string\",\n            \"title\": \"Name of animal\"\n          },\n          \"cluster_fix_count\": {\n            \"type\": \"number\",\n            \"title\": \"Cluster Fix Count\"\n          },\n          \"total_fix_count\": {\n            \"type\": \"number\",\n            \"title\": \"Total Fix Count\"\n          },\n          \"cluster_radius\": {\n            \"type\": \"number\",\n            \"title\": \"Cluster Search Radius\"\n          },\n          \"probability_value\": {\n            \"type\": \"number\",\n            \"title\": \"Probability\"\n          }\n        },\n        \"definition\": [\n          \"name\",\n          \"details\",\n          \"probability_value\",\n          \"total_fix_count\",\n          \"cluster_fix_count\",\n          \"cluster_radius\"\n        ]\n      }\n    }",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/b4cf22e4-fabc-4db3-85fd-3385a92cea90",
+          "_schema_field_count": 6,
+          "_schema_fields": [
+            "cluster_fix_count",
+            "cluster_radius",
+            "details",
+            "name",
+            "probability_value",
+            "total_fix_count"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "9defdcad-8ab4-42b8-ad1b-ce96220cd4de",
+          "has_events_assigned": true,
+          "icon": null,
+          "value": "incident_collection",
+          "display": "Incident Collection",
+          "ordernum": 23.0,
+          "is_collection": true,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "incident_collection",
+          "is_active": true,
+          "schema": "{\r\n  \"schema\": {\r\n    \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n    \"id\": \"http://localhost/api/v1.0/activity/events/schema/incident_collection\",\r\n    \"title\": \"Incident Collection\",\r\n    \"type\": \"object\",\r\n    \"properties\": {\r\n      \"conservancy\": {\r\n                  \"type\":\"string\",\r\n                  \"title\": \"Conservancy (Incident Field)\",\r\n                  \"enum\": {{enum___conservancy___values}},\r\n                  \"enumNames\": {{enum___conservancy___names}}\r\n          },\r\n      \"station\": {\r\n          \"type\": \"string\",\r\n        \"title\": \"Reporting Station (Incident Field)\",\r\n        \"enum\": {{enum___station___values}},\r\n        \"enumNames\": {{enum___station___names}}\r\n      },\r\n    \"reportingTime\":{\r\n        \"type\": \"string\",\r\n        \"title\": \"Reporting Time (Incident Field)\"\r\n    }\r\n  }\r\n  },\r\n  \"definition\": [\"conservancy\", \"station\", \r\n    {\r\n        \"key\": \"reportingTime\",\r\n        \"fieldHtmlClass\": \"date-time-picker json-schema\",\r\n        \"readonly\": false\r\n        }\r\n        ]\r\n}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/9defdcad-8ab4-42b8-ad1b-ce96220cd4de",
+          "_schema_field_count": 3,
+          "_schema_fields": [
+            "conservancy",
+            "reportingTime",
+            "station"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        },
+        {
+          "id": "f4c8fa1f-fdc1-4813-b809-1d6f03f9733c",
+          "has_events_assigned": false,
+          "icon": null,
+          "value": "low_speed_percentile",
+          "display": "Low Speed (Percentile)",
+          "ordernum": 40.0,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "low_speed_percentile",
+          "is_active": true,
+          "schema": "{\"schema\": {\"definition\": [\"name\", \"details\", \"low_speed_threshold_percentile\", \"low_speed_threshold_value\", \"current_median_speed_value\", \"total_fix_count\"], \"properties\": {\"low_speed_threshold_percentile\": {\"title\": \"Low Speed Threshold Percentile\", \"type\": \"number\"}, \"low_speed_threshold_value\": {\"title\": \"Low Speed Threshold Value\", \"type\": \"number\"}, \"details\": {\"title\": \"Details\", \"type\": \"string\"}, \"cur_median_speed\": {\"title\": \"Current Median Speed\", \"type\": \"number\"}, \"name\": {\"title\": \"Name of subject\", \"type\": \"string\"}, \"total_fix_count\": {\"title\": \"Total Fix Count\", \"type\": \"number\"}}, \"title\": \"EventType Low Speed Percentile\", \"type\": \"object\", \"$schema\": \"http://json-schema.org/draft-04/schema#\"}}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/f4c8fa1f-fdc1-4813-b809-1d6f03f9733c",
+          "_schema_field_count": 6,
+          "_schema_fields": [
+            "cur_median_speed",
+            "details",
+            "low_speed_threshold_percentile",
+            "low_speed_threshold_value",
+            "name",
+            "total_fix_count"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "98e40eef-6a25-4cba-ba9d-6fe214b34305",
+          "has_events_assigned": false,
+          "icon": null,
+          "value": "low_speed_wilcoxon",
+          "display": "Low Speed (Wilcoxon)",
+          "ordernum": 38.0,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "low_speed_wilcoxon",
+          "is_active": true,
+          "schema": "{\"schema\": {\"definition\": [\"name\", \"details\", \"low_speed_probability_cutoff\", \"low_speed_probability\",\r\n                               \"total_fix_count\"],\r\n                \r\n                \"properties\": {\"name\": \r\n                               {\"title\": \"Name of subject\", \"type\": \"string\"},\r\n                               \"low_speed_probability_cutoff\": \r\n                               {\"title\": \"Low Speed Threshold Probability\", \"type\": \"number\"},\r\n                               \"low_speed_probability\": \r\n                               {\"title\": \"Low Speed Probability Value\", \"type\": \"number\"},\r\n                \"total_fix_count\": {\"title\": \"Total Fix Count\", \"type\": \"number\"}},\r\n     \"title\": \"EventType Low Speed Wilcox\", \"type\": \"object\", \"$schema\": \"http://json-schema.org/draft-04/schema#\"}}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/98e40eef-6a25-4cba-ba9d-6fe214b34305",
+          "_schema_field_count": 4,
+          "_schema_fields": [
+            "low_speed_probability",
+            "low_speed_probability_cutoff",
+            "name",
+            "total_fix_count"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "d5f2b88c-1720-4f2d-9548-0adba820a22d",
+          "has_events_assigned": false,
+          "icon": null,
+          "value": "low_speed_wilcoxon_all_clear",
+          "display": "Low Speed (Wilcoxon) All Clear",
+          "ordernum": 39.0,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "low_speed_wilcoxon_all_clear",
+          "is_active": true,
+          "schema": "{\"schema\": {\"$schema\": \"http://json-schema.org/draft-04/schema#\", \"definition\": [\"name\", \"details\", \"low_speed_threshold_probability\", \"low_speed_probability\", \"total_fix_count\"], \"properties\": {\"name\": {\"title\": \"Name of subject\", \"type\": \"string\"}, \"details\": {\"title\": \"Details\", \"type\": \"string\"}, \"low_speed_threshold_probability\": {\"title\": \"Low Speed Threshold Percentile\", \"type\": \"number\"}, \"low_speed_probability\": {\"title\": \"Low Speed Threshold Value\", \"type\": \"number\"}, \"total_fix_count\": {\"title\": \"Total Fix Count\", \"type\": \"number\"}}, \"title\": \"EventType Low Speed Wilcox All Clear\", \"type\": \"object\"}}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/d5f2b88c-1720-4f2d-9548-0adba820a22d",
+          "_schema_field_count": 5,
+          "_schema_fields": [
+            "details",
+            "low_speed_probability",
+            "low_speed_threshold_probability",
+            "name",
+            "total_fix_count"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "ac7188a6-65b7-42d6-9430-a67819e0cd13",
+          "has_events_assigned": false,
+          "icon": "",
+          "value": "medevac_rep",
+          "display": "Sơ tán cấp cứu",
+          "ordernum": 25.0,
+          "is_collection": false,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "medevac_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Báo cáo sơ tán cấp cứu (medevac_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"medevacrep_location\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Vị trí cấp cứu\"\r\n            },   \r\n            \"medevacrep_bestcommunication\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Phương thức liên lạc (kênh bộ đàm, dấu hiệu, điện thoại...)\"\r\n            },\r\n            \"medevacrep_urgentpatients\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Số lượng nạn nhân (số ca trong 1 giờ)\",\r\n                \"minimum\": 0\r\n            },     \r\n            \"medevacrep_prioritypatients\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Số lượng nạn nhân nặng (trong 6-12 giờ)\",\r\n                \"minimum\": 0\r\n            },                 \r\n            \"medevacrep_routinepatients\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Số lượng nạn nhân thường (trong 24 giờ)\",\r\n                \"minimum\": 0\r\n            },                 \r\n            \"medevacrep_specialequipment\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Trang thiết bị cần\",\r\n                \"enum\": {{enum___medevacrep_specialequipment___values}},\r\n                \"enumNames\": {{enum___medevacrep_specialequipment___names}}   \r\n            },                        \r\n            \"medevacrep_ambulatorycasualties\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Số nạn nhân tự đi lại \",\r\n                \"minimum\": 0\r\n            },\r\n            \"medevacrep_stretchercasualties\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Số nạn nhân cần cáng\",\r\n                \"minimum\": 0\r\n            },\r\n            \"medevacrep_security\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"An ninh tại địa điểm đón\",\r\n                \"enum\": {{enum___medevacrep_security___values}},\r\n                \"enumNames\": {{enum___medevacrep_security___names}}   \r\n            },\r\n            \"medevacrep_other\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Lưu ý khác\"\r\n            }\r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\":    \"medevacrep_location\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"medevacrep_bestcommunication\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"medevacrep_urgentpatients\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"medevacrep_prioritypatients\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"medevacrep_routinepatients\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"medevacrep_specialequipment\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"medevacrep_ambulatorycasualties\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"medevacrep_stretchercasualties\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"medevacrep_security\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"medevacrep_other\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n ]\r\n}",
+          "default_priority": 300,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/ac7188a6-65b7-42d6-9430-a67819e0cd13",
+          "_schema_field_count": 10,
+          "_schema_fields": [
+            "medevacrep_ambulatorycasualties",
+            "medevacrep_bestcommunication",
+            "medevacrep_location",
+            "medevacrep_other",
+            "medevacrep_prioritypatients",
+            "medevacrep_routinepatients",
+            "medevacrep_security",
+            "medevacrep_specialequipment",
+            "medevacrep_stretchercasualties",
+            "medevacrep_urgentpatients"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        },
+        {
+          "id": "7c16ee18-c427-4d24-957a-f291113e3402",
+          "has_events_assigned": true,
+          "icon": "",
+          "value": "poacher_camp_rep",
+          "display": "Phát hiện lán trại",
+          "ordernum": 6.0,
+          "is_collection": false,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "poacher_camp_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Báo cáo phát hiện lán trại (poacher_camp_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"poachercamprep_status\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Tình trạng của lán trại\",\r\n               \"enum\": {{enum___poachercamprep_status___values}},\r\n               \"enumNames\": {{enum___poachercamprep_status___names}}   \r\n            },\r\n            \"poachercamprep_numberofpeople\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Ước lượng số người\",\r\n                \"minimum\": 0\r\n            },\r\n            \"poachercamprep_description\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Mô tả thêm\"\r\n            }                \r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\":    \"poachercamprep_status\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"poachercamprep_numberofpeople\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"poachercamprep_description\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n ]\r\n}",
+          "default_priority": 200,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/7c16ee18-c427-4d24-957a-f291113e3402",
+          "_schema_field_count": 3,
+          "_schema_fields": [
+            "poachercamprep_description",
+            "poachercamprep_numberofpeople",
+            "poachercamprep_status"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        },
+        {
+          "id": "e6cd29e0-b94e-44b8-85db-79f84ddc0dfe",
+          "has_events_assigned": false,
+          "icon": null,
+          "value": "proximity",
+          "display": "Proximity",
+          "ordernum": 43.0,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "proximity",
+          "is_active": true,
+          "schema": "\n{\n    \"schema\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"title\": \"EventType Proximity\",\n        \"type\": \"object\",\n        \"definition\": [\n            \"name\",\n            \"details\",\n            \"spatial_feature_name\",\n            \"spatial_feature_group\",\n            \"subject_speed_kmhr\",\n            \"subject_heading\",\n            \"total_fix_count\",\n            \"proximity_dist_meters\"\n        ],\n        \"properties\": {\n            \"name\": {\n                \"title\": \"Name of subject\",\n                \"type\": \"string\"\n            },\n            \"details\": {\n                \"title\": \"Details\",\n                \"type\": \"string\"\n            },\n            \"spatial_feature_name\": {\n                \"title\": \"Spatial Feature Name\",\n                \"type\": \"string\"\n            },\n            \"spatial_feature_group\": {\n                \"title\": \"Spatial Feature Group\",\n                \"type\": \"string\"\n            },\n            \"subject_speed_kmhr\": {\n                \"title\": \"Subject Speed\",\n                \"type\": \"number\"\n            },\n            \"subject_heading\": {\n                \"title\": \"Subject Heading\",\n                \"type\": \"number\"\n            },\n            \"total_fix_count\": {\n                \"title\": \"Total Fix Count\",\n                \"type\": \"number\"\n            },\n            \"proximity_dist_meters\": {\n                \"title\": \"Proximity Distance Meters\",\n                \"type\": \"number\"\n            }\n        }\n    }\n}\n",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/e6cd29e0-b94e-44b8-85db-79f84ddc0dfe",
+          "_schema_field_count": 8,
+          "_schema_fields": [
+            "details",
+            "name",
+            "proximity_dist_meters",
+            "spatial_feature_group",
+            "spatial_feature_name",
+            "subject_heading",
+            "subject_speed_kmhr",
+            "total_fix_count"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "98489e56-e93e-4475-bfaf-51ccdc956658",
+          "has_events_assigned": true,
+          "icon": "",
+          "value": "rainfall_rep",
+          "display": "Mưa lớn",
+          "ordernum": 19.0,
+          "is_collection": false,
+          "category": {
+            "id": "1da9a802-8a42-473d-92c4-75a72c355c8d",
+            "value": "monitoring",
+            "display": "Giám sát",
+            "is_active": true,
+            "ordernum": 5.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "rainfall_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Mưa lớn (rainfall_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"rainfallrep_location\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Vị trí\"\r\n            },\r\n            \"rainfallrep_rainfall\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Ước đoán cường độ (mm)\",\r\n                \"minimum\": 0\r\n              }\r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\": \"rainfallrep_location\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    },\r\n    {\r\n        \"key\": \"rainfallrep_rainfall\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n ]\r\n}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/98489e56-e93e-4475-bfaf-51ccdc956658",
+          "_schema_field_count": 2,
+          "_schema_fields": [
+            "rainfallrep_location",
+            "rainfallrep_rainfall"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "a4595929-2982-41d2-863c-7da951177bb1",
+          "has_events_assigned": false,
+          "icon": "",
+          "value": "shot_rep",
+          "display": "Tiếng súng",
+          "ordernum": 30.0,
+          "is_collection": false,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "shot_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Phát hiện tiếng súng\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n          \r\n            \"shotrep_timeofshot\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Thời điểm nghe được\"\r\n            },          \r\n            \"shotrep_bearing\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Góc phương vị (0-360)\",\r\n                \"minimum\": 0,\r\n                \"maximum\":  360\r\n            },                      \r\n            \"shotrep_distance\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Khoảng cách ước đoán (m)\",\r\n                \"minimum\": 0\r\n            },                      \r\n            \"shotrep_numberofshots\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Số tiếng súng nghe được\",\r\n                \"minimum\": 0\r\n            },\r\n            \"shotrep_typeofshots\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Đánh giá loại súng\",\r\n                \"enum\": {{enum___shotrep_typeofshot___values}},\r\n                \"enumNames\": {{enum___shotrep_typeofshot___names}}                  \r\n            },              \r\n            \"shotrep_estimatedcaliber\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Cỡ nòng ước tính\",\r\n                \"enum\": {{enum___shotrep_estimatedcaliber___values}},\r\n                \"enumNames\": {{enum___shotrep_estimatedcaliber___names}}                  \r\n            },\r\n            \"shotrep_patrolresponse\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Phương án tiếp cận\"\r\n            }\r\n       }\r\n   },\r\n \"definition\": [\r\n   {\r\n   \"key\": \"shotrep_timeofshot\",\r\n   \"fieldHtmlClass\": \"date-time-picker json-schema\",\r\n   \"readonly\": false,\r\n   \"htmlClass\": \"col-lg-6\"   \r\n   },   \r\n   {\r\n   \"key\": \"shotrep_bearing\",\r\n   \"htmlClass\": \"col-lg-6\"\r\n   }, \r\n   {  \r\n   \"key\": \"shotrep_distance\",\r\n   \"htmlClass\": \"col-lg-6\"\r\n   }, \r\n   {    \r\n   \"key\": \"shotrep_numberofshots\",\r\n   \"htmlClass\": \"col-lg-6\"\r\n   },  \r\n   {   \r\n   \"key\": \"shotrep_typeofshots\",\r\n   \"htmlClass\": \"col-lg-6\"\r\n   },    \r\n   { \r\n   \"key\": \"shotrep_estimatedcaliber\",\r\n   \"htmlClass\": \"col-lg-6\"\r\n   },   \r\n   {  \r\n   \"key\": \"shotrep_patrolresponse\",\r\n   \"htmlClass\": \"col-lg-6\"\r\n   }    \r\n ]\r\n}",
+          "default_priority": 300,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/a4595929-2982-41d2-863c-7da951177bb1",
+          "_schema_field_count": 7,
+          "_schema_fields": [
+            "shotrep_bearing",
+            "shotrep_distance",
+            "shotrep_estimatedcaliber",
+            "shotrep_numberofshots",
+            "shotrep_patrolresponse",
+            "shotrep_timeofshot",
+            "shotrep_typeofshots"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        },
+        {
+          "id": "126e9bad-5406-446a-8994-ddfc02ea280c",
+          "has_events_assigned": false,
+          "icon": null,
+          "value": "silence_source_provider_rep",
+          "display": "Silent Source Provider",
+          "ordernum": 1.0,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "silence_source_provider_rep",
+          "is_active": true,
+          "schema": "\n{\n    \"schema\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"title\": \"Entry Alert\",\n        \"type\": \"object\",\n        \"readonly\": true,\n        \"properties\": {\n            \"report_time\": {\n                \"type\": \"string\",\n                \"title\": \"Report Time\"\n            },\n            \"silence_threshold\": {\n                \"type\": \"string\",\n                \"title\": \"Silence threshold(hh:mm)\"\n            },\n            \"last_device_reported_at\": {\n                \"type\": \"string\",\n                \"title\": \"Last device reported at\"\n            }\n        }\n    },\n    \"definition\": [\n        \"report_time\",\n        \"silence_threshold\",\n        \"last_device_reported_at\"\n    ]\n}\n",
+          "default_priority": 200,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/126e9bad-5406-446a-8994-ddfc02ea280c",
+          "readonly": true,
+          "_schema_field_count": 3,
+          "_schema_fields": [
+            "last_device_reported_at",
+            "report_time",
+            "silence_threshold"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "0394e724-16ab-4aa4-91b2-eb4efae09d08",
+          "has_events_assigned": false,
+          "icon": null,
+          "value": "silence_source_rep",
+          "display": "Silent Source",
+          "ordernum": 2.0,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "silence_source_rep",
+          "is_active": true,
+          "schema": "{\n    \"schema\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"title\": \"Entry Alert\",\n        \"type\": \"object\",\n        \"readonly\": true,\n        \"properties\": {\n            \"report_time\": {\n                \"type\": \"number\",\n                \"title\": \"Heading at entry (deg)\"\n            },\n            \"location\": {\n                \"type\": \"number\",\n                \"title\": \"Speed at entry (knots)\"\n            },\n            \"device_id\": {\n                \"type\": \"string\",\n                \"title\": \"Device ID\"\n            },\n            \"name_assigned_subject\": {\n                \"type\": \"string\",\n                \"title\": \"Name of assigned subject\"\n            },\n            \"source_provider\": {\n                \"type\": \"string\",\n                \"title\": \"Source Provider\"\n            },\n            \"silence_threshold\": {\n                \"type\": \"string\",\n                \"title\": \"Silence Threshold\"\n            },\n            \"latest_position_recorded_at\": {\n                \"type\": \"string\",\n                \"title\": \"Latest position recorded at\"\n            }\n        }\n    },\n    \"definition\": [\n        \"report_time\",\n        \"location\",\n        \"device_id\",\n        \"name_assigned_subject\",\n        \"source_provider\",\n        \"silence_threshold\",\n        \"latest_position_recorded_at\"\n    ]\n}\n",
+          "default_priority": 200,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/0394e724-16ab-4aa4-91b2-eb4efae09d08",
+          "readonly": true,
+          "_schema_field_count": 7,
+          "_schema_fields": [
+            "device_id",
+            "latest_position_recorded_at",
+            "location",
+            "name_assigned_subject",
+            "report_time",
+            "silence_threshold",
+            "source_provider"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "4b8743e6-3bd5-43cd-a2b4-e1e89f2c9353",
+          "has_events_assigned": false,
+          "icon": "",
+          "value": "sit_rep",
+          "display": "Cập nhật tình huống",
+          "ordernum": 31.0,
+          "is_collection": false,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "sit_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Cập nhật tình huống (sit_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"sitrep_currentactivity\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Cập nhật tình hình hiện tại\"\r\n            },\r\n            \"sitrep_futureactivity\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Kế hoạch nhiệm vụ tiếp theo\"\r\n            },\r\n            \"sitrep_other\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Lưu ý khác\"\r\n            }\r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\":    \"sitrep_currentactivity\",\r\n        \"type\":  \"textarea\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"sitrep_futureactivity\",\r\n        \"type\":  \"textarea\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"sitrep_other\",\r\n        \"type\":  \"textarea\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n ]\r\n}",
+          "default_priority": 0,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/4b8743e6-3bd5-43cd-a2b4-e1e89f2c9353",
+          "_schema_field_count": 3,
+          "_schema_fields": [
+            "sitrep_currentactivity",
+            "sitrep_futureactivity",
+            "sitrep_other"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "3b2843f7-08fa-4422-a762-bb16586423e8",
+          "has_events_assigned": false,
+          "icon": "",
+          "value": "snare_rep",
+          "display": "Phát hiện bẫy thú",
+          "ordernum": 32.0,
+          "is_collection": false,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "snare_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Cây bị chặt (snare_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"snarerep_numberofsnares\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Số lượng\"\r\n            },       \r\n            \"snarerep_status\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Tình trạng\",\r\n               \"enum\": {{enum___snarerep_status___values}},\r\n               \"enumNames\": {{enum___snarerep_status___names}}   \r\n            },       \r\n            \"snarerep_action\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Hành động dự kiến\",\r\n               \"enum\": {{enum___snarerep_action___values}},\r\n               \"enumNames\": {{enum___snarerep_action___names}}   \r\n            },\r\n            \"snarerep_comments\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Lưu ý khác\"\r\n            }\r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\":    \"snarerep_numberofsnares\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"snarerep_status\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"snarerep_action\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"snarerep_comments\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n ]\r\n}",
+          "default_priority": 200,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/3b2843f7-08fa-4422-a762-bb16586423e8",
+          "_schema_field_count": 4,
+          "_schema_fields": [
+            "snarerep_action",
+            "snarerep_comments",
+            "snarerep_numberofsnares",
+            "snarerep_status"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        },
+        {
+          "id": "3fb44f5e-c95f-4859-b001-7a43bbf3dbf3",
+          "has_events_assigned": true,
+          "icon": "",
+          "value": "spoor_rep",
+          "display": "Phát hiện dấu vết",
+          "ordernum": 4.0,
+          "is_collection": false,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "spoor_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Phát hiện dấu vết (spoor_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"spoorrep_type\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Loại dấu vết\",\r\n               \"enum\": {{enum___spoorrep_type___values}},\r\n               \"enumNames\": {{enum___spoorrep_type___names}}  \r\n            },  \r\n            \"spoorrep_numberpeopletracked\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Ước đoán số lượng từ dấu vết\",\r\n                \"minimum\": 0\r\n            },\r\n            \"spoorrep_bearing\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Góc phương vị hướng đi (0-360)\",\r\n                \"minimum\": 0,\r\n                \"maximum\": 360\r\n            },     \r\n            \"spoorrep_age\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Dấu vết mới hay cũ\",\r\n               \"enum\": {{enum___spoorrep_age___values}},\r\n               \"enumNames\": {{enum___spoorrep_age___names}}                \r\n            },            \r\n   \r\n            \"spoorrep_comments\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Lưu ý khác\"\r\n            }\r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\":    \"spoorrep_type\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"spoorrep_numberpeopletracked\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"spoorrep_bearing\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"spoorrep_age\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"spoorrep_comments\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n ]\r\n}",
+          "default_priority": 200,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/3fb44f5e-c95f-4859-b001-7a43bbf3dbf3",
+          "_schema_field_count": 5,
+          "_schema_fields": [
+            "spoorrep_age",
+            "spoorrep_bearing",
+            "spoorrep_comments",
+            "spoorrep_numberpeopletracked",
+            "spoorrep_type"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        },
+        {
+          "id": "a2cd584d-c6cd-49de-a200-b30bd8876ad9",
+          "has_events_assigned": false,
+          "icon": null,
+          "value": "subject_proximity",
+          "display": "Subject Proximity",
+          "ordernum": 4.0,
+          "is_collection": false,
+          "category": {
+            "id": "e7849f38-b98d-4ab7-acb1-c7a93f3d4b7a",
+            "value": "analyzer_event",
+            "display": "Analyzer Event",
+            "is_active": true,
+            "ordernum": 4.0,
+            "flag": "system",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "subject_proximity",
+          "is_active": true,
+          "schema": "{\n  \"schema\": {\n    \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n    \"title\": \"Subject Proximity Schema\",\n    \"type\": \"object\",\n    \"properties\": {\n      \"subject_1_name\": {\n        \"type\": \"string\",\n        \"title\": \"Subject 1 Name\"\n      },\n      \"subject_1_speed_kmhr\": {\n        \"type\": \"number\",\n        \"title\": \"Subject 1 Speed Kmhr\"\n      },\n      \"subject_1_heading\": {\n        \"type\": \"number\",\n        \"title\": \"Subject 1 Heading\"\n      },\n      \"subject_1_location\": {\n        \"type\": \"string\",\n        \"title\": \"Subject 1 location\"\n      },\n      \"subject_2_name\": {\n        \"type\": \"string\",\n        \"title\": \"Subject 2 Name\"\n      },\n      \"subject_2_speed_kmhr\": {\n        \"type\": \"number\",\n        \"title\": \"Subject 2 Speed Kmhr\"\n      },\n      \"subject_2_heading\": {\n        \"type\": \"number\",\n        \"title\": \"Subject 2 Heading\"\n      },\n      \"subject_2_location\": {\n        \"type\": \"string\",\n        \"title\": \"Subject 2 location\"\n      },\n      \"proximity_dist_meters\": {\n        \"type\": \"number\",\n        \"title\": \"Proximity Dist Meters\"\n      },\n      \"total_fix_count\": {\n        \"type\": \"number\",\n        \"title\": \"Total Fix Count\"\n      }\n    }\n  },\n  \"definition\": [\n    {\n      \"type\": \"fieldset\",\n      \"title\": \"Analyzer Details\",\n      \"htmlClass\": \"col-lg-12\",\n      \"items\": []\n    },\n    {\n      \"type\": \"fieldset\",\n      \"htmlClass\": \"col-lg-6\",\n      \"items\": [\n        \"subject_1_name\",\n        \"subject_1_location\",\n        \"subject_1_speed_kmhr\",\n        \"subject_1_heading\"\n      ]\n    },\n    {\n      \"type\": \"fieldset\",\n      \"htmlClass\": \"col-lg-6\",\n      \"items\": [\n        \"subject_2_name\",\n        \"subject_2_location\",\n        \"subject_2_speed_kmhr\",\n        \"subject_2_heading\"\n      ]\n    },\n    \"proximity_dist_meters\",\n    \"total_fix_count\"\n  ]\n}",
+          "default_priority": 200,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/a2cd584d-c6cd-49de-a200-b30bd8876ad9",
+          "_schema_field_count": 10,
+          "_schema_fields": [
+            "proximity_dist_meters",
+            "subject_1_heading",
+            "subject_1_location",
+            "subject_1_name",
+            "subject_1_speed_kmhr",
+            "subject_2_heading",
+            "subject_2_location",
+            "subject_2_name",
+            "subject_2_speed_kmhr",
+            "total_fix_count"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v1-schema"
+        },
+        {
+          "id": "eef7122e-6ede-4368-9078-b10af7710f01",
+          "has_events_assigned": true,
+          "icon": "",
+          "value": "traffic_rep",
+          "display": "Phát hiện phương tiện",
+          "ordernum": 5.0,
+          "is_collection": false,
+          "category": {
+            "id": "652e8021-397a-426d-8a4a-c3eab4e4d04c",
+            "value": "security",
+            "display": "An ninh",
+            "is_active": true,
+            "ordernum": 3.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "traffic_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Phát hiện phương tiện (traffic_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"trafficrep_sightingdescription\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Quan sát được gì?\",\r\n                \"enum\": {{enum___trafficrep_sightingdescription___values}},\r\n                \"enumNames\": {{enum___trafficrep_sightingdescription___names}}  \r\n            },\r\n            \"trafficrep_bearing\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Góc phương vị (0-360)\",\r\n                \"minimum\": 0,\r\n                \"maximum\": 360\r\n            }, \r\n            \"trafficrep_distance\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Khoảng cách (m)\",\r\n                \"minimum\": 0\r\n            },                         \r\n            \"trafficrep_sightingactivity\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Mô tả hoạt động của phương tiện\",\r\n                \"enum\": {{enum___trafficrep_sightingactivity___values}},\r\n                \"enumNames\": {{enum___trafficrep_sightingactivity___names}} \r\n            },\r\n            \"trafficrep_vehicleregistration\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Biển số xe (nếu có)\"\r\n            },   \r\n            \"trafficrep_vehiclemakemodel\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Loại xe (nếu có)\"\r\n            },              \r\n            \"trafficrep_currentpatrolactivity\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Phương án hành động\"\r\n            }\r\n         \r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\":    \"trafficrep_sightingdescription\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"trafficrep_bearing\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"trafficrep_distance\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"trafficrep_sightingactivity\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"trafficrep_vehicleregistration\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"trafficrep_vehiclemakemodel\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"trafficrep_currentpatrolactivity\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }\r\n ]\r\n}",
+          "default_priority": 200,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/eef7122e-6ede-4368-9078-b10af7710f01",
+          "_schema_field_count": 7,
+          "_schema_fields": [
+            "trafficrep_bearing",
+            "trafficrep_currentpatrolactivity",
+            "trafficrep_distance",
+            "trafficrep_sightingactivity",
+            "trafficrep_sightingdescription",
+            "trafficrep_vehiclemakemodel",
+            "trafficrep_vehicleregistration"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        },
+        {
+          "id": "46788771-f921-4700-86cb-d5a5201b7a03",
+          "has_events_assigned": true,
+          "icon": "",
+          "value": "wildlife_sighting_rep",
+          "display": "Phát hiện thú rừng",
+          "ordernum": 22.0,
+          "is_collection": false,
+          "category": {
+            "id": "1da9a802-8a42-473d-92c4-75a72c355c8d",
+            "value": "monitoring",
+            "display": "Giám sát",
+            "is_active": true,
+            "ordernum": 5.0,
+            "flag": "user",
+            "permissions": [
+              "delete",
+              "update",
+              "read",
+              "create"
+            ]
+          },
+          "icon_id": "wildlife_sighting_rep",
+          "is_active": true,
+          "schema": "{\r\n   \"schema\": \r\n   {\r\n       \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r\n       \"title\": \"Phát hiện thú rừng (wildlife_sighting_rep)\",\r\n     \r\n       \"type\": \"object\",\r\n\r\n       \"properties\": \r\n       {\r\n            \"wildlifesightingrep_species\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Loài gì?\",\r\n                \"enum\": {{enum___wildlifesightingrep_species___values}},\r\n                \"enumNames\": {{enum___wildlifesightingrep_species___names}}   \r\n            }, \r\n           \"wildlifesightingrep_numberanimals\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Số lượng\",\r\n                \"minimum\":0\r\n           },                      \r\n           \"wildlifesightingrep_collared\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Có gắn thiết bị theo dõi không?\",\r\n                \"enum\": {{enum___yesno___values}},\r\n                \"enumNames\": {{enum___yesno___names}}                   \r\n           }\r\n          \r\n       }\r\n   },\r\n \"definition\": [\r\n    {\r\n        \"key\":    \"wildlifesightingrep_species\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    }, \r\n    {\r\n        \"key\":    \"wildlifesightingrep_numberanimals\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    },    \r\n    {\r\n        \"key\":    \"wildlifesightingrep_collared\",\r\n        \"htmlClass\": \"col-lg-6\"\r\n    } \r\n\r\n ]\r\n}",
+          "default_priority": 100,
+          "default_state": "new",
+          "geometry_type": "Point",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "url": "https://epictech.pamdas.org/api/v1.0/activity/events/eventtypes/46788771-f921-4700-86cb-d5a5201b7a03",
+          "_schema_field_count": 3,
+          "_schema_fields": [
+            "wildlifesightingrep_collared",
+            "wildlifesightingrep_numberanimals",
+            "wildlifesightingrep_species"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "raw-string-fallback"
+        }
+      ]
+    },
+    "v2": {
+      "count": 5,
+      "items": [
+        {
+          "id": "f8418bea-618a-461b-8f33-3121550100f7",
+          "url": "https://epictech.pamdas.org/api/v2.0/activity/eventtypes/all_posts_check",
+          "has_events_assigned": false,
+          "icon_id": "all_posts_rep",
+          "value": "all_posts_check",
+          "display": "Kiểm tra trạm gác",
+          "ordernum": 23.0,
+          "category": "logistics",
+          "geometry_type": "Point",
+          "default_priority": 0,
+          "default_state": "active",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "readonly": false,
+          "is_collection": false,
+          "schema": "{\n  \"json\": {\n    \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n    \"properties\": {\n      \"station_number\": {\n        \"deprecated\": false,\n        \"title\": \"Tr\\u1ea1m g\\u00e1c s\\u1ed1\",\n        \"description\": \"\",\n        \"anyOf\": [\n          {\n            \"$ref\": \"/api/v2.0/schemas/choices.json?field=station\"\n          }\n        ],\n        \"type\": \"string\"\n      },\n      \"onpatrol_number\": {\n        \"deprecated\": false,\n        \"title\": \"S\\u1ed1 nh\\u00e2n vi\\u00ean \\u0111ang tu\\u1ea7n tra\",\n        \"description\": \"\",\n        \"type\": \"number\"\n      },\n      \"onsite_number\": {\n        \"deprecated\": false,\n        \"title\": \"S\\u1ed1 nh\\u00e2n vi\\u00ean t\\u1ea1i tr\\u1ea1m\",\n        \"description\": \"\",\n        \"type\": \"number\"\n      },\n      \"onleave_number\": {\n        \"deprecated\": false,\n        \"title\": \"S\\u1ed1 nh\\u00e2n vi\\u00ean ngh\\u1ec9 ph\\u00e9p\",\n        \"description\": \"\",\n        \"type\": \"number\"\n      },\n      \"station_note\": {\n        \"deprecated\": false,\n        \"title\": \"Ghi ch\\u00fa th\\u00eam\",\n        \"default\": \"\",\n        \"description\": \"\",\n        \"type\": \"string\"\n      }\n    },\n    \"required\": [],\n    \"type\": \"object\",\n    \"unevaluatedProperties\": false\n  },\n  \"ui\": {\n    \"fields\": {\n      \"station_number\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"CHOICE_LIST\",\n        \"choices\": {\n          \"eventTypeCategories\": [],\n          \"existingChoiceList\": [\n            \"station\"\n          ],\n          \"featureCategories\": [],\n          \"myDataType\": \"EVENT_TYPES_FROM_EVENT_CATEGORY\",\n          \"subjectGroups\": [],\n          \"subjectSubtypes\": [],\n          \"type\": \"EXISTING_CHOICE_LIST\"\n        },\n        \"inputType\": \"DROPDOWN\",\n        \"placeholder\": \"\"\n      },\n      \"onpatrol_number\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"NUMERIC\",\n        \"placeholder\": \"\"\n      },\n      \"onsite_number\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"NUMERIC\",\n        \"placeholder\": \"\"\n      },\n      \"onleave_number\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"NUMERIC\",\n        \"placeholder\": \"\"\n      },\n      \"station_note\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-2\",\n        \"type\": \"TEXT\",\n        \"inputType\": \"SHORT_TEXT\",\n        \"placeholder\": \"C\\u00e1c th\\u00f4ng tin c\\u1ea7n l\\u01b0u \\u00fd th\\u00eam\"\n      }\n    },\n    \"headers\": {},\n    \"order\": [\n      \"section-1\",\n      \"section-2\"\n    ],\n    \"sections\": {\n      \"section-1\": {\n        \"columns\": 2,\n        \"conditions\": [],\n        \"isActive\": true,\n        \"label\": \"\",\n        \"leftColumn\": [\n          {\n            \"name\": \"station_number\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"onpatrol_number\",\n            \"type\": \"field\"\n          }\n        ],\n        \"rightColumn\": [\n          {\n            \"name\": \"onsite_number\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"onleave_number\",\n            \"type\": \"field\"\n          }\n        ]\n      },\n      \"section-2\": {\n        \"columns\": 1,\n        \"conditions\": [],\n        \"isActive\": true,\n        \"label\": \"\",\n        \"leftColumn\": [\n          {\n            \"name\": \"station_note\",\n            \"type\": \"field\"\n          }\n        ],\n        \"rightColumn\": []\n      }\n    }\n  }\n}",
+          "is_active": true,
+          "icon": "all_posts_rep",
+          "_schema_field_count": 5,
+          "_schema_fields": [
+            "onleave_number",
+            "onpatrol_number",
+            "onsite_number",
+            "station_note",
+            "station_number"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v2-json"
+        },
+        {
+          "id": "c17db012-a119-49b4-bd16-f885016a1f25",
+          "url": "https://epictech.pamdas.org/api/v2.0/activity/eventtypes/deforestation_rep",
+          "has_events_assigned": false,
+          "icon_id": "deforestation_rep",
+          "value": "deforestation_rep",
+          "display": "Chặt phá rừng",
+          "ordernum": 0.015625,
+          "category": "security",
+          "geometry_type": "Polygon",
+          "default_priority": 200,
+          "default_state": "active",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "readonly": false,
+          "is_collection": false,
+          "schema": "{\n  \"json\": {\n    \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n    \"properties\": {\n      \"Time_defor\": {\n        \"deprecated\": false,\n        \"title\": \"Th\\u1eddi \\u0111i\\u1ec3m ph\\u00e1t hi\\u1ec7n\",\n        \"description\": \"\",\n        \"format\": \"date-time\",\n        \"type\": \"string\"\n      },\n      \"defore_rep_name\": {\n        \"deprecated\": false,\n        \"title\": \"T\\u00ean ng\\u01b0\\u1eddi ph\\u00e1t hi\\u1ec7n\",\n        \"default\": \"\",\n        \"description\": \"\",\n        \"type\": \"string\"\n      },\n      \"wood_type\": {\n        \"deprecated\": false,\n        \"title\": \"Lo\\u1ea1i g\\u1ed7\",\n        \"description\": \"\",\n        \"anyOf\": [\n          {\n            \"$ref\": \"/api/v2.0/schemas/choices.json?field=deforest_rep_species\"\n          }\n        ],\n        \"type\": \"string\"\n      },\n      \"Lot_defore\": {\n        \"deprecated\": false,\n        \"title\": \"V\\u1ecb tr\\u00ed ph\\u00e1t hi\\u1ec7n\",\n        \"description\": \"C\\u00f3 th\\u1ec3 m\\u00f4 t\\u1ea3 theo kho\\u1ea3nh\",\n        \"properties\": {\n          \"latitude\": {\n            \"maximum\": 90,\n            \"minimum\": -90,\n            \"type\": \"number\"\n          },\n          \"longitude\": {\n            \"maximum\": 180,\n            \"minimum\": -180,\n            \"type\": \"number\"\n          }\n        },\n        \"required\": [\n          \"latitude\",\n          \"longitude\"\n        ],\n        \"type\": \"object\",\n        \"unevaluatedProperties\": false\n      },\n      \"violation_type_defore\": {\n        \"deprecated\": false,\n        \"title\": \"M\\u1ee5c \\u0111\\u00edch ch\\u1eb7t ph\\u00e1\",\n        \"description\": \"\",\n        \"anyOf\": [\n          {\n            \"$ref\": \"/api/v2.0/schemas/choices.json?field=deforest_rep_type\"\n          }\n        ],\n        \"type\": \"string\"\n      },\n      \"tree_defore\": {\n        \"deprecated\": false,\n        \"title\": \"S\\u1ed1 c\\u00e2y b\\u1ecb ch\\u1eb7t\",\n        \"description\": \"\",\n        \"type\": \"number\"\n      },\n      \"detail_defore\": {\n        \"deprecated\": false,\n        \"title\": \"M\\u00f4 t\\u1ea3 chi ti\\u1ebft\",\n        \"default\": \"\",\n        \"description\": \"\",\n        \"type\": \"string\"\n      }\n    },\n    \"required\": [\n      \"violation_type_defore\",\n      \"tree_defore\"\n    ],\n    \"type\": \"object\",\n    \"unevaluatedProperties\": false\n  },\n  \"ui\": {\n    \"fields\": {\n      \"Time_defor\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"DATE_TIME\"\n      },\n      \"defore_rep_name\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"TEXT\",\n        \"inputType\": \"SHORT_TEXT\",\n        \"placeholder\": \"\"\n      },\n      \"wood_type\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"CHOICE_LIST\",\n        \"choices\": {\n          \"eventTypeCategories\": [],\n          \"existingChoiceList\": [\n            \"deforest_rep_species\"\n          ],\n          \"featureCategories\": [],\n          \"myDataType\": \"EVENT_TYPES_FROM_EVENT_CATEGORY\",\n          \"subjectGroups\": [],\n          \"subjectSubtypes\": [],\n          \"type\": \"EXISTING_CHOICE_LIST\"\n        },\n        \"inputType\": \"DROPDOWN\",\n        \"placeholder\": \"\"\n      },\n      \"Lot_defore\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"LOCATION\"\n      },\n      \"violation_type_defore\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"CHOICE_LIST\",\n        \"choices\": {\n          \"eventTypeCategories\": [],\n          \"existingChoiceList\": [\n            \"deforest_rep_type\"\n          ],\n          \"featureCategories\": [],\n          \"myDataType\": \"EVENT_TYPES_FROM_EVENT_CATEGORY\",\n          \"subjectGroups\": [],\n          \"subjectSubtypes\": [],\n          \"type\": \"EXISTING_CHOICE_LIST\"\n        },\n        \"inputType\": \"DROPDOWN\",\n        \"placeholder\": \"\"\n      },\n      \"tree_defore\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"NUMERIC\",\n        \"placeholder\": \"\\u01af\\u1edbc t\\u00ednh\"\n      },\n      \"detail_defore\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-2\",\n        \"type\": \"TEXT\",\n        \"inputType\": \"LONG_TEXT\",\n        \"placeholder\": \"M\\u00f4 t\\u1ea3 \\u0111\\u1ed1i t\\u01b0\\u1ee3ng / tang v\\u1eadt...\"\n      }\n    },\n    \"headers\": {},\n    \"order\": [\n      \"section-1\",\n      \"section-2\"\n    ],\n    \"sections\": {\n      \"section-1\": {\n        \"columns\": 2,\n        \"conditions\": [],\n        \"isActive\": true,\n        \"label\": \"Th\\u00f4ng tin\",\n        \"leftColumn\": [\n          {\n            \"name\": \"Time_defor\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"defore_rep_name\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"wood_type\",\n            \"type\": \"field\"\n          }\n        ],\n        \"rightColumn\": [\n          {\n            \"name\": \"Lot_defore\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"violation_type_defore\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"tree_defore\",\n            \"type\": \"field\"\n          }\n        ]\n      },\n      \"section-2\": {\n        \"columns\": 1,\n        \"conditions\": [],\n        \"isActive\": true,\n        \"label\": \"\",\n        \"leftColumn\": [\n          {\n            \"name\": \"detail_defore\",\n            \"type\": \"field\"\n          }\n        ],\n        \"rightColumn\": []\n      }\n    }\n  }\n}",
+          "is_active": true,
+          "icon": "deforestation_rep",
+          "_schema_field_count": 7,
+          "_schema_fields": [
+            "Lot_defore",
+            "Time_defor",
+            "defore_rep_name",
+            "detail_defore",
+            "tree_defore",
+            "violation_type_defore",
+            "wood_type"
+          ],
+          "_schema_required_fields": [
+            "tree_defore",
+            "violation_type_defore"
+          ],
+          "_schema_parser_mode": "v2-json"
+        },
+        {
+          "id": "12cc8037-3786-4f5a-93c0-cc2779f7f6f0",
+          "url": "https://epictech.pamdas.org/api/v2.0/activity/eventtypes/land_grabbing_rep2",
+          "has_events_assigned": false,
+          "icon_id": "land_clearance_rep",
+          "value": "land_grabbing_rep2",
+          "display": "Lấn chiếm đất rừng",
+          "ordernum": 1.0,
+          "category": "security",
+          "geometry_type": "Point",
+          "default_priority": 300,
+          "default_state": "active",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "readonly": false,
+          "is_collection": false,
+          "schema": "{\n  \"json\": {\n    \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n    \"properties\": {\n      \"land_grabbing_name2\": {\n        \"deprecated\": false,\n        \"title\": \"T\\u00ean ng\\u01b0\\u1eddi ph\\u00e1t hi\\u1ec7n\",\n        \"default\": \"\",\n        \"description\": \"\",\n        \"type\": \"string\"\n      },\n      \"land_grabbing_type2\": {\n        \"deprecated\": false,\n        \"title\": \"H\\u00ecnh th\\u1ee9c l\\u1ea5n chi\\u1ebfm\",\n        \"description\": \"\",\n        \"anyOf\": [\n          {\n            \"$ref\": \"/api/v2.0/schemas/choices.json?field=land_grabbing_rep_type\"\n          }\n        ],\n        \"type\": \"string\"\n      },\n      \"land_grabbing_situ\": {\n        \"deprecated\": false,\n        \"title\": \"Hi\\u1ec7n tr\\u1ea1ng khu \\u0111\\u1ea5t\",\n        \"description\": \"\",\n        \"anyOf\": [\n          {\n            \"$ref\": \"/api/v2.0/schemas/choices.json?field=land_grabbing_rep_situation\"\n          }\n        ],\n        \"type\": \"string\"\n      },\n      \"land_grabbing_area2\": {\n        \"deprecated\": false,\n        \"title\": \"Di\\u1ec7n t\\u00edch \\u01b0\\u1edbc t\\u00ednh (hecta)\",\n        \"description\": \"\",\n        \"type\": \"number\"\n      },\n      \"land_grabbing_status2\": {\n        \"deprecated\": false,\n        \"title\": \"Tr\\u01b0\\u1eddng h\\u1ee3p c\\u0169 hay m\\u1edbi\",\n        \"description\": \"\",\n        \"anyOf\": [\n          {\n            \"$ref\": \"/api/v2.0/schemas/choices.json?field=land_grabbing_rep_status\"\n          }\n        ],\n        \"type\": \"string\"\n      },\n      \"land_grabbing_detail\": {\n        \"deprecated\": false,\n        \"title\": \"Th\\u00f4ng tin chi ti\\u1ebft\",\n        \"default\": \"\",\n        \"description\": \"\",\n        \"type\": \"string\"\n      }\n    },\n    \"required\": [],\n    \"type\": \"object\",\n    \"unevaluatedProperties\": false\n  },\n  \"ui\": {\n    \"fields\": {\n      \"land_grabbing_name2\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"TEXT\",\n        \"inputType\": \"SHORT_TEXT\",\n        \"placeholder\": \"\"\n      },\n      \"land_grabbing_type2\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"CHOICE_LIST\",\n        \"choices\": {\n          \"eventTypeCategories\": [],\n          \"existingChoiceList\": [\n            \"land_grabbing_rep_type\"\n          ],\n          \"featureCategories\": [],\n          \"myDataType\": \"EVENT_TYPES_FROM_EVENT_CATEGORY\",\n          \"subjectGroups\": [],\n          \"subjectSubtypes\": [],\n          \"type\": \"EXISTING_CHOICE_LIST\"\n        },\n        \"inputType\": \"DROPDOWN\",\n        \"placeholder\": \"\"\n      },\n      \"land_grabbing_situ\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"CHOICE_LIST\",\n        \"choices\": {\n          \"eventTypeCategories\": [],\n          \"existingChoiceList\": [\n            \"land_grabbing_rep_situation\"\n          ],\n          \"featureCategories\": [],\n          \"myDataType\": \"EVENT_TYPES_FROM_EVENT_CATEGORY\",\n          \"subjectGroups\": [],\n          \"subjectSubtypes\": [],\n          \"type\": \"EXISTING_CHOICE_LIST\"\n        },\n        \"inputType\": \"DROPDOWN\",\n        \"placeholder\": \"\"\n      },\n      \"land_grabbing_area2\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"NUMERIC\",\n        \"placeholder\": \"\"\n      },\n      \"land_grabbing_status2\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"CHOICE_LIST\",\n        \"choices\": {\n          \"eventTypeCategories\": [],\n          \"existingChoiceList\": [\n            \"land_grabbing_rep_status\"\n          ],\n          \"featureCategories\": [],\n          \"myDataType\": \"EVENT_TYPES_FROM_EVENT_CATEGORY\",\n          \"subjectGroups\": [],\n          \"subjectSubtypes\": [],\n          \"type\": \"EXISTING_CHOICE_LIST\"\n        },\n        \"inputType\": \"DROPDOWN\",\n        \"placeholder\": \"\"\n      },\n      \"land_grabbing_detail\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-2\",\n        \"type\": \"TEXT\",\n        \"inputType\": \"LONG_TEXT\",\n        \"placeholder\": \"Chi ti\\u1ebft s\\u1ef1 v\\u1ee5 k\\u00e8m \\u1ea3nh\"\n      }\n    },\n    \"headers\": {},\n    \"order\": [\n      \"section-1\",\n      \"section-2\"\n    ],\n    \"sections\": {\n      \"section-1\": {\n        \"columns\": 2,\n        \"conditions\": [],\n        \"isActive\": true,\n        \"label\": \"\",\n        \"leftColumn\": [\n          {\n            \"name\": \"land_grabbing_name2\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"land_grabbing_type2\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"land_grabbing_situ\",\n            \"type\": \"field\"\n          }\n        ],\n        \"rightColumn\": [\n          {\n            \"name\": \"land_grabbing_area2\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"land_grabbing_status2\",\n            \"type\": \"field\"\n          }\n        ]\n      },\n      \"section-2\": {\n        \"columns\": 1,\n        \"conditions\": [],\n        \"isActive\": true,\n        \"label\": \"\",\n        \"leftColumn\": [\n          {\n            \"name\": \"land_grabbing_detail\",\n            \"type\": \"field\"\n          }\n        ],\n        \"rightColumn\": []\n      }\n    }\n  }\n}",
+          "is_active": true,
+          "icon": "land_clearance_rep",
+          "_schema_field_count": 6,
+          "_schema_fields": [
+            "land_grabbing_area2",
+            "land_grabbing_detail",
+            "land_grabbing_name2",
+            "land_grabbing_situ",
+            "land_grabbing_status2",
+            "land_grabbing_type2"
+          ],
+          "_schema_required_fields": [],
+          "_schema_parser_mode": "v2-json"
+        },
+        {
+          "id": "72d61cb0-6db1-4d4a-8709-8e1591053126",
+          "url": "https://epictech.pamdas.org/api/v2.0/activity/eventtypes/patrol_info_rep",
+          "has_events_assigned": true,
+          "icon_id": "patrol_rep",
+          "value": "patrol_info_rep",
+          "display": "Thông tin tuần tra",
+          "ordernum": 21.0,
+          "category": "logistics",
+          "geometry_type": "Point",
+          "default_priority": 0,
+          "default_state": "active",
+          "resolve_time": 8,
+          "auto_resolve": true,
+          "readonly": false,
+          "is_collection": false,
+          "schema": "{\n  \"json\": {\n    \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n    \"properties\": {\n      \"thoi_gian_bat_dau\": {\n        \"deprecated\": false,\n        \"title\": \"Th\\u1eddi gian b\\u1eaft \\u0111\\u1ea7u\",\n        \"description\": \"\",\n        \"format\": \"date-time\",\n        \"type\": \"string\"\n      },\n      \"so_luong_thanh_vien\": {\n        \"deprecated\": false,\n        \"title\": \"S\\u1ed1 l\\u01b0\\u1ee3ng th\\u00e0nh vi\\u00ean\",\n        \"description\": \"\",\n        \"type\": \"number\"\n      },\n      \"thoi_gian_ket_thuc\": {\n        \"deprecated\": false,\n        \"title\": \"Th\\u1eddi gian k\\u1ebft th\\u00fac\",\n        \"description\": \"\",\n        \"format\": \"date-time\",\n        \"type\": \"string\"\n      },\n      \"noi_dung_tuan_tra\": {\n        \"deprecated\": false,\n        \"title\": \"N\\u1ed9i dung / M\\u1ee5c \\u0111\\u00edch tu\\u1ea7n tra\",\n        \"default\": \"\",\n        \"description\": \"\",\n        \"type\": \"string\"\n      }\n    },\n    \"required\": [\n      \"thoi_gian_bat_dau\",\n      \"thoi_gian_ket_thuc\",\n      \"noi_dung_tuan_tra\"\n    ],\n    \"type\": \"object\",\n    \"unevaluatedProperties\": false\n  },\n  \"ui\": {\n    \"fields\": {\n      \"thoi_gian_bat_dau\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"DATE_TIME\"\n      },\n      \"so_luong_thanh_vien\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"NUMERIC\",\n        \"placeholder\": \"\"\n      },\n      \"thoi_gian_ket_thuc\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"DATE_TIME\"\n      },\n      \"noi_dung_tuan_tra\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-2\",\n        \"type\": \"TEXT\",\n        \"inputType\": \"LONG_TEXT\",\n        \"placeholder\": \"\"\n      }\n    },\n    \"headers\": {},\n    \"order\": [\n      \"section-1\",\n      \"section-2\"\n    ],\n    \"sections\": {\n      \"section-1\": {\n        \"columns\": 2,\n        \"conditions\": [],\n        \"isActive\": true,\n        \"label\": \"Th\\u00f4ng tin cu\\u1ed9c tu\\u1ea7n tra\",\n        \"leftColumn\": [\n          {\n            \"name\": \"thoi_gian_bat_dau\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"so_luong_thanh_vien\",\n            \"type\": \"field\"\n          }\n        ],\n        \"rightColumn\": [\n          {\n            \"name\": \"thoi_gian_ket_thuc\",\n            \"type\": \"field\"\n          }\n        ]\n      },\n      \"section-2\": {\n        \"columns\": 1,\n        \"conditions\": [],\n        \"isActive\": true,\n        \"label\": \"\",\n        \"leftColumn\": [\n          {\n            \"name\": \"noi_dung_tuan_tra\",\n            \"type\": \"field\"\n          }\n        ],\n        \"rightColumn\": []\n      }\n    }\n  }\n}",
+          "is_active": true,
+          "icon": "patrol_rep",
+          "_schema_field_count": 4,
+          "_schema_fields": [
+            "noi_dung_tuan_tra",
+            "so_luong_thanh_vien",
+            "thoi_gian_bat_dau",
+            "thoi_gian_ket_thuc"
+          ],
+          "_schema_required_fields": [
+            "noi_dung_tuan_tra",
+            "thoi_gian_bat_dau",
+            "thoi_gian_ket_thuc"
+          ],
+          "_schema_parser_mode": "v2-json"
+        },
+        {
+          "id": "7a0aa529-3a22-4671-8ecc-0637890245a4",
+          "url": "https://epictech.pamdas.org/api/v2.0/activity/eventtypes/tree_rep",
+          "has_events_assigned": true,
+          "icon_id": "natural_feature_rep",
+          "value": "tree_rep",
+          "display": "Cây có giá trị",
+          "ordernum": 20.0,
+          "category": "forest_asset",
+          "geometry_type": "Point",
+          "default_priority": 100,
+          "default_state": "active",
+          "resolve_time": null,
+          "auto_resolve": false,
+          "readonly": false,
+          "is_collection": false,
+          "schema": "{\n  \"json\": {\n    \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n    \"properties\": {\n      \"tree_id\": {\n        \"deprecated\": false,\n        \"title\": \"ID\",\n        \"default\": \"\",\n        \"description\": \"ID c\\u1ee7a c\\u00e2y\",\n        \"type\": \"string\"\n      },\n      \"tree_type\": {\n        \"deprecated\": false,\n        \"title\": \"Lo\\u00e0i c\\u00e2y\",\n        \"default\": \"\",\n        \"description\": \"T\\u00ean Lo\\u00e0i c\\u00e2y\",\n        \"type\": \"string\"\n      },\n      \"tree_age\": {\n        \"deprecated\": false,\n        \"title\": \"\\u0110\\u1ed9 tu\\u1ed5i (n\\u0103m)\",\n        \"description\": \"\\u0110\\u1ed9 tu\\u1ed5i c\\u1ee7a c\\u00e2y\",\n        \"type\": \"number\"\n      },\n      \"tree_height\": {\n        \"deprecated\": false,\n        \"title\": \"Chi\\u1ec1u cao (m)\",\n        \"description\": \"Chi\\u1ec1u cao c\\u1ee7a c\\u00e2y\",\n        \"type\": \"number\"\n      },\n      \"tree_diameter\": {\n        \"deprecated\": false,\n        \"title\": \"\\u0110\\u01b0\\u1eddng k\\u00ednh th\\u00e2n (cm)\",\n        \"description\": \"\\u0110\\u01b0\\u1eddng k\\u00ednh th\\u00e2n c\\u00e2y\",\n        \"type\": \"number\"\n      },\n      \"tree_foliage\": {\n        \"deprecated\": false,\n        \"title\": \"\\u0110\\u1ed9 r\\u1ed9ng t\\u00e1n l\\u00e1 (m)\",\n        \"description\": \"\",\n        \"type\": \"number\"\n      },\n      \"tree_status\": {\n        \"deprecated\": false,\n        \"title\": \"T\\u00ecnh tr\\u1ea1ng \",\n        \"description\": \"\",\n        \"items\": {\n          \"anyOf\": [\n            {\n              \"$ref\": \"/api/v2.0/schemas/choices.json?field=tree_status\"\n            }\n          ],\n          \"type\": \"string\"\n        },\n        \"type\": \"array\",\n        \"uniqueItems\": true\n      }\n    },\n    \"required\": [\n      \"tree_id\",\n      \"tree_type\",\n      \"tree_status\"\n    ],\n    \"type\": \"object\",\n    \"unevaluatedProperties\": false\n  },\n  \"ui\": {\n    \"fields\": {\n      \"tree_id\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"TEXT\",\n        \"inputType\": \"SHORT_TEXT\",\n        \"placeholder\": \"1234\"\n      },\n      \"tree_type\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"TEXT\",\n        \"inputType\": \"SHORT_TEXT\",\n        \"placeholder\": \"\"\n      },\n      \"tree_age\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"NUMERIC\",\n        \"placeholder\": \"\"\n      },\n      \"tree_height\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"NUMERIC\",\n        \"placeholder\": \"\"\n      },\n      \"tree_diameter\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"NUMERIC\",\n        \"placeholder\": \"\"\n      },\n      \"tree_foliage\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"NUMERIC\",\n        \"placeholder\": \"\"\n      },\n      \"tree_status\": {\n        \"conditionalDependents\": [],\n        \"parent\": \"section-1\",\n        \"type\": \"CHOICE_LIST\",\n        \"choices\": {\n          \"eventTypeCategories\": [],\n          \"existingChoiceList\": [\n            \"tree_status\"\n          ],\n          \"featureCategories\": [],\n          \"myDataType\": \"EVENT_TYPES_FROM_EVENT_CATEGORY\",\n          \"subjectGroups\": [],\n          \"subjectSubtypes\": [],\n          \"type\": \"EXISTING_CHOICE_LIST\"\n        },\n        \"inputType\": \"LIST\",\n        \"placeholder\": \"\"\n      }\n    },\n    \"headers\": {},\n    \"order\": [\n      \"section-1\"\n    ],\n    \"sections\": {\n      \"section-1\": {\n        \"columns\": 1,\n        \"conditions\": [],\n        \"isActive\": true,\n        \"label\": \"Th\\u00f4ng Tin C\\u00e2y\",\n        \"leftColumn\": [\n          {\n            \"name\": \"tree_id\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"tree_type\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"tree_age\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"tree_height\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"tree_diameter\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"tree_foliage\",\n            \"type\": \"field\"\n          },\n          {\n            \"name\": \"tree_status\",\n            \"type\": \"field\"\n          }\n        ],\n        \"rightColumn\": []\n      }\n    }\n  }\n}",
+          "is_active": true,
+          "icon": "natural_feature_rep",
+          "_schema_field_count": 7,
+          "_schema_fields": [
+            "tree_age",
+            "tree_diameter",
+            "tree_foliage",
+            "tree_height",
+            "tree_id",
+            "tree_status",
+            "tree_type"
+          ],
+          "_schema_required_fields": [
+            "tree_id",
+            "tree_status",
+            "tree_type"
+          ],
+          "_schema_parser_mode": "v2-json"
+        }
+      ]
+    }
+  },
+  "event_schema_catalog": [
+    {
+      "event_type": "accident_rep",
+      "version": "v1",
+      "field_count": 3,
+      "fields": [
+        "animals_involved",
+        "number_people_involved",
+        "type_accident"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "activity_rep",
+      "version": "v1",
+      "field_count": 4,
+      "fields": [
+        "activityrep_bearing",
+        "activityrep_distance",
+        "activityrep_patrolresponse",
+        "activityrep_whatseen"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "arrest_rep",
+      "version": "v1",
+      "field_count": 10,
+      "fields": [
+        "arrestrep_age",
+        "arrestrep_arrestingranger",
+        "arrestrep_dateofbirth",
+        "arrestrep_name",
+        "arrestrep_nationality",
+        "arrestrep_placeofarrest",
+        "arrestrep_reaonforarrest",
+        "arrestrep_timeofarrest",
+        "arrestrep_villagename",
+        "arrestrep_witness"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "confiscation_rep",
+      "version": "v1",
+      "field_count": 4,
+      "fields": [
+        "confiscationrep_details",
+        "confiscationrep_itemsconfiscated",
+        "confiscationrep_numberofitems",
+        "confiscationrep_weightofitems"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "contact_rep",
+      "version": "v1",
+      "field_count": 9,
+      "fields": [
+        "contactrep_ammunitionusedbypatrol",
+        "contactrep_arrests",
+        "contactrep_oppositioncasualties",
+        "contactrep_patrolactivity",
+        "contactrep_poachinggroupsize",
+        "contactrep_rangercasualties",
+        "contactrep_rangerresponse",
+        "contactrep_seizedweapons",
+        "contactrep_whoinitiatedcontact"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "fire_rep",
+      "version": "v1",
+      "field_count": 3,
+      "fields": [
+        "firerep_cause",
+        "firerep_direction",
+        "firerep_status"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "firms_rep",
+      "version": "v1",
+      "field_count": 6,
+      "fields": [
+        "bright_ti4",
+        "bright_ti5",
+        "confidence",
+        "frp",
+        "scan",
+        "track"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "geofence_break",
+      "version": "v1",
+      "field_count": 8,
+      "fields": [
+        "contain_regions",
+        "details",
+        "feature_group_name",
+        "geofence_name",
+        "name",
+        "subject_heading",
+        "subject_speed_kmhr",
+        "total_fix_count"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "gfw_activefire_alert",
+      "version": "v1",
+      "field_count": 9,
+      "fields": [
+        "alert_link",
+        "bright_ti4",
+        "bright_ti5",
+        "confidence",
+        "frp",
+        "num_clustered_alerts",
+        "scan",
+        "subscription_name",
+        "track"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "gfw_glad_alert",
+      "version": "v1",
+      "field_count": 4,
+      "fields": [
+        "alert_link",
+        "confidence",
+        "num_clustered_alerts",
+        "subscription_name"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "gfwfirealert",
+      "version": "v1",
+      "field_count": 2,
+      "fields": [
+        "alert_time",
+        "confidence"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "gfwgladalert",
+      "version": "v1",
+      "field_count": 1,
+      "fields": [
+        "confidence"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "hwc_rep",
+      "version": "v1",
+      "field_count": 8,
+      "fields": [
+        "hwcrep_cropdamaged",
+        "hwcrep_humandeath",
+        "hwcrep_humaninjury",
+        "hwcrep_livestockInjuredKilled",
+        "hwcrep_livestocktypes",
+        "hwcrep_propertydamage",
+        "hwcrep_propertydamagetype",
+        "hwcrep_species"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "immobility",
+      "version": "v1",
+      "field_count": 6,
+      "fields": [
+        "cluster_fix_count",
+        "cluster_radius",
+        "details",
+        "name",
+        "probability_value",
+        "total_fix_count"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "immobility_all_clear",
+      "version": "v1",
+      "field_count": 6,
+      "fields": [
+        "cluster_fix_count",
+        "cluster_radius",
+        "details",
+        "name",
+        "probability_value",
+        "total_fix_count"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "incident_collection",
+      "version": "v1",
+      "field_count": 3,
+      "fields": [
+        "conservancy",
+        "reportingTime",
+        "station"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "low_speed_percentile",
+      "version": "v1",
+      "field_count": 6,
+      "fields": [
+        "cur_median_speed",
+        "details",
+        "low_speed_threshold_percentile",
+        "low_speed_threshold_value",
+        "name",
+        "total_fix_count"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "low_speed_wilcoxon",
+      "version": "v1",
+      "field_count": 4,
+      "fields": [
+        "low_speed_probability",
+        "low_speed_probability_cutoff",
+        "name",
+        "total_fix_count"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "low_speed_wilcoxon_all_clear",
+      "version": "v1",
+      "field_count": 5,
+      "fields": [
+        "details",
+        "low_speed_probability",
+        "low_speed_threshold_probability",
+        "name",
+        "total_fix_count"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "medevac_rep",
+      "version": "v1",
+      "field_count": 10,
+      "fields": [
+        "medevacrep_ambulatorycasualties",
+        "medevacrep_bestcommunication",
+        "medevacrep_location",
+        "medevacrep_other",
+        "medevacrep_prioritypatients",
+        "medevacrep_routinepatients",
+        "medevacrep_security",
+        "medevacrep_specialequipment",
+        "medevacrep_stretchercasualties",
+        "medevacrep_urgentpatients"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "poacher_camp_rep",
+      "version": "v1",
+      "field_count": 3,
+      "fields": [
+        "poachercamprep_description",
+        "poachercamprep_numberofpeople",
+        "poachercamprep_status"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "proximity",
+      "version": "v1",
+      "field_count": 8,
+      "fields": [
+        "details",
+        "name",
+        "proximity_dist_meters",
+        "spatial_feature_group",
+        "spatial_feature_name",
+        "subject_heading",
+        "subject_speed_kmhr",
+        "total_fix_count"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "rainfall_rep",
+      "version": "v1",
+      "field_count": 2,
+      "fields": [
+        "rainfallrep_location",
+        "rainfallrep_rainfall"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "shot_rep",
+      "version": "v1",
+      "field_count": 7,
+      "fields": [
+        "shotrep_bearing",
+        "shotrep_distance",
+        "shotrep_estimatedcaliber",
+        "shotrep_numberofshots",
+        "shotrep_patrolresponse",
+        "shotrep_timeofshot",
+        "shotrep_typeofshots"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "silence_source_provider_rep",
+      "version": "v1",
+      "field_count": 3,
+      "fields": [
+        "last_device_reported_at",
+        "report_time",
+        "silence_threshold"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "silence_source_rep",
+      "version": "v1",
+      "field_count": 7,
+      "fields": [
+        "device_id",
+        "latest_position_recorded_at",
+        "location",
+        "name_assigned_subject",
+        "report_time",
+        "silence_threshold",
+        "source_provider"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "sit_rep",
+      "version": "v1",
+      "field_count": 3,
+      "fields": [
+        "sitrep_currentactivity",
+        "sitrep_futureactivity",
+        "sitrep_other"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "snare_rep",
+      "version": "v1",
+      "field_count": 4,
+      "fields": [
+        "snarerep_action",
+        "snarerep_comments",
+        "snarerep_numberofsnares",
+        "snarerep_status"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "spoor_rep",
+      "version": "v1",
+      "field_count": 5,
+      "fields": [
+        "spoorrep_age",
+        "spoorrep_bearing",
+        "spoorrep_comments",
+        "spoorrep_numberpeopletracked",
+        "spoorrep_type"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "subject_proximity",
+      "version": "v1",
+      "field_count": 10,
+      "fields": [
+        "proximity_dist_meters",
+        "subject_1_heading",
+        "subject_1_location",
+        "subject_1_name",
+        "subject_1_speed_kmhr",
+        "subject_2_heading",
+        "subject_2_location",
+        "subject_2_name",
+        "subject_2_speed_kmhr",
+        "total_fix_count"
+      ],
+      "required_fields": [],
+      "parser_mode": "v1-schema"
+    },
+    {
+      "event_type": "traffic_rep",
+      "version": "v1",
+      "field_count": 7,
+      "fields": [
+        "trafficrep_bearing",
+        "trafficrep_currentpatrolactivity",
+        "trafficrep_distance",
+        "trafficrep_sightingactivity",
+        "trafficrep_sightingdescription",
+        "trafficrep_vehiclemakemodel",
+        "trafficrep_vehicleregistration"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "wildlife_sighting_rep",
+      "version": "v1",
+      "field_count": 3,
+      "fields": [
+        "wildlifesightingrep_collared",
+        "wildlifesightingrep_numberanimals",
+        "wildlifesightingrep_species"
+      ],
+      "required_fields": [],
+      "parser_mode": "raw-string-fallback"
+    },
+    {
+      "event_type": "all_posts_check",
+      "version": "v2",
+      "field_count": 5,
+      "fields": [
+        "onleave_number",
+        "onpatrol_number",
+        "onsite_number",
+        "station_note",
+        "station_number"
+      ],
+      "required_fields": [],
+      "parser_mode": "v2-json"
+    },
+    {
+      "event_type": "deforestation_rep",
+      "version": "v2",
+      "field_count": 7,
+      "fields": [
+        "Lot_defore",
+        "Time_defor",
+        "defore_rep_name",
+        "detail_defore",
+        "tree_defore",
+        "violation_type_defore",
+        "wood_type"
+      ],
+      "required_fields": [
+        "tree_defore",
+        "violation_type_defore"
+      ],
+      "parser_mode": "v2-json"
+    },
+    {
+      "event_type": "land_grabbing_rep2",
+      "version": "v2",
+      "field_count": 6,
+      "fields": [
+        "land_grabbing_area2",
+        "land_grabbing_detail",
+        "land_grabbing_name2",
+        "land_grabbing_situ",
+        "land_grabbing_status2",
+        "land_grabbing_type2"
+      ],
+      "required_fields": [],
+      "parser_mode": "v2-json"
+    },
+    {
+      "event_type": "patrol_info_rep",
+      "version": "v2",
+      "field_count": 4,
+      "fields": [
+        "noi_dung_tuan_tra",
+        "so_luong_thanh_vien",
+        "thoi_gian_bat_dau",
+        "thoi_gian_ket_thuc"
+      ],
+      "required_fields": [
+        "noi_dung_tuan_tra",
+        "thoi_gian_bat_dau",
+        "thoi_gian_ket_thuc"
+      ],
+      "parser_mode": "v2-json"
+    },
+    {
+      "event_type": "tree_rep",
+      "version": "v2",
+      "field_count": 7,
+      "fields": [
+        "tree_age",
+        "tree_diameter",
+        "tree_foliage",
+        "tree_height",
+        "tree_id",
+        "tree_status",
+        "tree_type"
+      ],
+      "required_fields": [
+        "tree_id",
+        "tree_status",
+        "tree_type"
+      ],
+      "parser_mode": "v2-json"
+    }
+  ],
+  "patrol": {
+    "patrol_types": {
+      "count": 5,
+      "items": [
+        {
+          "id": "32ea5280-448d-4dae-b5e0-5e0665f71805",
+          "value": "adhoc_patrol",
+          "display": "Tuần tra đột xuất",
+          "ordernum": 20,
+          "icon_id": "all_terrain_vehicle-event",
+          "default_priority": 200,
+          "is_active": true
+        },
+        {
+          "id": "2c085d62-67f3-472a-b524-1c598c54dcc0",
+          "value": "bicycle_patrol",
+          "display": "Bicycle Patrol",
+          "ordernum": 40,
+          "icon_id": "bicycle-patrol-icon",
+          "default_priority": 0,
+          "is_active": false
+        },
+        {
+          "id": "ff2f7da6-ade4-4dc1-bd7a-c2c5244017fa",
+          "value": "dog_patrol",
+          "display": "Tuần tra với chó",
+          "ordernum": 30,
+          "icon_id": "dog-patrol-icon",
+          "default_priority": 0,
+          "is_active": false
+        },
+        {
+          "id": "e62ca278-8687-455e-ba76-2c7dfa4d6b5f",
+          "value": "fence_patrol",
+          "display": "Tuần tra ranh giới",
+          "ordernum": 30,
+          "icon_id": "fence-patrol-icon",
+          "default_priority": 0,
+          "is_active": false
+        },
+        {
+          "id": "c6f88fd2-2b87-477a-9c23-3bc4b3eb845d",
+          "value": "routine_patrol",
+          "display": "Tuần tra định kỳ",
+          "ordernum": 10,
+          "icon_id": "routine-patrol-icon",
+          "default_priority": 100,
+          "is_active": true
+        }
+      ]
+    },
+    "trackedby": {
+      "data": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "properties": {
+          "leader": {
+            "type": "object",
+            "required": false,
+            "title": "Leader",
+            "enum": [],
+            "enum_ext": []
+          }
+        },
+        "required": [],
+        "dependencies": {},
+        "description": ""
+      },
+      "status": {
+        "code": 200,
+        "message": "OK"
+      }
+    },
+    "instances": {
+      "sample_size": 5,
+      "field_inventory": {
+        "patrol_fields": [
+          "files",
+          "id",
+          "notes",
+          "objective",
+          "patrol_segments",
+          "priority",
+          "serial_number",
+          "state",
+          "title",
+          "updates"
+        ],
+        "segment_fields": [
+          "end_location",
+          "events",
+          "icon_id",
+          "id",
+          "image_url",
+          "leader",
+          "patrol_type",
+          "scheduled_end",
+          "scheduled_start",
+          "start_location",
+          "time_range",
+          "updates"
+        ],
+        "segment_time_range_fields": [
+          "end_time",
+          "start_time"
+        ],
+        "segment_leader_fields": [
+          "additional",
+          "common_name",
+          "content_type",
+          "created_at",
+          "id",
+          "image_url",
+          "is_active",
+          "name",
+          "subject_subtype",
+          "subject_type",
+          "tracks_available",
+          "updated_at",
+          "user"
+        ],
+        "segment_start_location_fields": [
+          "latitude",
+          "longitude"
+        ],
+        "segment_end_location_fields": [
+          "latitude",
+          "longitude"
+        ]
+      },
+      "sample": [
+        {
+          "id": "e72deb54-090c-4e5c-ba60-cd1836b9a9d4",
+          "priority": 0,
+          "state": "open",
+          "objective": "Tuần tra team",
+          "serial_number": 35,
+          "title": null,
+          "files": [
+            {
+              "id": "73313a98-3d3a-4326-b7f6-a0d399caac65",
+              "comment": "",
+              "ordernum": null,
+              "updates": [
+                {
+                  "message": "File Added: Don xin nghi tỷuc.docx",
+                  "time": "2026-01-21T08:49:27.875785+00:00",
+                  "text": "",
+                  "user": {
+                    "username": "anhson",
+                    "first_name": "Son",
+                    "last_name": "Nguyen",
+                    "id": "caaf8df8-3fa0-4606-b9d4-1f13d627943e",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "add_patrolfile"
+                }
+              ],
+              "url": "https://epictech.pamdas.org/api/v1.0/activity/patrols/e72deb54-090c-4e5c-ba60-cd1836b9a9d4/file/73313a98-3d3a-4326-b7f6-a0d399caac65/",
+              "filename": "Don xin nghi tỷuc.docx",
+              "file_type": "file",
+              "icon_url": "https://epictech.pamdas.org/static/icon-docx.png"
+            }
+          ],
+          "notes": [
+            {
+              "id": "dda7a67d-1714-49fd-b013-6dfea5623a53",
+              "text": "trễ lịch vì bị bệnh",
+              "updates": [
+                {
+                  "message": "Note Added",
+                  "time": "2026-01-21T08:49:26.555489+00:00",
+                  "text": "trễ lịch vì bị bệnh",
+                  "user": {
+                    "username": "anhson",
+                    "first_name": "Son",
+                    "last_name": "Nguyen",
+                    "id": "caaf8df8-3fa0-4606-b9d4-1f13d627943e",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "add_patrolnote"
+                }
+              ]
+            }
+          ],
+          "patrol_segments": [
+            {
+              "id": "25f96245-8f29-4f56-9e75-d080334c931c",
+              "patrol_type": "routine_patrol",
+              "leader": {
+                "content_type": "observations.subject",
+                "id": "8ddd829a-f985-469b-80c4-3a8613510940",
+                "name": "Dev Service Account",
+                "subject_type": "person",
+                "subject_subtype": "ranger_team",
+                "common_name": null,
+                "additional": {},
+                "created_at": "2026-01-07T20:44:13.220675-08:00",
+                "updated_at": "2026-01-11T23:54:38.803321-08:00",
+                "is_active": true,
+                "user": {
+                  "id": "0f911ef2-743c-4b86-96db-035a80e8cedb"
+                },
+                "tracks_available": false,
+                "image_url": "/static/ranger_team.svg"
+              },
+              "scheduled_start": "2026-01-19T18:00:00-08:00",
+              "scheduled_end": null,
+              "time_range": {
+                "start_time": null,
+                "end_time": null
+              },
+              "start_location": null,
+              "end_location": null,
+              "events": [],
+              "image_url": "https://epictech.pamdas.org/static/sprite-src/routine-patrol-icon.svg",
+              "icon_id": "routine-patrol-icon",
+              "updates": [
+                {
+                  "message": "Updated fields: ",
+                  "time": "2026-01-21T08:49:26.581116+00:00",
+                  "user": {
+                    "username": "anhson",
+                    "first_name": "Son",
+                    "last_name": "Nguyen",
+                    "id": "caaf8df8-3fa0-4606-b9d4-1f13d627943e",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "update_segment"
+                }
+              ]
+            }
+          ],
+          "updates": [
+            {
+              "message": "Patrol Added",
+              "time": "2026-01-19T08:05:46.699149+00:00",
+              "user": {
+                "username": "anhson",
+                "first_name": "Son",
+                "last_name": "Nguyen",
+                "id": "caaf8df8-3fa0-4606-b9d4-1f13d627943e",
+                "content_type": "accounts.user"
+              },
+              "type": "add_patrol"
+            }
+          ]
+        },
+        {
+          "id": "762be60d-fefa-4d72-a999-b48a71f2dd8a",
+          "priority": 0,
+          "state": "done",
+          "objective": null,
+          "serial_number": 1,
+          "title": "Bicycle Patrol",
+          "files": [],
+          "notes": [],
+          "patrol_segments": [
+            {
+              "id": "ecab6f6d-9011-4607-81bd-a6989597fcd7",
+              "patrol_type": "bicycle_patrol",
+              "leader": {
+                "content_type": "observations.subject",
+                "id": "8ddd829a-f985-469b-80c4-3a8613510940",
+                "name": "Dev Service Account",
+                "subject_type": "person",
+                "subject_subtype": "ranger_team",
+                "common_name": null,
+                "additional": {},
+                "created_at": "2026-01-07T20:44:13.220675-08:00",
+                "updated_at": "2026-01-11T23:54:38.803321-08:00",
+                "is_active": true,
+                "user": {
+                  "id": "0f911ef2-743c-4b86-96db-035a80e8cedb"
+                },
+                "tracks_available": false,
+                "image_url": "/static/ranger_team.svg"
+              },
+              "scheduled_start": null,
+              "scheduled_end": null,
+              "time_range": {
+                "start_time": "2026-01-07T21:46:46-08:00",
+                "end_time": "2026-01-07T21:57:43-08:00"
+              },
+              "start_location": {
+                "latitude": 10.785504734189308,
+                "longitude": 106.68205363478774
+              },
+              "end_location": {
+                "latitude": 10.781038697875928,
+                "longitude": 106.69521046209401
+              },
+              "events": [],
+              "image_url": "https://epictech.pamdas.org/static/sprite-src/bicycle-patrol-icon.svg",
+              "icon_id": "bicycle-patrol-icon",
+              "updates": [
+                {
+                  "message": "Updated fields: End Time, End Location",
+                  "time": "2026-01-08T05:57:43.677653+00:00",
+                  "user": {
+                    "username": "dev",
+                    "first_name": "Dev",
+                    "last_name": "Service Account",
+                    "id": "0f911ef2-743c-4b86-96db-035a80e8cedb",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "update_segment"
+                }
+              ]
+            }
+          ],
+          "updates": [
+            {
+              "message": "Updated fields: State is done",
+              "time": "2026-01-08T05:57:43.695775+00:00",
+              "user": {
+                "username": "dev",
+                "first_name": "Dev",
+                "last_name": "Service Account",
+                "id": "0f911ef2-743c-4b86-96db-035a80e8cedb",
+                "content_type": "accounts.user"
+              },
+              "type": "update_patrol_state"
+            },
+            {
+              "message": "Patrol Added",
+              "time": "2026-01-08T05:46:47.560224+00:00",
+              "user": {
+                "username": "dev",
+                "first_name": "Dev",
+                "last_name": "Service Account",
+                "id": "0f911ef2-743c-4b86-96db-035a80e8cedb",
+                "content_type": "accounts.user"
+              },
+              "type": "add_patrol"
+            }
+          ]
+        },
+        {
+          "id": "8613c568-6005-4737-a1b5-f9f317d47c7c",
+          "priority": 0,
+          "state": "done",
+          "objective": null,
+          "serial_number": 4,
+          "title": "nhà chú K",
+          "files": [],
+          "notes": [],
+          "patrol_segments": [
+            {
+              "id": "ce529855-d913-476b-a7f0-a7f30b9f3274",
+              "patrol_type": "bicycle_patrol",
+              "leader": {
+                "content_type": "observations.subject",
+                "id": "8ddd829a-f985-469b-80c4-3a8613510940",
+                "name": "Dev Service Account",
+                "subject_type": "person",
+                "subject_subtype": "ranger_team",
+                "common_name": null,
+                "additional": {},
+                "created_at": "2026-01-07T20:44:13.220675-08:00",
+                "updated_at": "2026-01-11T23:54:38.803321-08:00",
+                "is_active": true,
+                "user": {
+                  "id": "0f911ef2-743c-4b86-96db-035a80e8cedb"
+                },
+                "tracks_available": false,
+                "image_url": "/static/ranger_team.svg"
+              },
+              "scheduled_start": null,
+              "scheduled_end": null,
+              "time_range": {
+                "start_time": "2026-01-09T01:01:29-08:00",
+                "end_time": "2026-01-09T02:06:19-08:00"
+              },
+              "start_location": {
+                "latitude": 10.7808061,
+                "longitude": 106.6950634
+              },
+              "end_location": {
+                "latitude": 10.7533831,
+                "longitude": 106.6135575
+              },
+              "events": [],
+              "image_url": "https://epictech.pamdas.org/static/sprite-src/bicycle-patrol-icon.svg",
+              "icon_id": "bicycle-patrol-icon",
+              "updates": [
+                {
+                  "message": "Updated fields: End Time, End Location",
+                  "time": "2026-01-09T10:06:20.217820+00:00",
+                  "user": {
+                    "username": "dev",
+                    "first_name": "Dev",
+                    "last_name": "Service Account",
+                    "id": "0f911ef2-743c-4b86-96db-035a80e8cedb",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "update_segment"
+                },
+                {
+                  "message": "Updated fields: ",
+                  "time": "2026-01-09T10:00:24.791844+00:00",
+                  "user": {
+                    "username": "epictechnologyjsc",
+                    "first_name": "Epic",
+                    "last_name": "Tech",
+                    "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "update_segment"
+                },
+                {
+                  "message": "Updated fields: Auto-End Time",
+                  "time": "2026-01-09T10:00:06.867079+00:00",
+                  "user": {
+                    "username": "epictechnologyjsc",
+                    "first_name": "Epic",
+                    "last_name": "Tech",
+                    "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "update_segment"
+                },
+                {
+                  "message": "Updated fields: ",
+                  "time": "2026-01-09T09:54:00.078621+00:00",
+                  "user": {
+                    "username": "epictechnologyjsc",
+                    "first_name": "Epic",
+                    "last_name": "Tech",
+                    "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "update_segment"
+                }
+              ]
+            }
+          ],
+          "updates": [
+            {
+              "message": "Updated fields: State is done",
+              "time": "2026-01-09T10:00:06.890723+00:00",
+              "user": {
+                "username": "epictechnologyjsc",
+                "first_name": "Epic",
+                "last_name": "Tech",
+                "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                "content_type": "accounts.user"
+              },
+              "type": "update_patrol_state"
+            },
+            {
+              "message": "Patrol Added",
+              "time": "2026-01-09T09:01:30.344949+00:00",
+              "user": {
+                "username": "dev",
+                "first_name": "Dev",
+                "last_name": "Service Account",
+                "id": "0f911ef2-743c-4b86-96db-035a80e8cedb",
+                "content_type": "accounts.user"
+              },
+              "type": "add_patrol"
+            }
+          ]
+        },
+        {
+          "id": "26555b4f-523e-4e0a-883d-156c34680c59",
+          "priority": 0,
+          "state": "done",
+          "objective": null,
+          "serial_number": 3,
+          "title": "Test",
+          "files": [],
+          "notes": [],
+          "patrol_segments": [
+            {
+              "id": "78a32461-93b5-421f-987a-d976c70f65c9",
+              "patrol_type": "routine_patrol",
+              "leader": {
+                "content_type": "observations.subject",
+                "id": "8ddd829a-f985-469b-80c4-3a8613510940",
+                "name": "Dev Service Account",
+                "subject_type": "person",
+                "subject_subtype": "ranger_team",
+                "common_name": null,
+                "additional": {},
+                "created_at": "2026-01-07T20:44:13.220675-08:00",
+                "updated_at": "2026-01-11T23:54:38.803321-08:00",
+                "is_active": true,
+                "user": {
+                  "id": "0f911ef2-743c-4b86-96db-035a80e8cedb"
+                },
+                "tracks_available": false,
+                "image_url": "/static/ranger_team.svg"
+              },
+              "scheduled_start": null,
+              "scheduled_end": null,
+              "time_range": {
+                "start_time": "2026-01-09T00:53:56-08:00",
+                "end_time": "2026-01-09T00:59:21.405000-08:00"
+              },
+              "start_location": {
+                "latitude": 10.780950008941344,
+                "longitude": 106.69519557530721
+              },
+              "end_location": null,
+              "events": [],
+              "image_url": "https://epictech.pamdas.org/static/sprite-src/routine-patrol-icon.svg",
+              "icon_id": "routine-patrol-icon",
+              "updates": [
+                {
+                  "message": "Updated fields: Auto-End Time",
+                  "time": "2026-01-09T08:59:21.016051+00:00",
+                  "user": {
+                    "username": "epictechnologyjsc",
+                    "first_name": "Epic",
+                    "last_name": "Tech",
+                    "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "update_segment"
+                },
+                {
+                  "message": "Updated fields: End Location",
+                  "time": "2026-01-09T08:58:27.352455+00:00",
+                  "user": {
+                    "username": "epictechnologyjsc",
+                    "first_name": "Epic",
+                    "last_name": "Tech",
+                    "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "update_segment"
+                },
+                {
+                  "message": "Updated fields: End Time, End Location",
+                  "time": "2026-01-09T08:58:07.944969+00:00",
+                  "user": {
+                    "username": "dev",
+                    "first_name": "Dev",
+                    "last_name": "Service Account",
+                    "id": "0f911ef2-743c-4b86-96db-035a80e8cedb",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "update_segment"
+                }
+              ]
+            }
+          ],
+          "updates": [
+            {
+              "message": "Updated fields: State is done",
+              "time": "2026-01-09T08:59:21.039117+00:00",
+              "user": {
+                "username": "epictechnologyjsc",
+                "first_name": "Epic",
+                "last_name": "Tech",
+                "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                "content_type": "accounts.user"
+              },
+              "type": "update_patrol_state"
+            },
+            {
+              "message": "Updated fields: State is open",
+              "time": "2026-01-09T08:58:27.371170+00:00",
+              "user": {
+                "username": "epictechnologyjsc",
+                "first_name": "Epic",
+                "last_name": "Tech",
+                "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                "content_type": "accounts.user"
+              },
+              "type": "update_patrol_state"
+            },
+            {
+              "message": "Updated fields: State is done",
+              "time": "2026-01-09T08:58:07.975549+00:00",
+              "user": {
+                "username": "dev",
+                "first_name": "Dev",
+                "last_name": "Service Account",
+                "id": "0f911ef2-743c-4b86-96db-035a80e8cedb",
+                "content_type": "accounts.user"
+              },
+              "type": "update_patrol_state"
+            },
+            {
+              "message": "Patrol Added",
+              "time": "2026-01-09T08:53:57.486541+00:00",
+              "user": {
+                "username": "dev",
+                "first_name": "Dev",
+                "last_name": "Service Account",
+                "id": "0f911ef2-743c-4b86-96db-035a80e8cedb",
+                "content_type": "accounts.user"
+              },
+              "type": "add_patrol"
+            }
+          ]
+        },
+        {
+          "id": "652c8781-8b06-415f-857c-7f7c23dd1243",
+          "priority": 0,
+          "state": "cancelled",
+          "objective": null,
+          "serial_number": 2,
+          "title": "Bicycle Patrol",
+          "files": [],
+          "notes": [],
+          "patrol_segments": [
+            {
+              "id": "f1d994b8-52fc-45f8-806f-141efb28b1d0",
+              "patrol_type": "bicycle_patrol",
+              "leader": {
+                "content_type": "observations.subject",
+                "id": "8ddd829a-f985-469b-80c4-3a8613510940",
+                "name": "Dev Service Account",
+                "subject_type": "person",
+                "subject_subtype": "ranger_team",
+                "common_name": null,
+                "additional": {},
+                "created_at": "2026-01-07T20:44:13.220675-08:00",
+                "updated_at": "2026-01-11T23:54:38.803321-08:00",
+                "is_active": true,
+                "user": {
+                  "id": "0f911ef2-743c-4b86-96db-035a80e8cedb"
+                },
+                "tracks_available": false,
+                "image_url": "/static/ranger_team.svg"
+              },
+              "scheduled_start": null,
+              "scheduled_end": null,
+              "time_range": {
+                "start_time": "2026-01-09T00:46:51-08:00",
+                "end_time": null
+              },
+              "start_location": {
+                "latitude": 10.780847947271774,
+                "longitude": 106.69511421087805
+              },
+              "end_location": {
+                "latitude": 10.780901170801616,
+                "longitude": 106.69513745409871
+              },
+              "events": [],
+              "image_url": "https://epictech.pamdas.org/static/sprite-src/bicycle-patrol-icon.svg",
+              "icon_id": "bicycle-patrol-icon",
+              "updates": [
+                {
+                  "message": "Updated fields: ",
+                  "time": "2026-01-09T09:20:09.896956+00:00",
+                  "user": {
+                    "username": "epictechnologyjsc",
+                    "first_name": "Epic",
+                    "last_name": "Tech",
+                    "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "update_segment"
+                },
+                {
+                  "message": "Updated fields: ",
+                  "time": "2026-01-09T09:19:54.481328+00:00",
+                  "user": {
+                    "username": "epictechnologyjsc",
+                    "first_name": "Epic",
+                    "last_name": "Tech",
+                    "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "update_segment"
+                },
+                {
+                  "message": "Updated fields: ",
+                  "time": "2026-01-09T09:19:36.784122+00:00",
+                  "user": {
+                    "username": "epictechnologyjsc",
+                    "first_name": "Epic",
+                    "last_name": "Tech",
+                    "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                    "content_type": "accounts.user"
+                  },
+                  "type": "update_segment"
+                }
+              ]
+            }
+          ],
+          "updates": [
+            {
+              "message": "Updated fields: State is cancelled",
+              "time": "2026-01-09T09:19:54.500302+00:00",
+              "user": {
+                "username": "epictechnologyjsc",
+                "first_name": "Epic",
+                "last_name": "Tech",
+                "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                "content_type": "accounts.user"
+              },
+              "type": "update_patrol_state"
+            },
+            {
+              "message": "Updated fields: State is open",
+              "time": "2026-01-09T09:19:36.802138+00:00",
+              "user": {
+                "username": "epictechnologyjsc",
+                "first_name": "Epic",
+                "last_name": "Tech",
+                "id": "b9d83279-5b49-4073-bac7-c492a9bdf30f",
+                "content_type": "accounts.user"
+              },
+              "type": "update_patrol_state"
+            },
+            {
+              "message": "Patrol Added",
+              "time": "2026-01-09T08:53:29.740534+00:00",
+              "user": {
+                "username": "dev",
+                "first_name": "Dev",
+                "last_name": "Service Account",
+                "id": "0f911ef2-743c-4b86-96db-035a80e8cedb",
+                "content_type": "accounts.user"
+              },
+              "type": "add_patrol"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "errors": []
+}

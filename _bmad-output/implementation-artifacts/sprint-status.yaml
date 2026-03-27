@@ -1,0 +1,73 @@
+# generated: 2026-03-19
+# last_updated: 2026-03-25
+# project: EarthRanger
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: {project-root}/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog -> in-progress: Automatically when first story is created (via create-story)
+#   - in-progress -> done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-03-19
+last_updated: 2026-03-25
+project: EarthRanger
+project_key: NOKEY
+tracking_system: file-system
+story_location: "{project-root}/_bmad-output/implementation-artifacts"
+
+development_status:
+  epic-1: done
+  1-1-backend-login-with-role-claims: done
+  1-2-secure-session-refresh-and-logout: done
+  1-3-server-side-role-guard-for-mobile-endpoints: done
+  1-4-secret-hygiene-and-production-security-baseline: done
+  epic-1-retrospective: done
+
+  epic-2: done
+  2-1-work-management-summary-api-for-calendar-views: done
+  2-2-idempotent-check-in-ingest-endpoint: done
+  2-3-mobile-app-open-check-in-trigger: done
+  2-4-work-management-calendar-ux-by-role: done
+  epic-2-retrospective: done
+
+  epic-3: done
+  3-1-read-only-incident-api-with-role-scope: done
+  3-2-incident-list-ux-with-operational-states: done
+  3-3-schedule-read-and-leader-write-apis: done
+  3-4-schedule-ux-for-ranger-view-and-leader-operations: done
+  epic-3-retrospective: done
+
+  epic-4: done
+  4-1-server-side-incremental-earthranger-sync-worker: done
+  4-2-mobile-cache-first-read-models: done
+  4-3-offline-queue-and-idempotent-replay-for-ranger-writes: done
+  4-4-sync-status-ux-and-manual-retry-flow: done
+  4-5-retention-and-compliance-operations: done
+  4-6-performance-and-observability-hardening: done
+  epic-4-retrospective: done
