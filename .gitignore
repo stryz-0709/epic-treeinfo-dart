@@ -30,6 +30,16 @@ Thumbs.db
 # Node
 node_modules/
 
+# Flutter / Dart (generated)
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.metadata
+
+# Nested env files
+**/.env
+
 # Lighthouse reports (regenerable)
 reports/lighthouse/*.json
 reports/lighthouse/*.html
