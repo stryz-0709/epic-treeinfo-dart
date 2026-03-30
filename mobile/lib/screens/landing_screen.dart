@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
+import '../services/external_app_launcher.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_widgets.dart';
 import 'main_shell.dart';
@@ -110,10 +111,12 @@ class _LandingScreenState extends State<LandingScreen> {
   }
 
   String _resolvedUserRole(AuthProvider auth, SettingsProvider settings) {
-    if (auth.isLeaderSession)
+    if (auth.isLeaderSession) {
       return settings.l.get('work_calendar_role_leader');
-    if (auth.isRangerSession)
+    }
+    if (auth.isRangerSession) {
       return settings.l.get('work_calendar_role_ranger');
+    }
     return settings.l.get('landing_user_role');
   }
 
@@ -139,6 +142,37 @@ class _LandingScreenState extends State<LandingScreen> {
     }
     const wd = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'];
     return '${wd[n.weekday - 1]}, ${n.day}/${n.month}/${n.year}';
+  }
+
+  void _showEarthRangerUnavailable(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _handleFeatureTap(_FeatureCardData feature) async {
+    HapticFeedback.lightImpact();
+
+    if (feature.routeName == '/patrol-management') {
+      final unavailableMessage = context.read<SettingsProvider>().l.get(
+        'landing_open_earthranger_failed',
+      );
+      final opened = await EarthRangerLauncher.open();
+      if (!opened) {
+        _showEarthRangerUnavailable(unavailableMessage);
+      }
+      return;
+    }
+
+    final shell = MainShellScope.of(context);
+    if (shell != null) {
+      shell.openFunctionRoute(feature.routeName);
+      return;
+    }
+
+    if (!mounted) return;
+    Navigator.of(context).pushNamed(feature.routeName);
   }
 
   @override
@@ -306,12 +340,7 @@ class _LandingScreenState extends State<LandingScreen> {
                                 return _FunctionCard(
                                   title: l.get(f.titleKey),
                                   icon: f.icon,
-                                  onTap: () {
-                                    HapticFeedback.lightImpact();
-                                    Navigator.of(
-                                      context,
-                                    ).pushNamed(f.routeName);
-                                  },
+                                  onTap: () => unawaited(_handleFeatureTap(f)),
                                 );
                               },
                             ),
@@ -354,7 +383,7 @@ class _LandingScreenState extends State<LandingScreen> {
 class _MaterialGradientFeatureIcon extends StatelessWidget {
   final IconData icon;
   final double size;
-  const _MaterialGradientFeatureIcon({required this.icon, this.size = 28});
+  const _MaterialGradientFeatureIcon({required this.icon, this.size = 32});
 
   @override
   Widget build(BuildContext context) {
@@ -363,8 +392,8 @@ class _MaterialGradientFeatureIcon extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Container(
-          width: 44,
-          height: 44,
+          width: 52,
+          height: 52,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             boxShadow: [
@@ -571,7 +600,7 @@ class _FunctionCard extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, constraints) {
               final compact = constraints.maxHeight < 112;
-              final iconSize = compact ? 24.0 : 28.0;
+              final iconSize = compact ? 28.0 : 34.0;
 
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -586,7 +615,7 @@ class _FunctionCard extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
                       color: const Color(0xFF101820),
-                      fontSize: compact ? 14.6 : 15.8,
+                      fontSize: compact ? 13.2 : 14.2,
                       fontWeight: FontWeight.w700,
                       height: 1.14,
                       letterSpacing: 0.08,

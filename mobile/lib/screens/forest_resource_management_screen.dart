@@ -1366,10 +1366,8 @@ class _ForestResourceManagementScreenState
                   _buildActionButtons(l),
                   const SizedBox(height: 10),
                   _buildOverviewInfoCard(l),
-                  const SizedBox(height: 10),
-                  if (selected == null)
-                    _buildScanPromptCard(l, minHeight: 164)
-                  else
+                  if (selected != null) ...[
+                    const SizedBox(height: 10),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1378,6 +1376,7 @@ class _ForestResourceManagementScreenState
                         Expanded(child: _buildCareCard(l, selected)),
                       ],
                     ),
+                  ],
                   if (_loading)
                     const Padding(
                       padding: EdgeInsets.only(top: 10),

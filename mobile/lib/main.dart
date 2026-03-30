@@ -18,7 +18,6 @@ import 'screens/link_tree_screen.dart';
 import 'screens/account_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/alerts_screen.dart';
-import 'screens/feature_placeholder_screen.dart';
 import 'screens/forest_compartment_management_screen.dart';
 import 'screens/forest_resource_management_screen.dart';
 import 'screens/map_screen.dart';
@@ -195,7 +194,12 @@ class TreeInfoApp extends StatelessWidget {
                 switch (routeSettings.name) {
                   case '/':
                   case '/landing':
-                    return MaterialPageRoute(builder: (_) => const MainShell());
+                    final initialTab = routeSettings.arguments is int
+                        ? routeSettings.arguments as int
+                        : 0;
+                    return MaterialPageRoute(
+                      builder: (_) => MainShell(initialTab: initialTab),
+                    );
                   case '/login':
                     return MaterialPageRoute(
                       builder: (_) => const LoginScreen(),
@@ -263,10 +267,7 @@ class TreeInfoApp extends StatelessWidget {
                     );
                   case '/notifications':
                     return MaterialPageRoute(
-                      builder: (_) => const FeaturePlaceholderScreen(
-                        titleKey: 'notifications',
-                        navIndex: 3,
-                      ),
+                      builder: (_) => const MainShell(initialTab: 3),
                     );
                   case '/account':
                     return MaterialPageRoute(

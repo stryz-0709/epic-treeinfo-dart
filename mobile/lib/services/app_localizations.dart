@@ -26,6 +26,8 @@ class AppLocalizations {
       'landing_function_schedule': 'Lịch làm việc',
       'landing_function_reports': 'Thống kê báo cáo',
       'landing_function_patrol': 'Quản lý Tuần tra',
+      'landing_open_earthranger_failed':
+          'Không thể mở ứng dụng EarthRanger trên thiết bị này.',
       'incident_management_title': 'Quản lý sự cố',
       'forest_compartment_title': 'Quản lý lâm phần',
       'forest_compartment_area': 'Diện tích',
@@ -464,6 +466,8 @@ class AppLocalizations {
       'landing_function_schedule': 'Work Schedule',
       'landing_function_reports': 'Report Statistics',
       'landing_function_patrol': 'Patrol Management',
+      'landing_open_earthranger_failed':
+          'Unable to open the EarthRanger app on this device.',
       'incident_management_title': 'Incident Management',
       'forest_compartment_title': 'Compartment Management',
       'forest_compartment_area': 'Area',
