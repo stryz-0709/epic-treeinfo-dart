@@ -73,7 +73,7 @@ class GlassCircleButton extends StatelessWidget {
             child: Center(
               child: Icon(
                 icon,
-                color: iconColor ?? const Color(0xFF555555),
+                color: iconColor ?? AppColors.textSecondary,
                 size: size * 0.5,
               ),
             ),
@@ -204,8 +204,8 @@ class GlassDangerButton extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppRadii.sm),
-          color: const Color(0xFFB42318),
-          boxShadow: AppShadows.danger,
+          color: AppColors.accentGreenDark,
+          boxShadow: AppShadows.accent,
         ),
         child: ElevatedButton.icon(
           onPressed: onPressed,
@@ -359,9 +359,11 @@ class GlassBottomNavBar extends StatelessWidget {
         vertical: AppSpacing.xs - 2,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.96),
+        color: AppColors.background.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.white),
+        border: Border.all(
+          color: AppColors.accentGreen.withValues(alpha: 0.28),
+        ),
         boxShadow: AppShadows.surface,
       ),
       child: Row(
@@ -395,7 +397,7 @@ class GlassBottomNavBar extends StatelessWidget {
                         size: 22,
                         color: selected
                             ? AppColors.accentGreenDark
-                            : const Color(0xFF111111),
+                            : AppColors.textSecondary,
                       ),
                       const SizedBox(height: 3),
                       Text(
@@ -409,7 +411,7 @@ class GlassBottomNavBar extends StatelessWidget {
                               : FontWeight.w600,
                           color: selected
                               ? AppColors.accentGreenDark
-                              : const Color(0xFF111111),
+                              : AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -459,10 +461,11 @@ class AppTopToolbar extends StatelessWidget implements PreferredSizeWidget {
     final showBack = showBackButton ?? Navigator.of(context).canPop();
     const backButtonSize = 40.0;
 
-    final trailingWidgets = <Widget>[
-      if (trailing != null) trailing!,
-      if (actions != null) ...actions!,
-    ];
+    final trailingWidgets = <Widget>[...?actions];
+    final trailingWidget = trailing;
+    if (trailingWidget != null) {
+      trailingWidgets.insert(0, trailingWidget);
+    }
 
     final header = Row(
       children: [
@@ -478,7 +481,7 @@ class AppTopToolbar extends StatelessWidget implements PreferredSizeWidget {
               ),
               child: IconButton(
                 icon: const Icon(Icons.arrow_back_rounded, size: 22),
-                color: const Color(0xFF1B2838),
+                color: AppColors.textPrimary,
                 onPressed: onBack ?? () => Navigator.of(context).maybePop(),
                 padding: EdgeInsets.zero,
                 splashRadius: 20,
@@ -496,7 +499,7 @@ class AppTopToolbar extends StatelessWidget implements PreferredSizeWidget {
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF1B2838),
+              color: AppColors.textPrimary,
             ),
           ),
         ),

@@ -28,6 +28,12 @@ class AppLocalizations {
       'landing_function_patrol': 'Quản lý Tuần tra',
       'landing_open_earthranger_failed':
           'Không thể mở ứng dụng EarthRanger trên thiết bị này.',
+      'landing_today_responsibility_title': 'Nhiệm vụ hôm nay',
+      'landing_today_responsibility_hint':
+          'Nhấn để mở ngày trực trong lịch làm việc.',
+      'landing_today_responsibility_prefix': 'Bạn phụ trách: ',
+      'landing_today_responsibility_more_prefix': 'và',
+      'landing_today_responsibility_more_suffix': 'nhiệm vụ khác',
       'incident_management_title': 'Quản lý sự cố',
       'forest_compartment_title': 'Quản lý lâm phần',
       'forest_compartment_area': 'Diện tích',
@@ -257,11 +263,15 @@ class AppLocalizations {
       'schedule_scope_self': 'Hiển thị cá nhân',
       'schedule_filter_label': 'Lọc kiểm lâm',
       'schedule_filter_all': 'Tất cả kiểm lâm',
-      'schedule_filter_all_staff': 'Tất cả trưởng nhóm/kiểm lâm',
+      'schedule_filter_all_staff': 'Tất cả nhân sự',
       'schedule_loading': 'Đang tải lịch làm việc...',
       'schedule_empty': 'Không có lịch làm việc trong tháng đã chọn.',
       'schedule_error': 'Không thể tải lịch làm việc.',
-      'schedule_retry': 'Thử tải lại',
+      'schedule_error_not_authorized':
+          'Bạn không có quyền thực hiện thao tác lịch làm việc này.',
+      'schedule_error_service_unavailable':
+          'Dịch vụ lịch làm việc tạm thời không khả dụng.',
+    'schedule_retry': 'Tải lại',
       'schedule_last_sync_prefix': 'Đồng bộ gần nhất: ',
       'schedule_last_sync_unknown': 'chưa có dữ liệu',
       'schedule_stale_banner':
@@ -292,9 +302,22 @@ class AppLocalizations {
           'Vui lòng chọn người được phân công.',
       'schedule_validation_work_date_required': 'Vui lòng chọn ngày làm việc.',
       'schedule_submit_error_prefix': 'Lỗi lưu lịch: ',
+      'schedule_validation_future_only':
+          'Chỉ có thể tạo/chỉnh sửa lịch cho ngày tương lai.',
+      'schedule_validation_reason_required':
+          'Vui lòng nhập lý do chỉnh sửa lịch.',
+      'schedule_dropdown_title': 'Chi tiết phân công ngày',
+      'schedule_dropdown_close': 'Đóng',
+      'schedule_dropdown_note_label': 'Nhiệm vụ',
+      'schedule_calendar_empty_day': 'Chưa có phân công trong ngày này.',
       'schedule_date_prefix': 'Ngày: ',
       'schedule_ranger_prefix': 'Kiểm lâm: ',
       'schedule_note_empty': 'Không có ghi chú.',
+      'schedule_form_area_label': 'Khu vực tuần tra',
+      'schedule_form_area_hint': 'Nhập khu vực cần tuần tra (tuỳ chọn)',
+      'schedule_form_reason_label': 'Lý do chỉnh sửa',
+      'schedule_form_reason_hint':
+          'Nhập lý do cập nhật lịch (bắt buộc khi chỉnh sửa)',
       'schedule_updated_by_prefix': 'Cập nhật bởi: ',
       'schedule_updated_at_prefix': 'Cập nhật lúc: ',
       'schedule_updated_by_unknown': 'không rõ',
@@ -468,6 +491,12 @@ class AppLocalizations {
       'landing_function_patrol': 'Patrol Management',
       'landing_open_earthranger_failed':
           'Unable to open the EarthRanger app on this device.',
+      'landing_today_responsibility_title': "Today's assignment",
+      'landing_today_responsibility_hint':
+          'Tap to open today in the schedule calendar.',
+      'landing_today_responsibility_prefix': 'You are responsible for: ',
+      'landing_today_responsibility_more_prefix': 'and',
+      'landing_today_responsibility_more_suffix': 'more missions',
       'incident_management_title': 'Incident Management',
       'forest_compartment_title': 'Compartment Management',
       'forest_compartment_area': 'Area',
@@ -700,11 +729,15 @@ class AppLocalizations {
       'schedule_scope_self': 'Self-only view',
       'schedule_filter_label': 'Ranger filter',
       'schedule_filter_all': 'All rangers',
-      'schedule_filter_all_staff': 'All leaders/rangers',
+      'schedule_filter_all_staff': 'All staff',
       'schedule_loading': 'Loading schedules...',
       'schedule_empty': 'No schedules found for the selected month.',
       'schedule_error': 'Unable to load schedules.',
-      'schedule_retry': 'Retry',
+      'schedule_error_not_authorized':
+          'You are not authorized for this schedule operation.',
+      'schedule_error_service_unavailable':
+          'Schedule service is temporarily unavailable.',
+    'schedule_retry': 'Reload',
       'schedule_last_sync_prefix': 'Last sync: ',
       'schedule_last_sync_unknown': 'no sync data',
       'schedule_stale_banner':
@@ -734,9 +767,22 @@ class AppLocalizations {
       'schedule_validation_ranger_required': 'Please select an assignee.',
       'schedule_validation_work_date_required': 'Please select a work date.',
       'schedule_submit_error_prefix': 'Schedule save error: ',
+      'schedule_validation_future_only':
+          'Schedules can only be created or edited for future dates.',
+      'schedule_validation_reason_required':
+          'Please provide a reason for the schedule edit.',
+      'schedule_dropdown_title': 'Daily assignment details',
+      'schedule_dropdown_close': 'Close',
+      'schedule_dropdown_note_label': 'Mission',
+      'schedule_calendar_empty_day': 'No assignment for this day.',
       'schedule_date_prefix': 'Date: ',
       'schedule_ranger_prefix': 'Ranger: ',
       'schedule_note_empty': 'No note provided.',
+      'schedule_form_area_label': 'Patrol area',
+      'schedule_form_area_hint': 'Enter patrol area (optional)',
+      'schedule_form_reason_label': 'Edit reason',
+      'schedule_form_reason_hint':
+          'Enter reason for schedule update (required for edits)',
       'schedule_updated_by_prefix': 'Updated by: ',
       'schedule_updated_at_prefix': 'Updated at: ',
       'schedule_updated_by_unknown': 'unknown',

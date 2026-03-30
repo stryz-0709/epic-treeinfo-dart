@@ -8,11 +8,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
+import '../providers/schedule_provider.dart';
 import '../providers/settings_provider.dart';
 import '../services/external_app_launcher.dart';
+import '../services/mobile_api_service.dart';
+import '../services/schedule_note_codec.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_widgets.dart';
 import 'main_shell.dart';
+import 'schedule_screen.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -60,6 +64,7 @@ class _LandingScreenState extends State<LandingScreen> {
   late final PageController _carouselController;
   Timer? _carouselTimer;
   int _carouselIndex = 0;
+  DateTime? _lastRequestedScheduleMonth;
 
   @override
   void initState() {
@@ -77,6 +82,13 @@ class _LandingScreenState extends State<LandingScreen> {
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      _ensureCurrentMonthSchedulesLoaded();
     });
   }
 
@@ -100,6 +112,149 @@ class _LandingScreenState extends State<LandingScreen> {
         _carouselController.jumpToPage(0);
       }
     });
+  }
+
+  void _ensureCurrentMonthSchedulesLoaded() {
+    final auth = context.read<AuthProvider>();
+    if (!auth.hasMobileAccessToken) {
+      return;
+    }
+
+    final scheduleProvider = context.read<ScheduleProvider>();
+    final now = DateTime.now();
+    final currentMonth = DateTime(now.year, now.month);
+
+    final alreadyRequestedCurrentMonth =
+        _lastRequestedScheduleMonth != null &&
+        _lastRequestedScheduleMonth!.year == currentMonth.year &&
+        _lastRequestedScheduleMonth!.month == currentMonth.month;
+
+    final focusedMonth = scheduleProvider.focusedMonth;
+    final focusedCurrentMonth =
+        focusedMonth.year == currentMonth.year &&
+        focusedMonth.month == currentMonth.month;
+
+    if (alreadyRequestedCurrentMonth &&
+        focusedCurrentMonth &&
+        (scheduleProvider.isLoading || scheduleProvider.lastSyncedAt != null)) {
+      return;
+    }
+
+    _lastRequestedScheduleMonth = currentMonth;
+    scheduleProvider.loadSchedules(
+      authProvider: auth,
+      month: currentMonth,
+      rangerId: scheduleProvider.selectedRangerId,
+    );
+  }
+
+  String? _resolveCurrentRangerId(
+    AuthProvider auth,
+    ScheduleProvider scheduleProvider,
+  ) {
+    final username = auth.mobileUsername?.trim();
+    if (username != null && username.isNotEmpty) {
+      return username;
+    }
+
+    final effective = scheduleProvider.effectiveRangerId?.trim();
+    if (effective != null && effective.isNotEmpty) {
+      return effective;
+    }
+
+    final selected = scheduleProvider.selectedRangerId?.trim();
+    if (selected != null && selected.isNotEmpty) {
+      return selected;
+    }
+
+    return null;
+  }
+
+  List<MobileScheduleItem> _todayAssignments(
+    AuthProvider auth,
+    ScheduleProvider scheduleProvider,
+  ) {
+    final rangerId = _resolveCurrentRangerId(auth, scheduleProvider);
+    if (rangerId == null || rangerId.isEmpty) {
+      return const <MobileScheduleItem>[];
+    }
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final matches = <MobileScheduleItem>[];
+    for (final item in scheduleProvider.schedules) {
+      if (item.rangerId.trim() != rangerId) {
+        continue;
+      }
+
+      final day = scheduleProvider.parseWorkDate(item.workDate);
+      if (day == null) {
+        continue;
+      }
+
+      final normalized = DateTime(day.year, day.month, day.day);
+      if (normalized.year == today.year &&
+          normalized.month == today.month &&
+          normalized.day == today.day) {
+        matches.add(item);
+      }
+    }
+
+    return matches;
+  }
+
+  String _todayResponsibilitySummary(
+    List<MobileScheduleItem> assignments,
+    SettingsProvider settings,
+  ) {
+    final l = settings.l;
+    if (assignments.isEmpty) {
+      return '';
+    }
+
+    final missionSummaries = assignments.map((item) {
+      final parsed = ScheduleMissionNote.fromRaw(item.note);
+      final mission = parsed.mission.trim();
+      final area = parsed.area.trim();
+
+      if (mission.isNotEmpty && area.isNotEmpty) {
+        return '$mission (${l.get('schedule_form_area_label')}: $area)';
+      }
+      if (mission.isNotEmpty) {
+        return mission;
+      }
+      if (area.isNotEmpty) {
+        return '${l.get('schedule_form_area_label')}: $area';
+      }
+      return l.get('schedule_note_empty');
+    }).toList(growable: false);
+
+    final firstMission = missionSummaries.first;
+    final additionalCount = missionSummaries.length - 1;
+
+    if (additionalCount <= 0) {
+      return '${l.get('landing_today_responsibility_prefix')}$firstMission';
+    }
+
+    return '${l.get('landing_today_responsibility_prefix')}$firstMission • ${l.get('landing_today_responsibility_more_prefix')}$additionalCount ${l.get('landing_today_responsibility_more_suffix')}';
+  }
+
+  void _openTodayResponsibilityDetails() {
+    final now = DateTime.now();
+    final focusedDay = DateTime(now.year, now.month, now.day);
+    final args = ScheduleScreenArguments(
+      focusDay: focusedDay,
+      openDetails: true,
+    );
+
+    final shell = MainShellScope.of(context);
+    if (shell != null) {
+      shell.openFunctionRoute('/schedule-management', arguments: args);
+      return;
+    }
+
+    Navigator.of(context).pushNamed('/schedule-management', arguments: args);
   }
 
   String _resolvedUserName(AuthProvider auth, SettingsProvider settings) {
@@ -182,6 +337,7 @@ class _LandingScreenState extends State<LandingScreen> {
     final screenH = mq.size.height;
     final settings = context.watch<SettingsProvider>();
     final auth = context.watch<AuthProvider>();
+    final scheduleProvider = context.watch<ScheduleProvider>();
     final l = settings.l;
 
     final userName = _resolvedUserName(auth, settings);
@@ -191,6 +347,9 @@ class _LandingScreenState extends State<LandingScreen> {
     final canUpload = !auth.isRangerSession;
     final hasImages = _uploadedImages.isNotEmpty;
     final showCarousel = hasImages || canUpload;
+    final todayAssignments = _todayAssignments(auth, scheduleProvider);
+    final showTodayAssignments = todayAssignments.isNotEmpty;
+    final todaySummary = _todayResponsibilitySummary(todayAssignments, settings);
 
     return Stack(
       children: [
@@ -289,6 +448,15 @@ class _LandingScreenState extends State<LandingScreen> {
                     }
                   },
                 ),
+                if (showTodayAssignments) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  _TodayResponsibilityCard(
+                    title: l.get('landing_today_responsibility_title'),
+                    summary: todaySummary,
+                    hint: l.get('landing_today_responsibility_hint'),
+                    onTap: _openTodayResponsibilityDetails,
+                  ),
+                ],
                 const SizedBox(height: AppSpacing.sm),
                 Expanded(
                   child: LayoutBuilder(
@@ -552,6 +720,99 @@ class _UserInfoCard extends StatelessWidget {
                 Icons.chevron_right_rounded,
                 color: Colors.white.withValues(alpha: 0.55),
                 size: 24,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TodayResponsibilityCard extends StatelessWidget {
+  final String title;
+  final String summary;
+  final String hint;
+  final VoidCallback? onTap;
+
+  const _TodayResponsibilityCard({
+    required this.title,
+    required this.summary,
+    required this.hint,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: GlassCard(
+        borderRadius: 14,
+        padding: EdgeInsets.zero,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: const Color(0xFFF4FAF5),
+            border: Border.all(color: const Color(0x332E7D32)),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF2E7D32).withValues(alpha: 0.14),
+                ),
+                child: const Icon(
+                  Icons.assignment_turned_in_rounded,
+                  size: 16,
+                  color: Color(0xFF2E7D32),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF1B2838),
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      summary,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: Color(0xFF2E3A46),
+                        fontWeight: FontWeight.w600,
+                        height: 1.25,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      hint,
+                      style: const TextStyle(
+                        fontSize: 10.8,
+                        color: Color(0xFF667085),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: const Color(0xFF344054).withValues(alpha: 0.55),
               ),
             ],
           ),

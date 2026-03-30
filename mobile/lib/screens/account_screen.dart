@@ -261,6 +261,8 @@ class _AccountScreenState extends State<AccountScreen> {
 
     showModalBottomSheet<void>(
       context: context,
+      useRootNavigator: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -339,7 +341,10 @@ class _AccountScreenState extends State<AccountScreen> {
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(l.get('signed_out'))));
 
-    Navigator.of(context).pushNamedAndRemoveUntil('/login', (_) => false);
+    Navigator.of(
+      context,
+      rootNavigator: true,
+    ).pushNamedAndRemoveUntil('/login_screen', (_) => false);
   }
 
   @override

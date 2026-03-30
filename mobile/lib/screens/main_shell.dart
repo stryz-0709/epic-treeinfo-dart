@@ -4,16 +4,16 @@ import 'package:provider/provider.dart';
 
 import '../providers/settings_provider.dart';
 import '../widgets/glass_widgets.dart';
-import 'forest_compartment_management_screen.dart';
-import 'forest_resource_management_screen.dart';
-import 'incident_management_screen.dart';
+import 'forest_sections_screen.dart';
+import 'forest_resource_screen.dart';
+import 'incident_screen.dart';
 import 'landing_screen.dart';
 import 'map_screen.dart';
 import 'alerts_screen.dart';
 import 'account_screen.dart';
 import 'reports_screen.dart';
-import 'schedule_management_screen.dart';
-import 'work_management_screen.dart';
+import 'schedule_screen.dart';
+import 'work_screen.dart';
 
 typedef OpenFunctionRoute = void Function(
   String routeName, {
@@ -130,9 +130,14 @@ class _MainShellState extends State<MainShell> {
           ),
         );
       case '/schedule-management':
+        final scheduleArgs = ScheduleManagementScreen.parseArguments(
+          settings.arguments,
+        );
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => const ScheduleManagementScreen(),
+          builder: (_) => ScheduleManagementScreen(
+            initialArguments: scheduleArgs,
+          ),
         );
       case '/reports-management':
         return MaterialPageRoute(

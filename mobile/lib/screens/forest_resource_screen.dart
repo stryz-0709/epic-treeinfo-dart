@@ -16,7 +16,7 @@ import '../services/app_notification.dart';
 import '../services/supabase_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_widgets.dart';
-import 'plant_identification_screen.dart';
+import 'plant_id_screen.dart';
 
 class ForestResourceManagementScreen extends StatefulWidget {
   final String? initialQuery;
@@ -419,6 +419,8 @@ class _ForestResourceManagementScreenState
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useRootNavigator: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
         return StatefulBuilder(
@@ -1038,9 +1040,9 @@ class _ForestResourceManagementScreenState
           ),
           children: [
             TileLayer(
-                urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: const ['a', 'b', 'c'],
-                userAgentPackageName: 'com.epictech.vranger',
+              urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              subdomains: const ['a', 'b', 'c'],
+              userAgentPackageName: 'com.epictech.vranger',
               maxZoom: 19,
             ),
             MarkerLayer(
@@ -1316,6 +1318,7 @@ class _ForestResourceManagementScreenState
 
   @override
   Widget build(BuildContext context) {
+    final screenH = MediaQuery.sizeOf(context).height;
     final l = context.watch<SettingsProvider>().l;
     final selected = _selectedTree;
 
@@ -1330,33 +1333,83 @@ class _ForestResourceManagementScreenState
           tooltip: l.get('retry'),
         ),
       ),
-      body: SafeArea(
-        top: false,
-        child: Stack(
-          children: [
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: IgnorePointer(
-                child: Container(
-                  height: 220,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xCC2E7D32),
-                        Color(0x662E7D32),
-                        Color(0x002E7D32),
-                      ],
-                      stops: [0.0, 0.58, 1.0],
-                    ),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Opacity(
+              opacity: 0.18,
+              child: Image.asset(
+                'assets/icons/background.jpeg',
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+                errorBuilder: (_, error, stackTrace) =>
+                    Container(color: const Color(0xFFF0F0F0)),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: screenH * 0.45,
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.0, 0.5, 1.0],
+                  colors: [Colors.white, Colors.white, Color(0x00FFFFFF)],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: IgnorePointer(
+              child: Container(
+                height: 220,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xCC2E7D32),
+                      Color(0x662E7D32),
+                      Color(0x002E7D32),
+                    ],
+                    stops: [0.0, 0.58, 1.0],
                   ),
                 ),
               ),
             ),
-            RefreshIndicator(
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 80,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.73),
+                    Colors.white.withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            top: false,
+            child: RefreshIndicator(
               onRefresh: _loadTrees,
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(12, 10, 12, 20),
@@ -1405,8 +1458,8 @@ class _ForestResourceManagementScreenState
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

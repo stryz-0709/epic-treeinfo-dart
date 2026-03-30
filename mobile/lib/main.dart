@@ -10,19 +10,19 @@ import 'providers/schedule_provider.dart';
 import 'providers/settings_provider.dart';
 import 'providers/tree_provider.dart';
 import 'providers/work_management_provider.dart';
-import 'screens/incident_management_screen.dart';
+import 'screens/incident_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_shell.dart';
-import 'screens/schedule_management_screen.dart';
+import 'screens/schedule_screen.dart';
 import 'screens/link_tree_screen.dart';
 import 'screens/account_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/alerts_screen.dart';
-import 'screens/forest_compartment_management_screen.dart';
-import 'screens/forest_resource_management_screen.dart';
+import 'screens/forest_sections_screen.dart';
+import 'screens/forest_resource_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/reports_screen.dart';
-import 'screens/work_management_screen.dart';
+import 'screens/work_screen.dart';
 import 'services/earthranger_auth.dart';
 import 'services/mobile_api_service.dart';
 import 'services/mobile_checkin_queue.dart';
@@ -204,6 +204,10 @@ class TreeInfoApp extends StatelessWidget {
                     return MaterialPageRoute(
                       builder: (_) => const LoginScreen(),
                     );
+                  case '/login_screen':
+                    return MaterialPageRoute(
+                      builder: (_) => const LoginScreen(),
+                    );
                   case '/signup':
                     return MaterialPageRoute(
                       builder: (_) => const SignupScreen(),
@@ -244,8 +248,14 @@ class TreeInfoApp extends StatelessWidget {
                       ),
                     );
                   case '/schedule-management':
+                    final scheduleArgs =
+                        ScheduleManagementScreen.parseArguments(
+                          routeSettings.arguments,
+                        );
                     return MaterialPageRoute(
-                      builder: (_) => const ScheduleManagementScreen(),
+                      builder: (_) => ScheduleManagementScreen(
+                        initialArguments: scheduleArgs,
+                      ),
                     );
                   case '/reports-management':
                     return MaterialPageRoute(

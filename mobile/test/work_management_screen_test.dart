@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:treeinfo_dart/providers/auth_provider.dart';
 import 'package:treeinfo_dart/providers/settings_provider.dart';
 import 'package:treeinfo_dart/providers/work_management_provider.dart';
-import 'package:treeinfo_dart/screens/work_management_screen.dart';
+import 'package:treeinfo_dart/screens/work_screen.dart';
 import 'package:treeinfo_dart/services/mobile_api_service.dart';
 import 'package:treeinfo_dart/services/mobile_checkin_queue.dart';
 

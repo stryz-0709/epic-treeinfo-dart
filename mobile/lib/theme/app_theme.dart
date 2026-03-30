@@ -4,18 +4,18 @@ import 'package:google_fonts/google_fonts.dart';
 /// Color palette with green accents – mirrors the ThingsBoardApp reference.
 class AppColors {
   // Core
-  static const background = Colors.white;
-  static const surface = Color(0xFFF8F9FA);
+  static const background = Color(0xFFF4FAF5);
+  static const surface = Color(0xFFEAF5EC);
 
   // Accent
   static const accentGreen = Color(0xFF4CAF50);
   static const accentGreenDark = Color(0xFF2E7D32);
-  static const accent = Color(0xFF00ACC1);
+  static const accent = Color(0xFF66BB6A);
 
   // Status
-  static const success = Color(0xFF4CAF50);
-  static const warning = Color(0xFFFFA726);
-  static const error = Color(0xFFEF5350);
+  static const success = Color(0xFF43A047);
+  static const warning = Color(0xFF66BB6A);
+  static const error = Color(0xFF2E7D32);
 
   // Incident UI
   static const incidentSeverityHigh = Color(0xFFB42318);
@@ -28,22 +28,22 @@ class AppColors {
   static const incidentStatusDefault = Color(0xFF475467);
 
   // Text
-  static const textPrimary = Color(0xFF1B2838);
-  static const textSecondary = Color(0xFF777777);
-  static const textHint = Color(0xFFAAAAAA);
-  static const versionLabel = Color(0xFF98A2B3);
+  static const textPrimary = Color(0xFF183222);
+  static const textSecondary = Color(0xFF4E6A59);
+  static const textHint = Color(0xFF8AA393);
+  static const versionLabel = Color(0xFF86A593);
 
   // Card
-  static const cardBg = Color(0xDDFFFFFF);
-  static const cardBorder = Color(0x14000000);
+  static const cardBg = Color(0xEAF9FCFA);
+  static const cardBorder = Color(0x1A3D8C56);
 
   // Dark mode
-  static const darkBackground = Color(0xFF121212);
-  static const darkSurface = Color(0xFF1E1E1E);
-  static const darkCardBg = Color(0xFF2C2C2C);
-  static const darkCardBorder = Color(0x33FFFFFF);
-  static const darkTextPrimary = Color(0xFFE0E0E0);
-  static const darkTextSecondary = Color(0xFF999999);
+  static const darkBackground = Color(0xFF0F1B14);
+  static const darkSurface = Color(0xFF15261D);
+  static const darkCardBg = Color(0xFF1C3327);
+  static const darkCardBorder = Color(0x337DB898);
+  static const darkTextPrimary = Color(0xFFE2F2E8);
+  static const darkTextSecondary = Color(0xFFA2C1AF);
 }
 
 class AppSpacing {
@@ -101,7 +101,7 @@ class AppTypography {
   static const subtitle = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w500,
-    color: Color(0xFF667085),
+    color: AppColors.textSecondary,
   );
 
   static const sectionLabel = TextStyle(
@@ -129,7 +129,7 @@ ThemeData buildLightTheme() {
     ),
     scaffoldBackgroundColor: AppColors.background,
     appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       foregroundColor: AppColors.textPrimary,
       elevation: 0,
       scrolledUnderElevation: 0,
@@ -144,13 +144,13 @@ ThemeData buildLightTheme() {
     ),
     navigationBarTheme: NavigationBarThemeData(
       height: 64,
-      backgroundColor: Colors.white.withValues(alpha: 0.95),
-      indicatorColor: AppColors.accentGreen.withValues(alpha: 0.15),
+      backgroundColor: AppColors.background.withValues(alpha: 0.96),
+      indicatorColor: AppColors.accentGreen.withValues(alpha: 0.2),
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
           return const IconThemeData(color: AppColors.accentGreen);
         }
-        return const IconThemeData(color: Color(0xFF999999));
+        return const IconThemeData(color: AppColors.textSecondary);
       }),
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
@@ -160,18 +160,61 @@ ThemeData buildLightTheme() {
             fontWeight: FontWeight.w500,
           );
         }
-        return const TextStyle(color: Color(0xFF999999), fontSize: 12);
+        return const TextStyle(color: AppColors.textSecondary, fontSize: 12);
       }),
     ),
     popupMenuTheme: PopupMenuThemeData(
-      color: Colors.white,
+      color: AppColors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadii.md),
       ),
     ),
-    dividerColor: Colors.black.withValues(alpha: 0.08),
+    dividerColor: AppColors.accentGreen.withValues(alpha: 0.14),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: AppColors.accentGreen,
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.accentGreenDark,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadii.sm),
+        ),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: AppColors.accentGreenDark,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.accentGreenDark,
+        side: BorderSide(
+          color: AppColors.accentGreen.withValues(alpha: 0.5),
+        ),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.white.withValues(alpha: 0.92),
+      hintStyle: const TextStyle(color: AppColors.textHint),
+      labelStyle: const TextStyle(color: AppColors.textSecondary),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadii.sm),
+        borderSide: BorderSide(color: AppColors.accentGreen.withValues(alpha: 0.2)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadii.sm),
+        borderSide: const BorderSide(color: AppColors.accentGreenDark),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadii.sm),
+      ),
+    ),
+    snackBarTheme: const SnackBarThemeData(
+      backgroundColor: AppColors.accentGreenDark,
+      contentTextStyle: TextStyle(color: Colors.white),
     ),
   );
   return base.copyWith(
@@ -191,7 +234,7 @@ ThemeData buildDarkTheme() {
     ),
     scaffoldBackgroundColor: AppColors.darkBackground,
     appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF1E1E1E),
+      backgroundColor: AppColors.darkBackground,
       foregroundColor: AppColors.darkTextPrimary,
       elevation: 0,
       scrolledUnderElevation: 0,
@@ -206,13 +249,13 @@ ThemeData buildDarkTheme() {
     ),
     navigationBarTheme: NavigationBarThemeData(
       height: 64,
-      backgroundColor: const Color(0xFF1E1E1E),
-      indicatorColor: AppColors.accentGreen.withValues(alpha: 0.15),
+      backgroundColor: AppColors.darkSurface,
+      indicatorColor: AppColors.accentGreen.withValues(alpha: 0.24),
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
           return const IconThemeData(color: AppColors.accentGreen);
         }
-        return const IconThemeData(color: Color(0xFF999999));
+        return const IconThemeData(color: AppColors.darkTextSecondary);
       }),
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
@@ -222,18 +265,61 @@ ThemeData buildDarkTheme() {
             fontWeight: FontWeight.w500,
           );
         }
-        return const TextStyle(color: Color(0xFF999999), fontSize: 12);
+        return const TextStyle(color: AppColors.darkTextSecondary, fontSize: 12);
       }),
     ),
     popupMenuTheme: PopupMenuThemeData(
-      color: const Color(0xFF2C2C2C),
+      color: AppColors.darkCardBg,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadii.md),
       ),
     ),
-    dividerColor: Colors.white.withValues(alpha: 0.08),
+    dividerColor: AppColors.accentGreen.withValues(alpha: 0.2),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: AppColors.accentGreen,
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.accentGreen,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadii.sm),
+        ),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: AppColors.accentGreen,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.accentGreen,
+        side: BorderSide(
+          color: AppColors.accentGreen.withValues(alpha: 0.6),
+        ),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: AppColors.darkSurface.withValues(alpha: 0.92),
+      hintStyle: const TextStyle(color: AppColors.darkTextSecondary),
+      labelStyle: const TextStyle(color: AppColors.darkTextSecondary),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadii.sm),
+        borderSide: BorderSide(color: AppColors.accentGreen.withValues(alpha: 0.25)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadii.sm),
+        borderSide: const BorderSide(color: AppColors.accentGreen),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadii.sm),
+      ),
+    ),
+    snackBarTheme: const SnackBarThemeData(
+      backgroundColor: AppColors.accentGreen,
+      contentTextStyle: TextStyle(color: Colors.white),
     ),
   );
   return base.copyWith(
