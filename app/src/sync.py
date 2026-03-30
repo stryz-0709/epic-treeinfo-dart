@@ -10,6 +10,8 @@ Also importable: the `run_sync_cycle()` function is used by the server
 to trigger manual syncs via API.
 """
 
+from __future__ import annotations
+
 import argparse
 import logging
 import random

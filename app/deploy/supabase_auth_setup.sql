@@ -9,9 +9,31 @@ create table if not exists public.app_users (
   region text,
   position text,
   phone text,
+  status text not null default 'active' check (status in ('active', 'pending', 'rejected')),
+  avatar_url text,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
+
+-- Migration: add status and avatar_url to existing tables
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'app_users' AND column_name = 'status'
+  ) THEN
+    ALTER TABLE public.app_users
+      ADD COLUMN status text NOT NULL DEFAULT 'active'
+      CHECK (status IN ('active', 'pending', 'rejected'));
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'app_users' AND column_name = 'avatar_url'
+  ) THEN
+    ALTER TABLE public.app_users ADD COLUMN avatar_url text;
+  END IF;
+END $$;
 
 create index if not exists idx_app_users_role on public.app_users(role);
 

@@ -16,6 +16,8 @@ Usage:
     uvicorn src.server:app --reload --port 8000
 """
 
+from __future__ import annotations
+
 import hmac
 import json
 import logging
@@ -267,6 +269,45 @@ mobile_checkin_lock = RLock()
 mobile_work_summary_lock = RLock()
 mobile_schedule_lock = RLock()
 
+# In-memory forest compartment store (seeded with sample data)
+mobile_forest_compartments: list[dict] = [
+    {
+        "id": "fc-001",
+        "name": "Tiểu khu 1 - Khu bảo tồn Bắc",
+        "region": "Bắc",
+        "area_ha": 120.5,
+        "notes": "Rừng phòng hộ đầu nguồn",
+    },
+    {
+        "id": "fc-002",
+        "name": "Tiểu khu 2 - Khu rừng trồng",
+        "region": "Bắc",
+        "area_ha": 85.0,
+        "notes": "Rừng trồng keo và bạch đàn",
+    },
+    {
+        "id": "fc-003",
+        "name": "Tiểu khu 3 - Khu sinh thái Nam",
+        "region": "Nam",
+        "area_ha": 200.0,
+        "notes": "Khu vực đa dạng sinh học cao",
+    },
+    {
+        "id": "fc-004",
+        "name": "Tiểu khu 4 - Đồi phía Tây",
+        "region": "Tây",
+        "area_ha": 95.3,
+        "notes": "Khu vực dễ bị sạt lở",
+    },
+    {
+        "id": "fc-005",
+        "name": "Tiểu khu 5 - Ven sông Đông",
+        "region": "Đông",
+        "area_ha": 150.0,
+        "notes": "Rừng ngập mặn ven sông",
+    },
+]
+
 SCHEDULE_SERVICE_UNAVAILABLE_DETAIL = "Schedule service unavailable"
 ALLOWED_ROLE_ACCOUNT_ROLE_COMBINATIONS: set[tuple[str, str]] = {
     ("leader", "admin"),
@@ -309,6 +350,24 @@ class MobileScheduleWriteRequest(BaseModel):
     note: str = Field(default="", max_length=500)
 
 
+class MobileRegisterRequest(BaseModel):
+    """Request payload for mobile registration endpoint."""
+
+    username: str = Field(max_length=128)
+    password: str = Field(max_length=256)
+    display_name: str = Field(default="", max_length=128)
+    region: str = Field(default="", max_length=128)
+    phone: str = Field(default="", max_length=64)
+
+
+class MobileProfileUpdateRequest(BaseModel):
+    """Request payload for profile update endpoint."""
+
+    display_name: str = Field(default="", max_length=128)
+    region: str = Field(default="", max_length=128)
+    phone: str = Field(default="", max_length=64)
+
+
 class MobileCheckinRequest(BaseModel):
     """Request payload for mobile check-in ingest endpoint."""
 
@@ -316,6 +375,8 @@ class MobileCheckinRequest(BaseModel):
     client_time: str = ""
     timezone: str = ""
     app_version: str = ""
+    latitude: float | None = None
+    longitude: float | None = None
 
 
 class RetentionRunRequest(BaseModel):
@@ -357,12 +418,23 @@ def _verify_pw(password: str, stored_hash: str) -> bool:
 def _load_users_from_file() -> dict:
     if not os.path.exists(USERS_FILE):
         s = get_settings()
+        pw = _hash_pw(s.default_admin_password)
         default = {
             "admin": {
-                "password": _hash_pw(s.default_admin_password),
+                "password": pw,
                 "role": "admin",
                 "display_name": "Administrator",
-            }
+            },
+            "leader1": {
+                "password": pw,
+                "role": "leader",
+                "display_name": "Test Leader",
+            },
+            "ranger1": {
+                "password": pw,
+                "role": "ranger",
+                "display_name": "Test Ranger",
+            },
         }
         with open(USERS_FILE, "w", encoding="utf-8") as f:
             json.dump(default, f, indent=2)
@@ -1381,6 +1453,8 @@ def _ingest_mobile_checkin(mobile_user: dict, payload: MobileCheckinRequest) -> 
                 "client_time": payload.client_time.strip(),
                 "client_timezone": payload.timezone.strip(),
                 "app_version": payload.app_version.strip(),
+                "latitude": payload.latitude,
+                "longitude": payload.longitude,
             }
 
             mobile_daily_checkins[checkin_key] = record
@@ -1501,6 +1575,12 @@ async def api_mobile_login(request: Request, payload: MobileLoginRequest):
         )
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
+    user_status = str(user_data.get("status") or "active").strip().lower()
+    if user_status == "pending":
+        raise HTTPException(status_code=403, detail="Account pending approval")
+    if user_status == "rejected":
+        raise HTTPException(status_code=403, detail="Account has been rejected")
+
     stored_hash = user_data.get("password", "")
     if not _verify_pw(password, stored_hash):
         log.warning(
@@ -1614,15 +1694,590 @@ async def api_mobile_logout(request: Request, payload: MobileLogoutRequest):
     return {"ok": True}
 
 
+@app.post("/api/mobile/auth/register")
+@limiter.limit(lambda: get_settings().rate_limit_login)
+async def api_mobile_register(request: Request, payload: MobileRegisterRequest):
+    """Register a new user account (pending admin approval)."""
+    username = payload.username.strip().lower()
+    password = payload.password
+    display_name = payload.display_name.strip()
+    region = payload.region.strip()
+    phone = payload.phone.strip()
+
+    if not username or not password:
+        raise HTTPException(status_code=400, detail="Username and password required")
+    if len(username) < 3:
+        raise HTTPException(status_code=400, detail="Username must be at least 3 characters")
+    if len(password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+
+    users = _load_users()
+    if username in users:
+        raise HTTPException(status_code=409, detail="Username already taken")
+
+    user_record: dict[str, str] = {
+        "password": _hash_pw(password),
+        "role": "ranger",
+        "display_name": display_name or username,
+        "status": "pending",
+    }
+    if region:
+        user_record["region"] = region
+    if phone:
+        user_record["phone"] = phone
+
+    users[username] = user_record
+    _save_users(users)
+
+    log.info(
+        "New user registration (pending approval): '%s'",
+        username,
+        extra={
+            "event": "mobile_auth_register",
+            "path": "/api/mobile/auth/register",
+            "username": username,
+            "status": "pending",
+        },
+    )
+    return {
+        "ok": True,
+        "username": username,
+        "status": "pending",
+        "message": "Registration submitted. Awaiting admin approval.",
+    }
+
+
 @app.get("/api/mobile/me")
 @limiter.limit(lambda: get_settings().rate_limit_api)
 async def api_mobile_me(request: Request, mobile_user: dict = Depends(require_mobile_auth)):
     """Return authenticated mobile identity and role claims."""
+    username = mobile_user["username"]
+    users = _load_users()
+    user_data = users.get(username, {}) if isinstance(users, dict) else {}
+    if not isinstance(user_data, dict):
+        user_data = {}
+
     return {
-        "username": mobile_user["username"],
-        "display_name": mobile_user.get("display_name") or mobile_user["username"],
+        "username": username,
+        "display_name": mobile_user.get("display_name") or username,
         "role": mobile_user["role"],
+        "region": user_data.get("region") or "",
+        "phone": user_data.get("phone") or "",
+        "avatar_url": user_data.get("avatar_url") or "",
     }
+
+
+@app.put("/api/mobile/account/profile")
+@limiter.limit(lambda: get_settings().rate_limit_api)
+async def api_mobile_update_profile(
+    request: Request,
+    payload: MobileProfileUpdateRequest,
+    mobile_user: dict = Depends(require_mobile_auth),
+):
+    """Update the authenticated user's profile fields (display_name, region, phone)."""
+    username = mobile_user["username"]
+    users = _load_users()
+
+    if username not in users:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user_data = users[username]
+    if not isinstance(user_data, dict):
+        raise HTTPException(status_code=500, detail="Corrupt user record")
+
+    display_name = payload.display_name.strip()
+    region = payload.region.strip()
+    phone = payload.phone.strip()
+
+    if display_name:
+        user_data["display_name"] = display_name
+    if region is not None:
+        user_data["region"] = region
+    if phone is not None:
+        user_data["phone"] = phone
+
+    users[username] = user_data
+    _save_users(users)
+
+    log.info(
+        "Profile updated for user '%s'",
+        username,
+        extra={"event": "mobile_profile_updated", "username": username},
+    )
+    return {
+        "ok": True,
+        "username": username,
+        "display_name": user_data.get("display_name", username),
+        "region": user_data.get("region", ""),
+        "phone": user_data.get("phone", ""),
+        "avatar_url": user_data.get("avatar_url", ""),
+    }
+
+
+@app.post("/api/mobile/account/avatar")
+@limiter.limit(lambda: get_settings().rate_limit_api)
+async def api_mobile_upload_avatar(
+    request: Request,
+    mobile_user: dict = Depends(require_mobile_auth),
+):
+    """Upload avatar image. Stores in Supabase Storage and saves URL to user profile."""
+    from src.supabase_db import get_supabase, _is_supabase_configured
+
+    username = mobile_user["username"]
+    content_type = request.headers.get("content-type", "")
+
+    if "multipart/form-data" in content_type:
+        form = await request.form()
+        upload_file = form.get("avatar")
+        if upload_file is None:
+            raise HTTPException(status_code=400, detail="No avatar file provided")
+        file_bytes = await upload_file.read()
+        filename = getattr(upload_file, "filename", "avatar.jpg") or "avatar.jpg"
+    else:
+        file_bytes = await request.body()
+        filename = "avatar.jpg"
+
+    if not file_bytes:
+        raise HTTPException(status_code=400, detail="Empty file")
+    if len(file_bytes) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Avatar file too large (max 5MB)")
+
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else "jpg"
+    if ext not in {"jpg", "jpeg", "png", "webp"}:
+        ext = "jpg"
+    storage_path = f"avatars/{username}.{ext}"
+
+    if not _is_supabase_configured():
+        raise HTTPException(status_code=503, detail="Storage not configured")
+
+    try:
+        client = get_supabase()
+        try:
+            client.storage.from_("avatars").remove([storage_path])
+        except Exception:
+            pass
+        client.storage.from_("avatars").upload(
+            storage_path,
+            file_bytes,
+            file_options={"content-type": f"image/{ext}", "upsert": "true"},
+        )
+        avatar_url = client.storage.from_("avatars").get_public_url(storage_path)
+    except Exception as exc:
+        log.exception("Avatar upload failed for user '%s'", username)
+        raise HTTPException(status_code=500, detail="Avatar upload failed") from exc
+
+    users = _load_users()
+    if username in users and isinstance(users[username], dict):
+        users[username]["avatar_url"] = avatar_url
+        _save_users(users)
+
+    log.info("Avatar uploaded for user '%s'", username)
+    return {"ok": True, "avatar_url": avatar_url}
+
+
+@app.get("/api/mobile/employees")
+@limiter.limit(lambda: get_settings().rate_limit_api)
+async def api_mobile_employees(
+    request: Request,
+    mobile_user: dict = Depends(require_mobile_auth),
+):
+    """Return employee directory visible to the authenticated user's role."""
+    directory = _build_mobile_schedule_directory(mobile_user)
+    return {"employees": directory}
+
+
+@app.get("/api/mobile/work-management/stats")
+@limiter.limit(lambda: get_settings().rate_limit_api)
+async def api_mobile_work_stats(
+    request: Request,
+    from_day_raw: Optional[str] = Query(None, alias="from"),
+    to_day_raw: Optional[str] = Query(None, alias="to"),
+    ranger_id: Optional[str] = None,
+    mobile_user: dict = Depends(require_mobile_auth),
+):
+    """Per-ranger patrol statistics for date range (patrols, hours, incidents)."""
+    from_day = _parse_iso_day(from_day_raw)
+    to_day = _parse_iso_day(to_day_raw)
+    _validate_mobile_date_window(from_day, to_day, endpoint_path="/api/mobile/work-management/stats")
+
+    requested_ranger_id = (ranger_id or "").strip().lower() or None
+
+    # Build work data for stats
+    all_items, effective_ranger_id, team_scope = _build_mobile_work_summary_items(
+        mobile_user=mobile_user,
+        ranger_id=requested_ranger_id,
+        from_day=from_day,
+        to_day=to_day,
+    )
+
+    # Build incident data
+    all_incidents, _, _ = _build_mobile_incident_items(
+        mobile_user=mobile_user,
+        ranger_id=requested_ranger_id,
+        from_day=from_day,
+        to_day=to_day,
+        updated_since=None,
+    )
+
+    # Aggregate per-ranger stats
+    ranger_stats: dict[str, dict] = {}
+    for item in all_items:
+        rid = item.get("ranger_id", "")
+        if rid not in ranger_stats:
+            ranger_stats[rid] = {
+                "ranger_id": rid,
+                "total_days": 0,
+                "checkin_days": 0,
+                "incidents_found": 0,
+            }
+        ranger_stats[rid]["total_days"] += 1
+        if item.get("has_checkin"):
+            ranger_stats[rid]["checkin_days"] += 1
+
+    for incident in all_incidents:
+        rid = incident.get("ranger_id") or ""
+        if rid in ranger_stats:
+            ranger_stats[rid]["incidents_found"] += 1
+        elif rid:
+            ranger_stats[rid] = {
+                "ranger_id": rid,
+                "total_days": 0,
+                "checkin_days": 0,
+                "incidents_found": 1,
+            }
+
+    stats_list = sorted(ranger_stats.values(), key=lambda s: s["ranger_id"])
+
+    # Enrich with display names
+    users = _load_users()
+    for stat in stats_list:
+        rid = stat["ranger_id"]
+        user_data = users.get(rid, {}) if isinstance(users, dict) else {}
+        stat["display_name"] = _resolve_user_display_name(rid, user_data if isinstance(user_data, dict) else {})
+
+    return {
+        "stats": stats_list,
+        "scope": {
+            "role": mobile_user["role"],
+            "team_scope": team_scope,
+            "requested_ranger_id": requested_ranger_id,
+            "effective_ranger_id": effective_ranger_id,
+        },
+        "filters": {
+            "from": from_day.isoformat() if from_day else None,
+            "to": to_day.isoformat() if to_day else None,
+        },
+    }
+
+
+@app.get("/api/mobile/forest-compartments")
+@limiter.limit(lambda: get_settings().rate_limit_api)
+async def api_mobile_forest_compartments(
+    request: Request,
+    from_day_raw: Optional[str] = Query(None, alias="from"),
+    to_day_raw: Optional[str] = Query(None, alias="to"),
+    mobile_user: dict = Depends(require_mobile_auth),
+):
+    """List forest compartments with incident counts for the date range."""
+    from_day = _parse_iso_day(from_day_raw)
+    to_day = _parse_iso_day(to_day_raw)
+    if from_day and to_day:
+        _validate_mobile_date_window(from_day, to_day, endpoint_path="/api/mobile/forest-compartments")
+
+    all_incidents, _, _ = _build_mobile_incident_items(
+        mobile_user=mobile_user,
+        ranger_id=None,
+        from_day=from_day,
+        to_day=to_day,
+        updated_since=None,
+    )
+
+    compartment_incident_counts: dict[str, dict] = {}
+    for compartment in mobile_forest_compartments:
+        cid = compartment["id"]
+        region = (compartment.get("region") or "").strip().lower()
+        total = 0
+        resolved = 0
+        for inc in all_incidents:
+            inc_title = str(inc.get("title") or "").strip().lower()
+            inc_status = str(inc.get("status") or "").strip().lower()
+            if region and region in inc_title:
+                total += 1
+                if inc_status in ("resolved", "closed"):
+                    resolved += 1
+            elif not region:
+                total += 1
+                if inc_status in ("resolved", "closed"):
+                    resolved += 1
+
+        compartment_incident_counts[cid] = {
+            "total_incidents": total,
+            "resolved_incidents": resolved,
+            "unresolved_incidents": total - resolved,
+            "resolution_pct": round(resolved * 100 / total) if total > 0 else 0,
+        }
+
+    items = []
+    for compartment in mobile_forest_compartments:
+        cid = compartment["id"]
+        counts = compartment_incident_counts.get(cid, {})
+        items.append({
+            **compartment,
+            **counts,
+        })
+
+    return {
+        "compartments": items,
+        "filters": {
+            "from": from_day.isoformat() if from_day else None,
+            "to": to_day.isoformat() if to_day else None,
+        },
+    }
+
+
+@app.get("/api/mobile/forest-compartments/{compartment_id}/incidents")
+@limiter.limit(lambda: get_settings().rate_limit_api)
+async def api_mobile_forest_compartment_incidents(
+    request: Request,
+    compartment_id: str,
+    from_day_raw: Optional[str] = Query(None, alias="from"),
+    to_day_raw: Optional[str] = Query(None, alias="to"),
+    mobile_user: dict = Depends(require_mobile_auth),
+):
+    """Get incidents for a specific forest compartment."""
+    from_day = _parse_iso_day(from_day_raw)
+    to_day = _parse_iso_day(to_day_raw)
+
+    compartment = None
+    for fc in mobile_forest_compartments:
+        if fc["id"] == compartment_id:
+            compartment = fc
+            break
+
+    if not compartment:
+        raise HTTPException(status_code=404, detail="Forest compartment not found")
+
+    all_incidents, _, _ = _build_mobile_incident_items(
+        mobile_user=mobile_user,
+        ranger_id=None,
+        from_day=from_day,
+        to_day=to_day,
+        updated_since=None,
+    )
+
+    region = (compartment.get("region") or "").strip().lower()
+    matched = []
+    for inc in all_incidents:
+        inc_title = str(inc.get("title") or "").strip().lower()
+        if region and region in inc_title:
+            matched.append(inc)
+        elif not region:
+            matched.append(inc)
+
+    return {
+        "compartment": compartment,
+        "incidents": matched,
+        "total": len(matched),
+    }
+
+
+@app.get("/api/mobile/alerts")
+@limiter.limit(lambda: get_settings().rate_limit_api)
+async def api_mobile_alerts(
+    request: Request,
+    limit: int = Query(20, ge=1, le=100),
+    mobile_user: dict = Depends(require_mobile_auth),
+):
+    """Recent incident-based alerts sorted by severity then recency."""
+    now = _utcnow()
+    from_day = (now - timedelta(days=30)).date()
+    to_day = now.date()
+
+    all_incidents, _, _ = _build_mobile_incident_items(
+        mobile_user=mobile_user,
+        ranger_id=None,
+        from_day=from_day,
+        to_day=to_day,
+        updated_since=None,
+    )
+
+    severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3, "unknown": 4}
+    alerts = sorted(
+        all_incidents,
+        key=lambda inc: (
+            severity_order.get(str(inc.get("severity", "unknown")).lower(), 4),
+            inc.get("updated_at") or "",
+        ),
+    )
+    alerts.reverse()
+    alerts = alerts[:limit]
+
+    for alert in alerts:
+        status = str(alert.get("status") or "open").lower()
+        severity = str(alert.get("severity") or "unknown").lower()
+        if severity in ("critical", "high") and status == "open":
+            alert["alert_level"] = "urgent"
+        elif severity == "medium" and status == "open":
+            alert["alert_level"] = "warning"
+        else:
+            alert["alert_level"] = "info"
+
+    return {
+        "alerts": alerts,
+        "total": len(alerts),
+        "period_days": 30,
+    }
+
+
+@app.get("/api/mobile/reports/{report_type}")
+@limiter.limit(lambda: get_settings().rate_limit_api)
+async def api_mobile_reports(
+    request: Request,
+    report_type: str,
+    from_day_raw: Optional[str] = Query(None, alias="from"),
+    to_day_raw: Optional[str] = Query(None, alias="to"),
+    mobile_user: dict = Depends(require_mobile_auth),
+):
+    """Generate report data for the given type and date range."""
+    valid_types = {"forest-protection", "incidents", "work-performance"}
+    if report_type not in valid_types:
+        raise HTTPException(status_code=400, detail=f"Invalid report type. Must be one of: {', '.join(valid_types)}")
+
+    from_day = _parse_iso_day(from_day_raw)
+    to_day = _parse_iso_day(to_day_raw)
+
+    if not from_day:
+        from_day = date.today().replace(day=1)
+    if not to_day:
+        to_day = date.today()
+
+    _validate_mobile_date_window(from_day, to_day, endpoint_path=f"/api/mobile/reports/{report_type}")
+
+    if report_type == "forest-protection":
+        all_incidents, _, _ = _build_mobile_incident_items(
+            mobile_user=mobile_user,
+            ranger_id=None,
+            from_day=from_day,
+            to_day=to_day,
+            updated_since=None,
+        )
+        severity_counts: dict[str, int] = {}
+        status_counts: dict[str, int] = {}
+        for inc in all_incidents:
+            sev = str(inc.get("severity") or "unknown")
+            st = str(inc.get("status") or "unknown")
+            severity_counts[sev] = severity_counts.get(sev, 0) + 1
+            status_counts[st] = status_counts.get(st, 0) + 1
+
+        total = len(all_incidents)
+        resolved = sum(1 for inc in all_incidents if str(inc.get("status") or "").lower() in ("resolved", "closed"))
+
+        return {
+            "report_type": report_type,
+            "period": {"from": from_day.isoformat(), "to": to_day.isoformat()},
+            "data": {
+                "total_incidents": total,
+                "resolved_incidents": resolved,
+                "unresolved_incidents": total - resolved,
+                "resolution_rate_pct": round(resolved * 100 / total) if total > 0 else 0,
+                "by_severity": severity_counts,
+                "by_status": status_counts,
+            },
+        }
+
+    elif report_type == "incidents":
+        all_incidents, _, _ = _build_mobile_incident_items(
+            mobile_user=mobile_user,
+            ranger_id=None,
+            from_day=from_day,
+            to_day=to_day,
+            updated_since=None,
+        )
+
+        by_ranger: dict[str, int] = {}
+        for inc in all_incidents:
+            rid = str(inc.get("ranger_id") or "unassigned")
+            by_ranger[rid] = by_ranger.get(rid, 0) + 1
+
+        users = _load_users()
+        ranger_breakdown = []
+        for rid, count in sorted(by_ranger.items(), key=lambda x: -x[1]):
+            user_data = users.get(rid, {}) if isinstance(users, dict) else {}
+            ranger_breakdown.append({
+                "ranger_id": rid,
+                "display_name": _resolve_user_display_name(rid, user_data if isinstance(user_data, dict) else {}),
+                "incident_count": count,
+            })
+
+        return {
+            "report_type": report_type,
+            "period": {"from": from_day.isoformat(), "to": to_day.isoformat()},
+            "data": {
+                "total_incidents": len(all_incidents),
+                "incidents": all_incidents[:50],
+                "by_ranger": ranger_breakdown,
+            },
+        }
+
+    else:
+        all_items, _, _ = _build_mobile_work_summary_items(
+            mobile_user=mobile_user,
+            ranger_id=None,
+            from_day=from_day,
+            to_day=to_day,
+        )
+
+        all_incidents, _, _ = _build_mobile_incident_items(
+            mobile_user=mobile_user,
+            ranger_id=None,
+            from_day=from_day,
+            to_day=to_day,
+            updated_since=None,
+        )
+
+        ranger_perf: dict[str, dict] = {}
+        for item in all_items:
+            rid = item.get("ranger_id", "")
+            if rid not in ranger_perf:
+                ranger_perf[rid] = {"total_days": 0, "checkin_days": 0, "incidents_found": 0}
+            ranger_perf[rid]["total_days"] += 1
+            if item.get("has_checkin"):
+                ranger_perf[rid]["checkin_days"] += 1
+
+        for inc in all_incidents:
+            rid = str(inc.get("ranger_id") or "")
+            if rid and rid in ranger_perf:
+                ranger_perf[rid]["incidents_found"] += 1
+
+        users = _load_users()
+        performance_rows = []
+        for rid, perf in sorted(ranger_perf.items()):
+            user_data = users.get(rid, {}) if isinstance(users, dict) else {}
+            rate = round(perf["checkin_days"] * 100 / perf["total_days"]) if perf["total_days"] > 0 else 0
+            performance_rows.append({
+                "ranger_id": rid,
+                "display_name": _resolve_user_display_name(rid, user_data if isinstance(user_data, dict) else {}),
+                "total_days": perf["total_days"],
+                "checkin_days": perf["checkin_days"],
+                "checkin_rate_pct": rate,
+                "incidents_found": perf["incidents_found"],
+            })
+
+        total_days = sum(p["total_days"] for p in ranger_perf.values())
+        total_checkins = sum(p["checkin_days"] for p in ranger_perf.values())
+
+        return {
+            "report_type": report_type,
+            "period": {"from": from_day.isoformat(), "to": to_day.isoformat()},
+            "data": {
+                "total_rangers": len(ranger_perf),
+                "total_work_days": total_days,
+                "total_checkin_days": total_checkins,
+                "overall_checkin_rate_pct": round(total_checkins * 100 / total_days) if total_days > 0 else 0,
+                "total_incidents": len(all_incidents),
+                "by_ranger": performance_rows,
+            },
+        }
 
 
 @app.get("/api/mobile/work-management")

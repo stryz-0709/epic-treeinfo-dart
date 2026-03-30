@@ -7,6 +7,8 @@ This module provides:
 - Failed-run discovery and replay support for operations
 """
 
+from __future__ import annotations
+
 import logging
 import secrets
 from datetime import datetime, timedelta, timezone

@@ -7,6 +7,7 @@ Loads from environment variables (or .env file). No secrets in code.
 import os
 from pathlib import Path
 from functools import lru_cache
+from typing import Optional
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -60,7 +61,7 @@ class Settings(BaseSettings):
     mobile_updated_since_max_age_days: int = 3650
     mobile_slow_request_warn_ms: int = 1200
     # Legacy alias kept for compatibility with existing observability tests.
-    request_slow_threshold_ms: float | None = None
+    request_slow_threshold_ms: Optional[float] = None
 
     # ── Runtime environment ──────────────────────────────────
     environment: str = "development"

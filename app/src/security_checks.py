@@ -4,6 +4,8 @@ Run as a build-time guard:
     python -m src.security_checks
 """
 
+from __future__ import annotations
+
 import re
 from pathlib import Path
 

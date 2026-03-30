@@ -2,6 +2,8 @@
 Supabase client — all database operations in one place.
 """
 
+from __future__ import annotations
+
 import logging
 import os
 from datetime import date, datetime, timezone
@@ -15,7 +17,7 @@ log = logging.getLogger(__name__)
 
 _client: Client | None = None
 AUTH_USERS_TABLE = "app_users"
-AUTH_USER_SELECT_FIELDS = "username,password_hash,role,display_name,region,position,phone"
+AUTH_USER_SELECT_FIELDS = "username,password_hash,role,display_name,region,position,phone,status,avatar_url"
 
 SCHEDULES_TABLE = "schedules"
 SCHEDULES_VIEW = "schedules_with_user_profile"
@@ -433,7 +435,7 @@ def load_auth_users() -> dict[str, dict] | None:
             "display_name": str(row.get("display_name") or username).strip() or username,
         }
 
-        for field in ("region", "position", "phone"):
+        for field in ("region", "position", "phone", "status", "avatar_url"):
             value = row.get(field)
             if value is not None:
                 user_data[field] = str(value)
@@ -480,7 +482,7 @@ def replace_auth_users(users: dict[str, dict]) -> bool:
                 "updated_at": now,
             }
 
-            for field in ("region", "position", "phone"):
+            for field in ("region", "position", "phone", "status", "avatar_url"):
                 value = raw_user.get(field)
                 if value is not None:
                     row[field] = str(value)

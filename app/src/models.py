@@ -5,6 +5,8 @@ Single definition of how ER events map to Supabase rows / dashboard rows.
 No more duplicated `build_rows()`.
 """
 
+from __future__ import annotations
+
 from datetime import datetime, timezone
 
 

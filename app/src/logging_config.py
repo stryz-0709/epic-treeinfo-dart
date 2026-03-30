@@ -12,6 +12,8 @@ Usage:
     setup_logging()  # call once at startup
 """
 
+from __future__ import annotations
+
 import logging
 import sys
 import uuid
