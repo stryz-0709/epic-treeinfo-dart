@@ -7,6 +7,7 @@ create table if not exists public.app_users (
   role text not null check (role in ('admin', 'leader', 'ranger', 'viewer')),
   display_name text not null,
   region text,
+  team text,
   position text,
   phone text,
   status text not null default 'active' check (status in ('active', 'pending', 'rejected')),
@@ -18,6 +19,23 @@ create table if not exists public.app_users (
 -- Migration: add status and avatar_url to existing tables
 DO $$
 BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'app_users' AND column_name = 'sub_region'
+  ) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'app_users' AND column_name = 'team'
+  ) THEN
+    ALTER TABLE public.app_users RENAME COLUMN sub_region TO team;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'app_users' AND column_name = 'team'
+  ) THEN
+    ALTER TABLE public.app_users ADD COLUMN team text;
+  END IF;
+
   IF NOT EXISTS (
     SELECT 1 FROM information_schema.columns
     WHERE table_schema = 'public' AND table_name = 'app_users' AND column_name = 'status'
@@ -36,6 +54,7 @@ BEGIN
 END $$;
 
 create index if not exists idx_app_users_role on public.app_users(role);
+create index if not exists idx_app_users_region_team on public.app_users(region, team);
 
 create or replace function public.set_app_users_updated_at()
 returns trigger

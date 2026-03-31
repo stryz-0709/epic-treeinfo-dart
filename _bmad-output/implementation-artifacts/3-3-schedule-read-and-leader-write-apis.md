@@ -31,7 +31,7 @@ so that assignments are managed correctly and safely.
 
 - [x] Task 1: Strengthen role-scoped schedule read endpoint (AC: 1)
   - [x] Ensure ranger users receive self-only schedule rows with server-side scope enforcement.
-  - [x] Support leader scope behavior for team view and ranger filter.
+  - [x] Support leader scope behavior for same-region/same-team view and ranger filter.
   - [x] Add filter support for schedule date range inputs where provided.
 
 - [x] Task 2: Harden leader-only schedule writes with validation and audit fields (AC: 2, 3)
@@ -41,7 +41,7 @@ so that assignments are managed correctly and safely.
 
 - [x] Task 3: Add automated backend regression tests (AC: 1, 2, 3)
   - [x] Add tests for ranger self-only reads and cross-ranger denial.
-  - [x] Add tests for leader team-scope reads, ranger-filter reads, and date-range filters.
+  - [x] Add tests for leader same-region/same-team reads, ranger-filter reads, and date-range filters.
   - [x] Add tests for leader write validation/audit fields and non-leader authorization failures.
 
 - [x] Task 4: Validate implementation and document evidence (AC: 1, 2, 3)
@@ -94,7 +94,7 @@ GPT-5.3-Codex
 ### Completion Notes List
 
 - Hardened `GET /api/mobile/schedules` with server-side role scope parity: ranger self-only, leader team scope by default, optional leader ranger filter, and `from`/`to` date range validation.
-- Added defensive schedule row normalization/filtering and consistent response metadata (`scope.team_scope`, `filters`).
+- Added defensive schedule row normalization/filtering and consistent response metadata (`scope.team_scope`, `filters`) aligned with same-region/same-team leader scope intent.
 - Hardened schedule create/update validation for required fields and ISO work-date format.
 - Added schedule audit metadata on writes (`updated_by`, `updated_at`; `created_at` on create and preserved on update).
 - Added schedule write payload hardening for note size (`note` max length 500 characters).

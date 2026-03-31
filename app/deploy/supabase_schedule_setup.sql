@@ -9,6 +9,7 @@ create table if not exists public.schedules (
   username text not null references public.app_users(username) on update cascade on delete restrict,
   display_name text not null,
   region text,
+  team text,
   role text not null check (role in ('admin', 'leader', 'ranger', 'viewer')),
   note text not null default '',
   created_by_username text not null references public.app_users(username) on update cascade on delete restrict,
@@ -77,6 +78,48 @@ begin
     from information_schema.columns
     where table_schema = 'public'
       and table_name = 'schedules'
+      and column_name = 'ranger_team'
+  ) and not exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'schedules'
+      and column_name = 'team'
+  ) then
+    alter table public.schedules rename column ranger_team to team;
+  end if;
+
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'schedules'
+      and column_name = 'sub_region'
+  ) and not exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'schedules'
+      and column_name = 'team'
+  ) then
+    alter table public.schedules rename column sub_region to team;
+  end if;
+
+  if not exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'schedules'
+      and column_name = 'team'
+  ) then
+    alter table public.schedules add column team text;
+  end if;
+
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'schedules'
       and column_name = 'ranger_role'
   ) and not exists (
     select 1
@@ -104,6 +147,7 @@ comment on table public.schedules is 'Workshift assignments persisted for monito
 comment on column public.schedules.username is 'Canonical stable identity key used for sorting/filtering.';
 comment on column public.schedules.display_name is 'Display-name snapshot at assignment time.';
 comment on column public.schedules.region is 'Region snapshot at assignment time.';
+comment on column public.schedules.team is 'Team snapshot at assignment time (legacy sub_region renamed).';
 comment on column public.schedules.role is 'Role snapshot at assignment time.';
 
 -- Canonical identity remediation + strict-readiness safety checks.
@@ -187,6 +231,8 @@ select
   u.display_name as display_name_current,
   s.region as region_snapshot,
   u.region as region_current,
+  s.team as team_snapshot,
+  u.team as team_current,
   s.role as role_snapshot,
   u.role as role_current,
   s.note,
@@ -202,7 +248,7 @@ left join public.app_users u
   on u.username = s.username;
 
 comment on view public.schedules_with_user_profile is
-  'Schedule rows with both snapshot fields and current app_users profile values (region/role/display_name).';
+  'Schedule rows with both snapshot fields and current app_users profile values (region/team/role/display_name).';
 
 drop index if exists public.uq_schedules_active_assignment;
 create unique index uq_schedules_active_assignment
@@ -250,6 +296,7 @@ begin
     u.username,
     u.display_name,
     u.region,
+    u.team,
     u.role
   into v_user
   from public.app_users u
@@ -262,6 +309,7 @@ begin
 
   new.display_name := v_user.display_name;
   new.region := v_user.region;
+  new.team := v_user.team;
   new.role := v_user.role;
   return new;
 end;

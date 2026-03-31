@@ -14,10 +14,10 @@ Deliver Phase 1 mobile capabilities for ranger operations visibility:
 
 ## leader
 
-- Can view overview of ranger work/check-in status.
-- Can filter/select rangers (drop-list expected).
-- Can create and manage ranger schedules.
-- Can view all incidents created by rangers.
+- Can view overview of ranger work/check-in status for authorized rangers in the same `region` and `team`.
+- Can filter/select rangers (drop-list expected) within same `region` + `team` scope.
+- Can create and manage ranger schedules only for authorized rangers in the same `region` and `team`.
+- Can view incidents created by authorized rangers in the same `region` and `team`.
 
 ## ranger
 
@@ -45,7 +45,7 @@ Deliver Phase 1 mobile capabilities for ranger operations visibility:
 - Check-in should be idempotent per user/day (avoid duplicate records for same day).
 - Access control must be enforced server-side by role and user identity.
 - Ranger cannot view other ranger data.
-- Leader can view team-level ranger data.
+- Leader permissions apply only to rangers with the same `region` and `team`.
 
 ## Non-Functional Priorities
 
@@ -83,7 +83,7 @@ Deliver Phase 1 mobile capabilities for ranger operations visibility:
 
 - Keep `service-role` key only on backend server.
 - For any direct mobile Supabase call, use `anon` key only + strict RLS policies.
-- Define explicit RLS by role/user scope (leader team scope vs ranger self scope).
+- Define explicit RLS by role/user scope (leader same-region+same-team scope vs ranger self scope).
 
 ### Authentication recommendation
 

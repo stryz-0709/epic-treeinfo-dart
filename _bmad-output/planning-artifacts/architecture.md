@@ -69,7 +69,7 @@ Primary architecture direction:
 **Decision:** Enforce role scope at backend query layer.
 
 - `ranger`: self-only reads/writes within allowed actions
-- `leader`: team-level reads + schedule write permissions
+- `leader`: reads and schedule writes only for rangers with the same `region` and `team`
 
 **Rationale:** UI-only scoping is insufficient for security and data correctness.
 
@@ -180,7 +180,7 @@ Cross-cutting:
 ## 5. Data Model v1 (Architecture Baseline)
 
 1. `users`
-   - `id`, `role`, `team_scope`, `status`
+   - `id`, `role`, `region`, `team`, `status`
 2. `daily_checkins`
    - `id`, `user_id`, `day_key`, `first_checkin_at`, `source`, `idempotency_key`
    - unique index: `(user_id, day_key)`
@@ -320,8 +320,8 @@ This addendum closes Section 12 for Phase 1 planning readiness by explicitly res
 
 **Decision:**
 
-- Leader read scope is constrained to backend `team_scope` assignments.
-- Region filtering is additive (can narrow scope) and never broadens beyond assigned team scope.
+- Leader read/write scope is constrained to backend assignments where both `region` and `team` match the target ranger.
+- Additional filters are additive (can narrow scope) and never broaden beyond assigned `region + team` scope.
 - Cross-region access requires explicit backend-admin grant and is not implied by role alone.
 
 ### Item 12.3 — Retention execution schedule

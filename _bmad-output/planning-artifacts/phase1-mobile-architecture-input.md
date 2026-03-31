@@ -39,7 +39,7 @@ Prepared for: `bmad-create-architecture`
 
 - Enforce scope in backend query layer (not UI filtering only):
   - `ranger`: self-only data
-  - `leader`: team-level data + schedule write permissions
+  - `leader`: same-`region` + same-`team` data + schedule write permissions
 - Centralize role checks in reusable dependency/guard helpers.
 
 ### AD-04 — Check-In Semantics
@@ -137,7 +137,7 @@ Prepared for: `bmad-create-architecture`
 
 Minimum entities to finalize:
 
-- `users` (id, role, team_scope)
+- `users` (id, role, region, team)
 - `daily_checkins` (user_id, day_key, first_checkin_at, source, idempotency_key)
 - `schedules` (schedule_id, ranger_id, date, assigned_by, updated_at)
 - `incidents_mirror` (er_event_id, ranger_identity_fields, occurred_at, payload_ref, updated_at)

@@ -17,8 +17,8 @@ status: "draft-v1"
 
 This PRD defines the Phase 1 mobile capability set for EarthRanger operations visibility, focused on:
 
-1. Work Management
-2. Incident Management (read-only)
+1. Work Management (`Quản lí công việc`)
+2. Incident Management (`Quản lí lâm phần`)
 3. Schedule
 
 Phase 1 is a **hybrid offline-capable release** with security-first architecture:
@@ -40,7 +40,7 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 
 - ≥ 95% of daily ranger app opens create exactly one valid daily check-in record.
 - 0 privileged keys present in mobile build assets or binaries.
-- Leader can view scoped team summary and all ranger incidents.
+- Leader can view scoped team summary and incidents only for authorized rangers with the same `region` and `team`.
 - Ranger can only view self-scoped records.
 - Offline queued ranger check-ins replay successfully when connectivity returns.
 
@@ -54,12 +54,17 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 - Show a check-in/online indicator on days where check-in exists.
 - Daily check-in trigger: authenticated app open.
 - Ensure idempotent check-in behavior (max one record per user/day).
+- Support time-range filtering (`from` ... `to`) for all summary views.
+- For leader view, include ranger list/filter and ranger productivity metrics: patrol count, scheduled work count, completion percentage, total patrol distance, and event status breakdown.
 
-#### F2 — Incident Management (Read-Only)
+#### F2 — Incident Management (`Quản lí lâm phần`)
 
 - Show incidents/events created by ranger in the selected period.
 - Data source is EarthRanger via backend sync/aggregation.
-- No incident creation from this app in Phase 1.
+- Leaders can update incident status using controlled server-side transitions.
+- Show solved incidents / total incidents and percentage in selected time range.
+- Show event list fields: event type, status, priority, and note-presence indicator.
+- Show attached files for each incident when available.
 
 #### F3 — Schedule
 
@@ -75,7 +80,7 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 
 ### 3.2 Out of Scope
 
-- Incident/event creation or editing from this app.
+- Incident/event creation and non-status incident content editing from this app.
 - Leader offline schedule writes.
 - Broad analytics redesign or deep historical BI dashboards.
 - Direct EarthRanger polling from mobile clients.
@@ -84,10 +89,10 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 
 ### 4.1 leader
 
-- View ranger activity overview.
-- Filter/select ranger(s) from drop-list.
-- View all ranger incidents.
-- Create/update ranger schedules.
+- View ranger activity overview for authorized rangers in the same `region` and `team`.
+- Filter/select ranger(s) from drop-list (same `region` + same `team` scope only).
+- View incidents for authorized rangers in the same `region` and `team`.
+- Create/update schedules only for authorized rangers in the same `region` and `team`.
 
 ### 4.2 ranger
 
@@ -109,9 +114,10 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 
 1. Leader signs in.
 2. Leader opens team Work Management dashboard/calendar.
-3. Leader selects ranger from filter list or all-ranger view.
-4. Leader reviews incident list and schedule by period.
-5. Leader creates/updates schedule online.
+3. Leader selects ranger from filter list limited to same-region/same-team scope.
+4. Leader reviews ranger metrics (patrols, scheduled work, completion %, patrol distance, event status) and incident list by period.
+5. Leader updates incident status when operations workflow requires.
+6. Leader creates/updates schedule online.
 
 ### 5.3 Ranger Incident Visibility Flow
 
@@ -129,6 +135,7 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 - **FR-AUTH-001**: App MUST use production authentication flow (no hardcoded credentials).
 - **FR-AUTH-002**: Backend MUST issue/validate authenticated session/token before data endpoints are accessed.
 - **FR-AUTH-003**: Role claims (`leader`, `ranger`) MUST be enforced server-side for every protected endpoint.
+- **FR-AUTH-004**: Leader permissions MUST apply only to rangers who share both `region` and `team` with that leader.
 - **FR-SEC-003**: If direct mobile Supabase access is used for any limited case, only anon key + strict RLS is permitted.
 
 ### 6.2 Work Management
@@ -137,21 +144,29 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 - **FR-WM-002**: System MUST display check-in indicator for days with confirmed check-in.
 - **FR-WM-003**: App-open check-in MUST be tied to authenticated user identity.
 - **FR-WM-004**: Backend MUST guarantee one effective check-in per user/day (`user_id + day_key` uniqueness).
-- **FR-WM-005**: Leader view MUST support ranger filter/drop-list.
+- **FR-WM-005**: Leader view MUST support ranger filter/drop-list constrained to same `region` and `team` scope.
 - **FR-WM-006**: Ranger view MUST show self records only.
+- **FR-WM-007**: Leader Work Management view MUST return ranger productivity metrics for selected time range: patrol count, scheduled work count, completion percentage, and total patrol distance.
+- **FR-WM-008**: Work Management data MUST include event totals and event status breakdown for selected ranger/time range.
+- **FR-WM-009**: Work Management endpoints MUST support explicit `from` and `to` range filtering.
 
-### 6.3 Incident Management (Read-Only)
+### 6.3 Incident Management (`Quản lí lâm phần`)
 
 - **FR-INC-001**: System MUST display incidents from EarthRanger-backed sync data.
 - **FR-INC-002**: Ranger MUST see only incidents mapped to that ranger identity.
-- **FR-INC-003**: Leader MUST see all ranger incidents within authorized scope.
-- **FR-INC-004**: Incident creation/edit operations are not available in Phase 1.
+- **FR-INC-003**: Leader MUST see incidents only for authorized rangers in the same `region` and `team`.
+- **FR-INC-004**: Leader MUST be able to update incident status through controlled server-side transitions.
+- **FR-INC-005**: Incident list endpoints MUST support `from`, `to`, `status`, `event_type`, and `priority` filters.
+- **FR-INC-006**: Incident list payload MUST expose note-presence information (`has_note`) for each event.
+- **FR-INC-007**: System MUST return solved/total incident counts and solved percentage for selected time range.
+- **FR-INC-008**: System MUST expose incident attachment listing for events that include files.
+- **FR-INC-009**: Incident creation/deletion operations remain unavailable in Phase 1.
 
 ### 6.4 Schedule
 
 - **FR-SCH-001**: System MUST display day-to-ranger schedule assignments.
 - **FR-SCH-002**: Ranger MUST see only own schedule.
-- **FR-SCH-003**: Leader MUST be able to create/update schedules online.
+- **FR-SCH-003**: Leader MUST be able to create/update schedules online only for authorized rangers in the same `region` and `team`.
 - **FR-SCH-004**: Schedule write actions MUST enforce role and payload validation on backend.
 
 ### 6.5 Offline and Sync
@@ -208,14 +223,19 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 - `POST /api/mobile/auth/logout`
 - `GET /api/mobile/me`
 
-### 8.2 Check-In and Work Summary
+### 8.2 Work Management (`Quản lí công việc`)
 
 - `POST /api/mobile/checkins` (idempotent)
-- `GET /api/mobile/work-management?from=&to=&ranger_id=`
+- `GET /api/mobile/work-management?from=&to=&ranger_id=&page=&page_size=`
+- `GET /api/mobile/work-management/rangers?active=&query=&page=&page_size=` (leader only)
+- `GET /api/mobile/work-management/summary?from=&to=&ranger_id=`
 
-### 8.3 Incidents
+### 8.3 Incident Management (`Quản lí lâm phần`)
 
-- `GET /api/mobile/incidents?from=&to=&updated_since=&ranger_id=`
+- `GET /api/mobile/incidents?from=&to=&updated_since=&ranger_id=&event_type=&status=&priority=&has_note=&page=&page_size=&cursor=`
+- `GET /api/mobile/incidents/summary?from=&to=&ranger_id=`
+- `GET /api/mobile/incidents/{incident_id}/attachments`
+- `PATCH /api/mobile/incidents/{incident_id}/status` (leader only)
 
 ### 8.4 Schedule
 
@@ -229,18 +249,21 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 
 - Calendar displays working day summary and check-in indicators.
 - Reopening app multiple times same day does not create duplicate check-ins.
-- Leader can filter by ranger; ranger cannot view others.
+- Leader can filter by ranger within same `region` and `team`; ranger cannot view others.
+- Leader sees patrol count, scheduled work count, completion %, total patrol distance, and event-status summary for selected range.
 
 ### AC-F2 Incident Management
 
 - Ranger sees only self incidents for selected period.
-- Leader sees incidents for all authorized rangers.
-- No create/edit controls available in UI.
+- Leader sees incidents only for authorized rangers in the same `region` and `team`.
+- Leader can update incident status via permitted transitions.
+- Incident list includes event type, status, priority, note indicator, solved/total ratio %, and file attachment presence.
+- No incident creation/deletion controls available in UI.
 
 ### AC-F3 Schedule
 
 - Ranger can view own schedule entries by date.
-- Leader can create/update schedule online and see updates reflected.
+- Leader can create/update schedule online only for authorized rangers in the same `region` and `team` and see updates reflected.
 - Unauthorized schedule write attempts are rejected by backend.
 
 ### AC-F4 Offline/Sync

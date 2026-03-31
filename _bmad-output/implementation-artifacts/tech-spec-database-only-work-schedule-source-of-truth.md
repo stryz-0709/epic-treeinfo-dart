@@ -116,7 +116,7 @@ Move schedule read/write authority to Supabase only, using `public.schedules` as
 - **Delta filter semantics**: Active schedule items are filtered by `updated_at >= updated_since`; delete events since cursor are returned separately as tombstones so clients can reconcile removals without full refresh.
 - **Concurrency policy**: Update/delete operations are atomic DB mutations on active rows (`schedule_id` + `deleted_at is null`); duplicate assignment conflicts are handled by DB uniqueness and mapped to HTTP `409`.
 - **Active uniqueness semantics**: Enforce exactly one active schedule per `(work_date, username)` using `uq_schedules_active_assignment` (`WHERE deleted_at IS NULL`); soft-deleted historical rows do not block re-assignment.
-- **Scope/directory generation rules**: Keep existing role behavior deterministic: ranger sees self-only scope and directory; leader sees ranger-assignable directory; admin-account leaders include leader+ranger directory entries as currently implemented.
+- **Scope/directory generation rules**: Keep existing role behavior deterministic: ranger sees self-only scope and directory; leader sees ranger-assignable directory constrained to same `region` + `team`; admin-account leaders include leader+ranger directory entries per admin/global policy as currently implemented.
 - **Delete response source semantics**: `deleted_by` in API response is sourced from authenticated actor claims (`mobile_user.username`), not from storage row snapshots.
 - **Pagination semantics**: `pagination.total` and `pagination.total_pages` are computed after applying role scope, date filters, `updated_since`, and active-row filter (`deleted_at is null`).
 - **Pagination consistency model**: Offset pagination is allowed with explicit consistency semantics; server supports snapshot pinning (`snapshot_at`) so multi-page reads can remain deterministic under concurrent writes/deletes.
@@ -191,7 +191,7 @@ Move schedule read/write authority to Supabase only, using `public.schedules` as
 - [ ] AC 1: Given a valid leader request to create a schedule, when `POST /api/mobile/schedules` is called, then the schedule is persisted in `public.schedules` and returned with API-compatible fields.
 - [ ] AC 2: Given the API process restarts (or requests are served by different workers), when `GET /api/mobile/schedules` is called, then previously created schedules are still returned because persistence is database-backed.
 - [ ] AC 3: Given a ranger-authenticated user, when `GET /api/mobile/schedules` is called, then only self-scoped schedule rows are returned and cross-ranger scope requests are denied.
-- [ ] AC 4: Given a leader-authenticated user, when `GET /api/mobile/schedules` is called without `ranger_id`, then team-scoped rows allowed by server-side role policy are returned with existing `scope` and `directory` metadata.
+- [ ] AC 4: Given a leader-authenticated user, when `GET /api/mobile/schedules` is called without `ranger_id`, then region+team-scoped rows allowed by server-side role policy are returned with existing `scope` and `directory` metadata.
 - [ ] AC 5: Given repeated list queries across the same filter window, when schedules are returned, then ordering is deterministic by `work_date`, `username`, `schedule_id` (not `display_name`).
 - [ ] AC 6: Given a valid leader update request for an existing schedule, when `PUT /api/mobile/schedules/{schedule_id}` is called, then the row is updated in Supabase and subsequent reads reflect the change.
 - [ ] AC 7: Given an admin delete request for an existing schedule, when `DELETE /api/mobile/schedules/{schedule_id}` is called, then the schedule is soft-deleted and excluded from active list responses.
@@ -296,25 +296,25 @@ Move schedule read/write authority to Supabase only, using `public.schedules` as
 
 ### Envelope, Scope, Filters, Directory, Sync Contract
 
-| Surface       | Field                  | Type                  | Nullability                           | Rules                                                |
-| ------------- | ---------------------- | --------------------- | ------------------------------------- | ---------------------------------------------------- |
-| `scope`       | `role`                 | string                | non-null                              | `leader` or `ranger` (mobile contract role)          |
-| `scope`       | `account_role`         | string                | nullable                              | normalized internal role (`admin`,`leader`,`ranger`) |
-| `scope`       | `team_scope`           | boolean               | non-null                              | true only when effective scope is team-level         |
-| `scope`       | `requested_ranger_id`  | string                | nullable                              | echo of normalized request filter                    |
-| `scope`       | `effective_ranger_id`  | string                | nullable                              | null for team scope, username for scoped reads       |
-| `filters`     | `from`                 | string (`YYYY-MM-DD`) | nullable                              | inclusive lower bound                                |
-| `filters`     | `to`                   | string (`YYYY-MM-DD`) | nullable                              | inclusive upper bound                                |
-| `filters`     | `updated_since`        | string (ISO-8601 UTC) | nullable                              | normalized cursor used in query                      |
-| `filters`     | `snapshot_at`          | string (ISO-8601 UTC) | nullable                              | fixed snapshot bound for paged consistency           |
-| `pagination`  | `page`                 | integer               | non-null                              | `>= 1`                                               |
-| `pagination`  | `page_size`            | integer               | non-null                              | configured bounds                                    |
-| `pagination`  | `total`                | integer               | non-null                              | post-filter count                                    |
-| `pagination`  | `total_pages`          | integer               | non-null                              | derived from total/page_size                         |
-| `directory[]` | `username`             | string                | non-null                              | normalized username                                  |
-| `directory[]` | `display_name`         | string                | non-null                              | display label                                        |
-| `directory[]` | `role`                 | string                | non-null                              | `leader` or `ranger`                                 |
-| `sync`        | `deleted_schedule_ids` | array[string]         | non-null when `updated_since` present | tombstones for scoped deletions                      |
+| Surface       | Field                  | Type                  | Nullability                           | Rules                                                      |
+| ------------- | ---------------------- | --------------------- | ------------------------------------- | ---------------------------------------------------------- |
+| `scope`       | `role`                 | string                | non-null                              | `leader` or `ranger` (mobile contract role)                |
+| `scope`       | `account_role`         | string                | nullable                              | normalized internal role (`admin`,`leader`,`ranger`)       |
+| `scope`       | `team_scope`           | boolean               | non-null                              | true only when effective scope is leader region+team-level |
+| `scope`       | `requested_ranger_id`  | string                | nullable                              | echo of normalized request filter                          |
+| `scope`       | `effective_ranger_id`  | string                | nullable                              | null for region+team scope, username for scoped reads      |
+| `filters`     | `from`                 | string (`YYYY-MM-DD`) | nullable                              | inclusive lower bound                                      |
+| `filters`     | `to`                   | string (`YYYY-MM-DD`) | nullable                              | inclusive upper bound                                      |
+| `filters`     | `updated_since`        | string (ISO-8601 UTC) | nullable                              | normalized cursor used in query                            |
+| `filters`     | `snapshot_at`          | string (ISO-8601 UTC) | nullable                              | fixed snapshot bound for paged consistency                 |
+| `pagination`  | `page`                 | integer               | non-null                              | `>= 1`                                                     |
+| `pagination`  | `page_size`            | integer               | non-null                              | configured bounds                                          |
+| `pagination`  | `total`                | integer               | non-null                              | post-filter count                                          |
+| `pagination`  | `total_pages`          | integer               | non-null                              | derived from total/page_size                               |
+| `directory[]` | `username`             | string                | non-null                              | normalized username                                        |
+| `directory[]` | `display_name`         | string                | non-null                              | display label                                              |
+| `directory[]` | `role`                 | string                | non-null                              | `leader` or `ranger`                                       |
+| `sync`        | `deleted_schedule_ids` | array[string]         | non-null when `updated_since` present | tombstones for scoped deletions                            |
 
 Directory sort order remains deterministic: ranger entries first, then by `display_name.lower()`, then `username`.
 
@@ -327,20 +327,21 @@ Allowed claim combinations for auth/session validation:
 
 ### Scope and Directory Resolution Rules
 
+- Scope enforcement for non-admin leaders must match both `region` and `team` from authenticated identity/profile (`team` replaces legacy `sub_region`).
 - Ranger account: effective scope is self-only; directory includes self.
-- Leader account: team-scope default when no `ranger_id`; directory includes assignable ranger users.
+- Leader account: region+team scope default when no `ranger_id`; directory includes assignable ranger users in same `region` and `team`.
 - Admin-account leader: directory includes leader + ranger entries per current behavior.
 - Non-admin leader self-target policy: leader usernames are not assignable targets for create/update, and `ranger_id` filter for self-leader username is denied.
 
 | Account Role         | Read `/api/mobile/schedules`                   | Create/Update  | Delete         | Allowed `ranger_id` target set |
 | -------------------- | ---------------------------------------------- | -------------- | -------------- | ------------------------------ |
 | ranger               | Self-only                                      | Denied (`403`) | Denied (`403`) | Self only                      |
-| leader (non-admin)   | Team ranger scope only                         | Allowed        | Denied (`403`) | Ranger accounts only           |
-| admin-account leader | Team scope including leader+ranger assignments | Allowed        | Allowed        | Leader + ranger accounts       |
+| leader (non-admin)   | Same-region + same-team ranger scope only      | Allowed        | Denied (`403`) | Ranger accounts only           |
+| admin-account leader | Admin policy scope (leader+ranger assignments) | Allowed        | Allowed        | Leader + ranger accounts       |
 
 Endpoint-level clarification:
 
-- `GET /api/mobile/schedules`: non-admin leader can list team ranger schedules; explicit `ranger_id` equal to own leader username is denied.
+- `GET /api/mobile/schedules`: non-admin leader can list same-region/same-team ranger schedules; explicit `ranger_id` equal to own leader username is denied.
 - `POST /api/mobile/schedules`: non-admin leader can create only for ranger targets.
 - `PUT /api/mobile/schedules/{id}`: non-admin leader can retarget/update only to ranger targets.
 - `DELETE /api/mobile/schedules/{id}`: admin-account leader only.

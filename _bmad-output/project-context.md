@@ -73,11 +73,16 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Incident Management in this app is **read-only consumption** of incidents/events created in EarthRanger mobile app.
 - In Phase 1, this app should **pull and display** incidents; do **not** implement incident creation here unless PRD explicitly changes scope.
 - Schedule in Phase 1 is display of day-to-ranger assignments (example: `19 March - Johnson`).
-- Account model has two roles:
-  - **leader**: overview of ranger work summaries, can create/edit schedules, can see all ranger incidents.
+- Account/visibility model has three roles:
+  - **admin**: global visibility and can see all leaders and rangers across all regions and teams.
+  - **leader**: overview of ranger work summaries, can create/edit schedules, and can monitor/view ranger data **only when both region and team match the leader assignment**.
   - **ranger**: can only see own stats/work summary/schedule/incidents.
+- Database naming standard for scope is now `team` (legacy `sub_region` has been renamed).
 - Role enforcement must be implemented server-side/API-side; UI-only restrictions are insufficient.
-- Any endpoint returning incident or attendance data must be scoped by role and user identity.
+- Any endpoint returning leader/ranger roster, incident, attendance, or schedule data must be scoped server-side by role and identity:
+  - **admin**: all regions and teams.
+  - **leader**: only users/resources where both `region` and `team` are the same as the leader (example: leader `BJW` + `team 1` can only see rangers `BJW` + `team 1`).
+  - **ranger**: own data only.
 - Phase 1 delivery mode is **hybrid online + offline-capable**: local cache on phone + sync when internet returns.
 - Offline sync queue is allowed in Phase 1 for ranger check-in/stat events; leader schedule writes remain online-only unless PRD explicitly expands this.
 - Queue records must include an idempotency key (`user_id + action_type + day_key + client_uuid`) to prevent duplicate writes on retries.
@@ -101,7 +106,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 - Mobile read APIs (`/api/mobile/work-management`, `/api/mobile/incidents`, `/api/mobile/schedules`) must keep bounded pagination defaults and max caps; do not add unbounded list reads.
 - Keep incremental fetch/query-window guards (`updated_since`, bounded date windows, or equivalent constrained filters) to avoid broad scans.
-- Keep role scoping (`leader`/`ranger`) as the first filter gate before expensive query paths.
+- Keep role scoping (`admin`/`leader`/`ranger`) as the first filter gate before expensive query paths.
 - Preserve request correlation end-to-end: `X-Request-ID` must propagate through middleware, endpoint logs, and response headers.
 - Keep structured request lifecycle logs with route/method/status/duration and safe role/user scope metadata where available.
 - Keep slow-request warning behavior config-driven (`REQUEST_SLOW_THRESHOLD_MS`, with legacy alias fallback support when present).
@@ -149,7 +154,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 - Never commit or expose live secrets from `.env`, service account files, `zalo-monitor/*.json`, or token-bearing configs.
 - Preserve login compatibility behavior in backend auth: legacy SHA-256 hashes are auto-migrated to bcrypt on successful login.
-- Keep region-based data visibility behavior in `/api/trees` for non-admin users.
+- Keep region/team-based data visibility behavior in `/api/trees`: admin is global, leaders are restricted to the same `region` and `team`, and non-admin users must not access cross-region or cross-team data.
 - EarthRanger API payload shapes can vary (`data/results` wrappers and optional fields); maintain defensive parsing patterns.
 - Zalo token lifecycle depends on Google Sheet-backed refresh flow; do not replace with static token assumptions.
 - In Flutter auth/provider code, treat hardcoded admin credentials as temporary legacy behavior; do not extend this pattern to new security-sensitive features.
@@ -202,4 +207,4 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Keep Phase 1 scope decisions synchronized with PRD/architecture artifacts to avoid implementation drift.
 - During story closure, ensure sprint status + implementation artifact + this file stay synchronized.
 
-Last Updated: 2026-03-27
+Last Updated: 2026-03-31
