@@ -23,7 +23,7 @@ Primary architecture direction:
 
 - Mobile app accesses data through backend BFF APIs.
 - EarthRanger integration and polling are server-side only.
-- Role enforcement is backend-enforced (`leader`, `ranger`).
+- Role enforcement is backend-enforced (`admin`, `leader`, `ranger`).
 - Ranger check-ins support offline queueing with idempotent replay.
 
 ## 2. Architecture Drivers and Constraints
@@ -68,8 +68,10 @@ Primary architecture direction:
 
 **Decision:** Enforce role scope at backend query layer.
 
+- `admin`: global read/write across all regions and teams
 - `ranger`: self-only reads/writes within allowed actions
 - `leader`: reads and schedule writes only for rangers with the same `region` and `team`
+- `ranger` schedule visibility exception: read-only schedule access for rangers in the same `region` and `team`; write actions remain denied
 
 **Rationale:** UI-only scoping is insufficient for security and data correctness.
 
@@ -218,6 +220,12 @@ Cross-cutting:
 - `GET /api/mobile/schedules?from=&to=&ranger_id=`
 - `POST /api/mobile/schedules` (leader only)
 - `PUT /api/mobile/schedules/{schedule_id}` (leader only)
+
+Scope contract note:
+
+- Admin schedule access is global (cross-region/cross-team allowed).
+- Leader schedule read/write is limited to same `region` + same `team` ranger scope.
+- Ranger schedule access is same `region` + same `team` read-only.
 
 ### 6.5 Error Contract (Common)
 

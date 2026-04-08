@@ -26,6 +26,7 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 - Mobile app uses backend-for-frontend (BFF) APIs.
 - Privileged keys stay on backend only.
 - Offline cache + safe sync queue are included for ranger check-in/stat updates.
+- Access-control baseline is mandatory for this project with exactly three roles: `admin`, `leader`, `ranger`.
 
 ## 2. Goals and Success Outcomes
 
@@ -96,8 +97,14 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 
 ### 4.2 ranger
 
-- View own work/check-ins/schedule/incidents only.
+- View own work/check-ins/incidents only.
+- For **Schedule** only, view schedules of rangers in the same `region` and `team` (read-only).
 - Cannot view or modify other ranger data.
+
+### 4.3 admin
+
+- Global authority: can view/modify data across all `region` and `team` combinations.
+- Cross-region/cross-team permissions are explicitly allowed for admin.
 
 ## 5. Key User Flows
 
@@ -136,6 +143,7 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 - **FR-AUTH-002**: Backend MUST issue/validate authenticated session/token before data endpoints are accessed.
 - **FR-AUTH-003**: Role claims (`leader`, `ranger`) MUST be enforced server-side for every protected endpoint.
 - **FR-AUTH-004**: Leader permissions MUST apply only to rangers who share both `region` and `team` with that leader.
+- **FR-AUTH-005**: Admin permissions MUST remain global (not restricted by `region`/`team`) for read/write operations.
 - **FR-SEC-003**: If direct mobile Supabase access is used for any limited case, only anon key + strict RLS is permitted.
 
 ### 6.2 Work Management
@@ -165,9 +173,10 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 ### 6.4 Schedule
 
 - **FR-SCH-001**: System MUST display day-to-ranger schedule assignments.
-- **FR-SCH-002**: Ranger MUST see only own schedule.
+- **FR-SCH-002**: Ranger MUST have read-only schedule visibility for rangers in the same `region` and `team`.
 - **FR-SCH-003**: Leader MUST be able to create/update schedules online only for authorized rangers in the same `region` and `team`.
 - **FR-SCH-004**: Schedule write actions MUST enforce role and payload validation on backend.
+- **FR-SCH-005**: Ranger schedule write actions (create/update/delete) MUST be denied server-side.
 
 ### 6.5 Offline and Sync
 
@@ -262,9 +271,10 @@ Phase 1 is a **hybrid offline-capable release** with security-first architecture
 
 ### AC-F3 Schedule
 
-- Ranger can view own schedule entries by date.
+- Ranger can view schedule entries by date for rangers in the same `region` and `team`, with no write actions.
 - Leader can create/update schedule online only for authorized rangers in the same `region` and `team` and see updates reflected.
 - Unauthorized schedule write attempts are rejected by backend.
+- Admin can view/modify schedules across any `region` and `team`.
 
 ### AC-F4 Offline/Sync
 

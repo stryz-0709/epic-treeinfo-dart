@@ -73,16 +73,17 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Incident Management in this app is **read-only consumption** of incidents/events created in EarthRanger mobile app.
 - In Phase 1, this app should **pull and display** incidents; do **not** implement incident creation here unless PRD explicitly changes scope.
 - Schedule in Phase 1 is display of day-to-ranger assignments (example: `19 March - Johnson`).
+- Mandatory role baseline for this project is exactly three roles: `admin`, `leader`, `ranger`.
 - Account/visibility model has three roles:
   - **admin**: global visibility and can see all leaders and rangers across all regions and teams.
   - **leader**: overview of ranger work summaries, can create/edit schedules, and can monitor/view ranger data **only when both region and team match the leader assignment**.
-  - **ranger**: can only see own stats/work summary/schedule/incidents.
+  - **ranger**: can only see own stats/work summary/incidents; for **schedule only**, rangers can read schedules within the same `region` and `team`, and cannot modify schedules.
 - Database naming standard for scope is now `team` (legacy `sub_region` has been renamed).
 - Role enforcement must be implemented server-side/API-side; UI-only restrictions are insufficient.
 - Any endpoint returning leader/ranger roster, incident, attendance, or schedule data must be scoped server-side by role and identity:
   - **admin**: all regions and teams.
   - **leader**: only users/resources where both `region` and `team` are the same as the leader (example: leader `BJW` + `team 1` can only see rangers `BJW` + `team 1`).
-  - **ranger**: own data only.
+  - **ranger**: own data for non-schedule domains; same `region` + `team` read-only scope for schedule list/read domains.
 - Phase 1 delivery mode is **hybrid online + offline-capable**: local cache on phone + sync when internet returns.
 - Offline sync queue is allowed in Phase 1 for ranger check-in/stat events; leader schedule writes remain online-only unless PRD explicitly expands this.
 - Queue records must include an idempotency key (`user_id + action_type + day_key + client_uuid`) to prevent duplicate writes on retries.

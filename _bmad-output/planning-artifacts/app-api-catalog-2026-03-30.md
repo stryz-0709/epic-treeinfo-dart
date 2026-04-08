@@ -33,7 +33,10 @@ This document is the **single place to store all APIs needed for the app**:
   - `admin` (system/operator controls)
   - `leader` (team/management controls)
   - `ranger` (field operations)
+- Role model is mandatory for this project and limited to exactly these 3 roles.
 - Scope policy: leader access applies only to rangers/resources where both `region` and `team` match the leader assignment.
+- Scope policy: ranger access is self-only for non-schedule domains; for schedules, ranger access is same `region` + same `team` read-only.
+- Scope policy: admin access is global across all `region`/`team` combinations for read/write operations.
 - Database naming note: `team` replaces legacy `sub_region` for scope filtering.
 
 ---
@@ -109,6 +112,12 @@ Required screen data:
 | POST   | `/api/mobile/schedules`               | mobile bearer token | leader         | Implemented | Create schedule                              |
 | PUT    | `/api/mobile/schedules/{schedule_id}` | mobile bearer token | leader         | Implemented | Update schedule                              |
 | DELETE | `/api/mobile/schedules/{schedule_id}` | mobile bearer token | admin          | Implemented | Soft-delete schedule                         |
+
+Schedule policy note:
+
+- Ranger schedule reads are read-only and limited to same `region` + same `team`.
+- Leader schedule writes are limited to same `region` + same `team` ranger targets.
+- Admin schedule operations are global (cross-region/cross-team allowed).
 
 ### Tree and NFC operations
 

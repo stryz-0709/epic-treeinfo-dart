@@ -12,6 +12,13 @@ Deliver Phase 1 mobile capabilities for ranger operations visibility:
 
 ## User Roles
 
+Total roles in this project: `admin`, `leader`, `ranger`.
+
+## admin
+
+- Can view/modify all data across all `region` and `team` combinations.
+- This global cross-region/cross-team authority is a mandatory project rule.
+
 ## leader
 
 - Can view overview of ranger work/check-in status for authorized rangers in the same `region` and `team`.
@@ -21,7 +28,9 @@ Deliver Phase 1 mobile capabilities for ranger operations visibility:
 
 ## ranger
 
-- Can view only own stats/work/check-ins/schedule/incidents.
+- Can view only own stats/work/check-ins/incidents.
+- For **Schedule** only, can view schedules of rangers in the same `region` and `team` (read-only).
+- Cannot create/update/delete schedules.
 
 ## Phase 1 Functional Scope
 
@@ -44,8 +53,9 @@ Deliver Phase 1 mobile capabilities for ranger operations visibility:
 
 - Check-in should be idempotent per user/day (avoid duplicate records for same day).
 - Access control must be enforced server-side by role and user identity.
-- Ranger cannot view other ranger data.
-- Leader permissions apply only to rangers with the same `region` and `team`.
+- Leader permissions MUST apply only to rangers with the same `region` and `team`.
+- Ranger schedule visibility is read-only and limited to same `region` + same `team`.
+- Admin permissions are global and not restricted by `region`/`team`.
 
 ## Non-Functional Priorities
 
@@ -84,6 +94,10 @@ Deliver Phase 1 mobile capabilities for ranger operations visibility:
 - Keep `service-role` key only on backend server.
 - For any direct mobile Supabase call, use `anon` key only + strict RLS policies.
 - Define explicit RLS by role/user scope (leader same-region+same-team scope vs ranger self scope).
+- Define explicit RLS by role/user scope:
+  - admin global scope,
+  - leader same-region+same-team scope,
+  - ranger self scope for non-schedule domains and same-region+same-team read-only scope for schedules.
 
 ### Authentication recommendation
 
